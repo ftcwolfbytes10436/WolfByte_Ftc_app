@@ -1,3 +1,8 @@
+# WolfByte_Ftc_app
+
+A Ftc app for team WolfByte
+
+---
 # ftc_app
 FTC Android Studio project to create FTC Robot Controller app.
 
