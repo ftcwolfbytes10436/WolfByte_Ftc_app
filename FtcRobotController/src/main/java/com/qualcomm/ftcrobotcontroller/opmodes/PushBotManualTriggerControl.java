@@ -73,18 +73,26 @@ public class PushBotManualTriggerControl extends PushBotTelemetry {
         //float l_left_drive_power = scale_motor_power (-gamepad1.left_stick_y);
         //float l_right_drive_power = scale_motor_power (-gamepad1.right_stick_y);
 
+        // get the power from the right trigger
+
         float l_left_drive_power = scale_motor_power(gamepad1.right_trigger);
         float l_right_drive_power = scale_motor_power(gamepad1.right_trigger);
+
+        // modify the current power with the left trigger
 
         l_left_drive_power = l_left_drive_power - scale_motor_power(gamepad1.left_trigger);
         l_right_drive_power = l_right_drive_power - scale_motor_power(gamepad1.left_trigger);
 
-        if (scale_motor_power(-gamepad1.right_stick_x) > 0){
+        // determine which way to turn and slow down that wheel
+
+        if (scale_motor_power(-gamepad1.right_stick_x) < 0){
             l_left_drive_power = l_left_drive_power * -(scale_motor_power(-gamepad1.right_stick_x) - 1);
         }
-        else if (scale_motor_power(-gamepad1.right_stick_x) < 0){
-            l_right_drive_power = l_right_drive_power * -((scale_motor_power(gamepad1.right_stick_x) - 1);
+        else if (scale_motor_power(-gamepad1.right_stick_x) > 0){
+            l_right_drive_power = l_right_drive_power * -(scale_motor_power(gamepad1.right_stick_x) - 1);
         }
+
+        // set the drive power
 
         set_drive_power (l_left_drive_power, l_right_drive_power);
 
