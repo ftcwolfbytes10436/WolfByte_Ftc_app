@@ -10,7 +10,12 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  */
 public class PushBotManualTriggerControl extends PushBotTelemetry {
 
-    int controller1ControlScheme = 1;
+    int controller1ControlScheme = 2;
+    int controller2ControlScheme = 1;
+    boolean switchControlSchemesC1 = false;
+    boolean switchControlSchemesC2 = false;
+    float l_left_arm_powerC1 = 0;
+    float l_left_arm_powerC2 = 0;
 
     //--------------------------------------------------------------------------
     //
@@ -68,48 +73,72 @@ public class PushBotManualTriggerControl extends PushBotTelemetry {
         // class, but the power levels aren't applied until this method ends.
         //
 
-        // Determine if the Contoller 1 control Scheme needs to be changed
+        //
+        // Determine if the Controller 1 control Scheme needs to be changed
+        //
 
-        if (gamepad1.a) {
-        controller1ControlScheme = 1;
-        } else if (gamepad1.b) {
-            controller1ControlScheme = 2;
+        if (gamepad1.guide){
+           switchControlSchemesC1 = !switchControlSchemesC1;
         }
+
+        if (switchControlSchemesC1) {
+            if (gamepad1.a) {
+                controller1ControlScheme = 1;
+            } else if (gamepad1.b) {
+                controller1ControlScheme = 2;
+            }
+            switchControlSchemesC1 = false;
+        }
+
+        //
         // Determine Which controller 1 control Scheme to use
+        //
 
-        if (controller1ControlScheme == 1) {
-            useController1ControlScheme1();
-        } else if (controller1ControlScheme == 2) {
-            useController1ControlScheme2();
+        if (!switchControlSchemesC1) {
+            if (controller1ControlScheme == 1) {
+                useController1ControlScheme1();
+            } else if (controller1ControlScheme == 2) {
+                useController1ControlScheme2();
+            }
         }
 
         //
-        // Manage the arm motor.
+        // Determine if the Controller 2 control Scheme needs to be changed
         //
-        float l_left_arm_power = scale_motor_power (-gamepad2.left_stick_y);
-        m_left_arm_power (l_left_arm_power);
 
-        //----------------------------------------------------------------------
-        //
-        // Servo Motors
-        //
-        // Obtain the current values of the gamepad 'x' and 'b' buttons.
-        //
-        // Note that x and b buttons have boolean values of true and false.
-        //
-        // The clip method guarantees the value never exceeds the allowable range of
-        // [0,1].
-        //
-        // The setPosition methods write the motor power values to the Servo
-        // class, but the positions aren't applied until this method ends.
-        //
-        if (gamepad2.x)
-        {
-            m_hand_position (a_hand_position () + 0.05);
+        if (gamepad1.guide) {
+            switchControlSchemesC2 = !switchControlSchemesC2;
         }
-        else if (gamepad2.b)
-        {
-            m_hand_position (a_hand_position () - 0.05);
+
+        if (switchControlSchemesC1) {
+            if (gamepad1.a) {
+                controller1ControlScheme = 1;
+            } else if (gamepad1.b) {
+                controller1ControlScheme = 1;
+            }
+            switchControlSchemesC1 = false;
+        }
+
+        //
+        // Determine Which controller 1 control Scheme to use
+        //
+
+        if (!switchControlSchemesC2) {
+            if (controller2ControlScheme == 1) {
+                useController2ControlScheme1();
+            } else if (controller2ControlScheme == 2) {
+                useController1ControlScheme1();
+            }
+        }
+
+        //
+        // set the arm motor
+        //
+
+        if (Math.abs(l_left_arm_powerC1) > Math.abs(l_left_arm_powerC2)) {
+            m_left_arm_power(l_left_arm_powerC1);
+        } else {
+            m_left_arm_power(l_left_arm_powerC2);
         }
 
         //
@@ -149,16 +178,62 @@ public class PushBotManualTriggerControl extends PushBotTelemetry {
 
         // determine which way to turn and slow down that wheel
 
-        if (scale_motor_power(-gamepad1.left_stick_x) < 0){
-            l_left_drive_power = l_left_drive_power * -(scale_motor_power(-gamepad1.left_stick_x) - 1);
+        if (scale_motor_power(gamepad1.left_stick_x) < 0){
+            l_left_drive_power = l_left_drive_power * -(gamepad1.left_stick_x - 1);
         }
-        else if (scale_motor_power(-gamepad1.left_stick_x) > 0){
-            l_right_drive_power = l_right_drive_power * -(scale_motor_power(gamepad1.left_stick_x) - 1);
+        else if (scale_motor_power(gamepad1.left_stick_x) > 0){
+            l_right_drive_power = l_right_drive_power * -(-gamepad1.left_stick_x - 1);
         }
 
         // set the drive power
 
         set_drive_power (scale_motor_power(l_left_drive_power), scale_motor_power(l_right_drive_power));
+
+        // set the arm
+
+        l_left_arm_powerC1 = scale_motor_power (-gamepad2.left_stick_y);
+
+        // set the hands
+
+        if (gamepad1.dpad_right)
+        {
+            m_hand_position (a_hand_position () + 0.05);
+        }
+        else if (gamepad1.dpad_left)
+        {
+            m_hand_position (a_hand_position () - 0.05);
+        }
+
+    }
+
+    public void useController2ControlScheme1() {
+        //
+        // Manage the arm motor.
+        //
+        l_left_arm_powerC2 = scale_motor_power (-gamepad2.left_stick_y);
+
+        //----------------------------------------------------------------------
+        //
+        // Servo Motors
+        //
+        // Obtain the current values of the gamepad 'x' and 'b' buttons.
+        //
+        // Note that x and b buttons have boolean values of true and false.
+        //
+        // The clip method guarantees the value never exceeds the allowable range of
+        // [0,1].
+        //
+        // The setPosition methods write the motor power values to the Servo
+        // class, but the positions aren't applied until this method ends.
+        //
+        if (gamepad2.x)
+        {
+            m_hand_position (a_hand_position () + 0.05);
+        }
+        else if (gamepad2.b)
+        {
+            m_hand_position (a_hand_position () - 0.05);
+        }
 
     }
 
