@@ -10,12 +10,15 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  */
 public class PushBotManualTriggerControl extends PushBotTelemetry {
 
+    final float a_left_arm_speed = .01f;
+    final float a_hand_speed = .01f;
     int controller1ControlScheme = 2;
     int controller2ControlScheme = 1;
     boolean switchControlSchemesC1 = false;
     boolean switchControlSchemesC2 = false;
     float l_left_arm_powerC1 = 0;
     float l_left_arm_powerC2 = 0;
+    float l_right_drive_powerC1 = 0;
 
     //--------------------------------------------------------------------------
     //
@@ -146,71 +149,73 @@ public class PushBotManualTriggerControl extends PushBotTelemetry {
         //
         update_telemetry (); // Update common telemetry
         update_gamepad_telemetry ();
+        telemetry.addData("12",controller1ControlScheme);
+        telemetry.addData("13",controller2ControlScheme);
 
     } // loop
 
-    public  void useController1ControlScheme1() {
+    void useController1ControlScheme1() {
 
         // Manage the drive wheel motors.
 
-        float l_left_drive_power = scale_motor_power (-gamepad1.left_stick_y);
-        float l_right_drive_power = scale_motor_power (-gamepad1.right_stick_y);
+        float l_left_drive_powerC1 = scale_motor_power (-gamepad1.left_stick_y);
+        float l_right_drive_powerC1 = scale_motor_power (-gamepad1.right_stick_y);
 
         // set the drive power
 
-        set_drive_power (l_left_drive_power, l_right_drive_power);
+        set_drive_power (l_left_drive_powerC1, l_right_drive_powerC1);
     }
 
-    public  void useController1ControlScheme2() {
+    void useController1ControlScheme2() {
 
         //
         // Manage the drive wheel motors.
 
         // get the power from the right trigger
 
-        float l_left_drive_power = scale_motor_power(gamepad1.right_trigger);
+        float l_left_drive_powerC1 = scale_motor_power(gamepad1.right_trigger);
         float l_right_drive_power = scale_motor_power(gamepad1.right_trigger);
 
         // modify the current power with the left trigger
 
-        l_left_drive_power = l_left_drive_power - scale_motor_power(gamepad1.left_trigger);
+        l_left_drive_powerC1 = l_left_drive_powerC1 - scale_motor_power(gamepad1.left_trigger);
         l_right_drive_power = l_right_drive_power - scale_motor_power(gamepad1.left_trigger);
 
         // determine which way to turn and slow down that wheel
 
         if (scale_motor_power(gamepad1.left_stick_x) < 0){
-            l_left_drive_power = l_left_drive_power * -(gamepad1.left_stick_x - 1);
+            l_left_drive_powerC1 = l_left_drive_powerC1 * (gamepad1.left_stick_x - 1);
         }
         else if (scale_motor_power(gamepad1.left_stick_x) > 0){
-            l_right_drive_power = l_right_drive_power * -(-gamepad1.left_stick_x - 1);
+            l_right_drive_power = l_right_drive_power * (-gamepad1.left_stick_x - 1);
         }
 
         // set the drive power
 
-        set_drive_power (scale_motor_power(l_left_drive_power), scale_motor_power(l_right_drive_power));
+        set_drive_power (scale_motor_power(l_left_drive_powerC1), scale_motor_power(l_right_drive_power));
 
         // set the arm
 
-        l_left_arm_powerC1 = scale_motor_power (-gamepad2.left_stick_y);
+        l_left_arm_powerC1 = scale_motor_power (-gamepad1.left_stick_y * a_left_arm_speed);
 
         // set the hands
 
-        if (gamepad1.dpad_right)
+        if (gamepad1.x)
         {
-            m_hand_position (a_hand_position () + 0.05);
+            m_hand_position (a_hand_position () + a_hand_speed);
         }
-        else if (gamepad1.dpad_left)
+        else if (gamepad1.b)
         {
-            m_hand_position (a_hand_position () - 0.05);
+            m_hand_position (a_hand_position () - a_hand_speed);
         }
 
     }
 
-    public void useController2ControlScheme1() {
+    void useController2ControlScheme1() {
         //
         // Manage the arm motor.
         //
-        l_left_arm_powerC2 = scale_motor_power (-gamepad2.left_stick_y);
+        l_left_arm_powerC2 = scale_motor_power (-gamepad2.left_stick_y * a_left_arm_speed);
 
         //----------------------------------------------------------------------
         //
@@ -228,11 +233,11 @@ public class PushBotManualTriggerControl extends PushBotTelemetry {
         //
         if (gamepad2.x)
         {
-            m_hand_position (a_hand_position () + 0.05);
+            m_hand_position (a_hand_position () + a_hand_speed);
         }
-        else if (gamepad2.b)
+        else if (gamepad2.b && a_hand_position() != 0)
         {
-            m_hand_position (a_hand_position () - 0.05);
+            m_hand_position (a_hand_position () - a_hand_speed);
         }
 
     }
