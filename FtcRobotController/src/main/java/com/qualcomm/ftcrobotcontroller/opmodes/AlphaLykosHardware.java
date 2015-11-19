@@ -122,6 +122,21 @@ public class AlphaLykosHardware extends OpMode
         }
 
         //
+        // Connect the extendable arm motor
+        //
+        try
+        {
+            v_motor_extendible_arm = hardwareMap.dcMotor.get ("extendable_arm");
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("extendable_arm");
+            DbgLog.msg (p_exeception.getLocalizedMessage());
+
+            v_motor_extendible_arm = null;
+        }
+
+        //
         // Connect the servo motors.
         //
         // Indicate the initial position of both the left and right servos.  The
@@ -906,6 +921,33 @@ public class AlphaLykosHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
+    // a_extendable_arm_power
+    //
+    /**
+     * Access the extendable arm motors's power level.
+     */
+    double a_extendable_arm_power ()
+    {
+        double l_return = 0.0;
+
+        if (v_motor_extendible_arm != null)
+        {
+            l_return = v_motor_extendible_arm.getPower();
+        }
+
+        return l_return;
+    } // a_extendable_arm_power
+
+    //--------------------------------------------------------------------------
+    //
+    // m_extendable_arm_power
+    //
+    /**
+     *  Acces
+     */
+
+    //--------------------------------------------------------------------------
+    //
     // a_hand_position
     //
     /**
@@ -1035,6 +1077,15 @@ public class AlphaLykosHardware extends OpMode
      * Manage the aspects of the left hand servo.
      */
     private Servo v_servo_left_hand;
+
+    //--------------------------------------------------------------------------
+    //
+    // v_moter_extendible_arm
+    //
+    /**
+     * Manage the aspects of the extendible_arm
+     */
+    private DcMotor v_motor_extendible_arm;
 
     //--------------------------------------------------------------------------
     //
