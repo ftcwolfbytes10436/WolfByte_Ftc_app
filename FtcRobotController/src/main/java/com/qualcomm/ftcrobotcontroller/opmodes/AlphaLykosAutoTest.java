@@ -72,7 +72,7 @@ public class AlphaLykosAutoTest extends AlphaLykosTelemetry
                     driveForward = false;
                     driveMoterSet = false;
                 }
-            }, 2 * 60 * 1000);
+            },7 * 1000);
             driveForward = true;
         }
 
