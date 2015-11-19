@@ -70,6 +70,7 @@ public class AlphaLykosAutoTest extends AlphaLykosTelemetry
                 @Override
                 public void run() {
                     driveForward = false;
+                    driveMoterSet = false;
                 }
             }, 2 * 60 * 1000);
             driveForward = true;
@@ -78,8 +79,10 @@ public class AlphaLykosAutoTest extends AlphaLykosTelemetry
         if (!driveMoterSet) {
             if (driveForward) {
                 set_drive_power(1,1);
+                driveMoterSet = true;
             } else {
                 set_drive_power(0,0);
+                driveMoterSet = true;
             }
         }
 
