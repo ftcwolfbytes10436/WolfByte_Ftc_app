@@ -16,9 +16,9 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     int controller2ControlScheme = 1;
     boolean switchControlSchemesC1 = false;
     boolean switchControlSchemesC2 = false;
-    float l_left_arm_powerC1 = 0;
-    float l_left_arm_powerC2 = 0;
-    float l_right_drive_powerC1 = 0;
+    float l_left_arm_power = 0;
+    float l_extendable_arm_power = 0;
+    float l_vacuum_power = 0;
 
     //--------------------------------------------------------------------------
     //
@@ -80,7 +80,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // Determine if the Controller 1 control Scheme needs to be changed
         //
 
-        if (gamepad1.guide){
+        if (gamepad1.back){
             switchControlSchemesC1 = !switchControlSchemesC1;
         }
 
@@ -109,7 +109,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // Determine if the Controller 2 control Scheme needs to be changed
         //
 
-        if (gamepad1.guide) {
+        if (gamepad2.back) {
             switchControlSchemesC2 = !switchControlSchemesC2;
         }
 
@@ -138,11 +138,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // set the arm motor
         //
 
-        if (Math.abs(l_left_arm_powerC1) > Math.abs(l_left_arm_powerC2)) {
-            m_left_arm_power(l_left_arm_powerC1);
-        } else {
-            m_left_arm_power(l_left_arm_powerC2);
-        }
+        m_left_arm_power(l_left_arm_power);
 
         //
         // Send telemetry data to the driver station.
@@ -173,18 +169,18 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
         // get the power from the right trigger
 
-        float l_left_drive_powerC1 = scale_motor_power(gamepad1.right_trigger);
+        float l_left_drive_power = scale_motor_power(gamepad1.right_trigger);
         float l_right_drive_power = scale_motor_power(gamepad1.right_trigger);
 
         // modify the current power with the left trigger
 
-        l_left_drive_powerC1 = l_left_drive_powerC1 - scale_motor_power(gamepad1.left_trigger);
+        l_left_drive_power = l_left_drive_power - scale_motor_power(gamepad1.left_trigger);
         l_right_drive_power = l_right_drive_power - scale_motor_power(gamepad1.left_trigger);
 
         // determine which way to turn and slow down that wheel
 
         if (scale_motor_power(gamepad1.left_stick_x) < 0){
-            l_left_drive_powerC1 = l_left_drive_powerC1 * (gamepad1.left_stick_x - 1);
+            l_left_drive_power = l_left_drive_power * (gamepad1.left_stick_x - 1);
         }
         else if (scale_motor_power(gamepad1.left_stick_x) > 0){
             l_right_drive_power = l_right_drive_power * (-gamepad1.left_stick_x - 1);
@@ -192,22 +188,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
         // set the drive power
 
-        set_drive_power (scale_motor_power(l_left_drive_powerC1), scale_motor_power(l_right_drive_power));
-
-        // set the arm
-
-        l_left_arm_powerC1 = scale_motor_power (-gamepad1.left_stick_y * a_left_arm_speed);
-
-        // set the hands
-
-        if (gamepad1.x)
-        {
-            m_hand_position (a_hand_position () + a_hand_speed);
-        }
-        else if (gamepad1.b)
-        {
-            m_hand_position (a_hand_position () - a_hand_speed);
-        }
+        set_drive_power (scale_motor_power(l_left_drive_power), scale_motor_power(l_right_drive_power));
 
     }
 
@@ -215,29 +196,44 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         //
         // Manage the arm motor.
         //
-        l_left_arm_powerC2 = scale_motor_power (-gamepad2.left_stick_y * a_left_arm_speed);
+        l_left_arm_power = scale_motor_power (-gamepad2.left_stick_y);
 
-        //----------------------------------------------------------------------
         //
+        // Manage the extendable arm
+        //
+        l_extendable_arm_power = gamepad2.right_trigger;
+        l_extendable_arm_power = scale_motor_power( l_extendable_arm_power - gamepad2.left_trigger);
+
+        //
+        // manage the vacuum
+        //
+        l_vacuum_power = gamepad2.right_trigger;
+        l_vacuum_power = scale_motor_power(l_vacuum_power - gamepad2.left_trigger);
+
         // Servo Motors
         //
         // Obtain the current values of the gamepad 'x' and 'b' buttons.
-        //
         // Note that x and b buttons have boolean values of true and false.
-        //
         // The clip method guarantees the value never exceeds the allowable range of
         // [0,1].
-        //
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
-        //
-        if (gamepad2.x)
+        if (gamepad2.right_stick_x > 0)
         {
-            m_hand_position (a_hand_position () + a_hand_speed);
+            m_hand_position (a_upper_hand_position () + gamepad2.right_stick_x * a_hand_speed, a_lower_hand_position());
         }
-        else if (gamepad2.b && a_hand_position() != 0)
+        else if (gamepad2.right_stick_x < 0 )
         {
-            m_hand_position (a_hand_position () - a_hand_speed);
+            m_hand_position (a_upper_hand_position () + gamepad2.right_stick_x * -a_hand_speed, a_lower_hand_position());
+        }
+
+        if (gamepad2.right_stick_y > 0)
+        {
+            m_hand_position (a_upper_hand_position(), a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed);
+        }
+        else if (gamepad2.right_stick_y < 0)
+        {
+            m_hand_position (a_upper_hand_position(), a_lower_hand_position() + gamepad2.right_stick_y * -a_hand_speed);
         }
 
     }

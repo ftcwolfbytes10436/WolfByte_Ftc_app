@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 //
 /**
  * Provides a single hardware access point between custom op-modes and the
- * OpMode class for the Push Bot.
+ * OpMode class for the AlphaLykos.
  *
  * This class prevents the custom op-mode from throwing an exception at runtime.
  * If any hardware fails to map, a warning will be shown via telemetry data,
@@ -137,6 +137,21 @@ public class AlphaLykosHardware extends OpMode
         }
 
         //
+        // Connect the vacuum
+        //
+        try
+        {
+            v_motor_vacuum = hardwareMap.dcMotor.get ("vacuum");
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("vacuum");
+            DbgLog.msg(p_exeception.getLocalizedMessage());
+
+            v_motor_vacuum = null;
+        }
+
+        //
         // Connect the servo motors.
         //
         // Indicate the initial position of both the left and right servos.  The
@@ -146,28 +161,28 @@ public class AlphaLykosHardware extends OpMode
 
         try
         {
-            v_servo_left_hand = hardwareMap.servo.get ("left_hand");
-            v_servo_left_hand.setPosition (l_hand_position);
+            v_hand_upper_left_servo = hardwareMap.servo.get ("upper_right_hand");
+            v_hand_upper_left_servo.setPosition(l_hand_position);
         }
         catch (Exception p_exeception)
         {
-            m_warning_message ("left_hand");
+            m_warning_message ("upper_right_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
-            v_servo_left_hand = null;
+            v_hand_upper_left_servo = null;
         }
 
         try
         {
-            v_servo_right_hand = hardwareMap.servo.get ("right_hand");
-            v_servo_right_hand.setPosition (l_hand_position);
+            v_hand_lower_left_servo = hardwareMap.servo.get ("lower_right_hand");
+            v_hand_lower_left_servo.setPosition(l_hand_position);
         }
         catch (Exception p_exeception)
         {
-            m_warning_message ("right_hand");
+            m_warning_message ("lower_right_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
-            v_servo_right_hand = null;
+            v_hand_lower_left_servo = null;
         }
 
     } // init
@@ -951,20 +966,35 @@ public class AlphaLykosHardware extends OpMode
     // a_hand_position
     //
     /**
-     * Access the hand position.
+     * Access the upper hand position.
      */
-    double a_hand_position ()
+    double a_upper_hand_position ()
     {
         double l_return = 0.0;
 
-        if (v_servo_left_hand != null)
+        if (v_hand_upper_left_servo != null)
         {
-            l_return = v_servo_left_hand.getPosition ();
+            l_return = v_hand_upper_left_servo.getPosition ();
         }
 
         return l_return;
 
     } // a_hand_position
+
+    /**
+     * Access the lower upper hand position
+     */
+    double a_lower_hand_position ()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_lower_left_servo != null)
+        {
+            l_return = v_hand_lower_left_servo.getPosition();
+        }
+
+        return l_return;
+    }
 
     //--------------------------------------------------------------------------
     //
@@ -973,56 +1003,37 @@ public class AlphaLykosHardware extends OpMode
     /**
      * Mutate the hand position.
      */
-    void m_hand_position (double p_position)
+    void m_hand_position (double upper_position,double lower_position)
     {
         //
-        // Ensure the specific value is legal.
+        // Ensure the specific values are legal.
         //
-        double l_position = Range.clip
-                ( p_position
+        double u_position = Range.clip
+                ( upper_position
                         , Servo.MIN_POSITION
                         , Servo.MAX_POSITION
                 );
 
+        double l_position = Range.clip
+                ( lower_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION);
+
         //
-        // Set the value.  The right hand value must be opposite of the left
-        // value.
+        // Set the values.
         //
-        if (v_servo_left_hand != null)
+        if (v_hand_lower_left_servo != null)
         {
-            v_servo_left_hand.setPosition (l_position);
+            v_hand_lower_left_servo.setPosition (u_position);
         }
-        if (v_servo_right_hand != null)
+
+        if (v_hand_upper_left_servo != null)
         {
-            v_servo_right_hand.setPosition (1.0 - l_position);
+            v_hand_upper_left_servo.setPosition (l_position);
         }
 
     } // m_hand_position
 
-    //--------------------------------------------------------------------------
-    //
-    // open_hand
-    //
-    /**
-     * Open the hand to its fullest.
-     */
-    void open_hand ()
-
-    {
-        //
-        // Set the value.  The right hand value must be opposite of the left
-        // value.
-        //
-        if (v_servo_left_hand != null)
-        {
-            v_servo_left_hand.setPosition (Servo.MAX_POSITION);
-        }
-        if (v_servo_right_hand != null)
-        {
-            v_servo_right_hand.setPosition (Servo.MIN_POSITION);
-        }
-
-    } // open_hand
 
     //--------------------------------------------------------------------------
     //
@@ -1071,29 +1082,39 @@ public class AlphaLykosHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
-    // v_servo_left_hand
-    //
-    /**
-     * Manage the aspects of the left hand servo.
-     */
-    private Servo v_servo_left_hand;
-
-    //--------------------------------------------------------------------------
-    //
     // v_moter_extendible_arm
     //
     /**
-     * Manage the aspects of the extendible_arm
+     * Manage the aspects of the extendible_arm.
      */
     private DcMotor v_motor_extendible_arm;
 
+
     //--------------------------------------------------------------------------
     //
-    // v_servo_right_hand
+    //v_motor_vacuum
     //
     /**
-     * Manage the aspects of the right hand servo.
+     * Manage the aspects of the vacuum.
      */
-    private Servo v_servo_right_hand;
+    private DcMotor v_motor_vacuum;
+
+    //--------------------------------------------------------------------------
+    //
+    // v_hand_lower_left_servo
+    //
+    /**
+     * Manage the aspects of the hand servo.
+     */
+    private Servo v_hand_lower_left_servo;
+
+    //----------------------------------------------------------------------------
+    //
+    // v_hand_upper_left_servo
+    //
+    /**
+     * Manage the aspects of the upper_left_hand_servo.
+     */
+    private Servo v_hand_upper_left_servo;
 
 } // PushBotHardware
