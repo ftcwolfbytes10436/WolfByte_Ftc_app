@@ -219,7 +219,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
 
-        if (gamepad2.right_stick_x != 0 || gamepad2.right_stick_y != 0 && (a_upper_left_hand_position() >= 0.2)) {
+        if (gamepad2.right_stick_x != 0 || gamepad2.right_stick_y != 0 && !(a_upper_left_hand_position() >= 0.2)) {
             m_left_hand_position(a_upper_left_hand_position() + gamepad2.right_stick_x * a_hand_speed, a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed);
         }
     }
