@@ -162,7 +162,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_upper_left_servo = hardwareMap.servo.get ("upper_left_hand");
-            v_hand_upper_left_servo.setPosition(l_hand_position);
+            v_hand_upper_left_servo.setPosition(0.2);
         }
         catch (Exception p_exeception)
         {
@@ -175,7 +175,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_lower_left_servo = hardwareMap.servo.get ("lower_left_hand");
-            v_hand_lower_left_servo.setPosition(l_hand_position);
+            v_hand_lower_left_servo.setPosition(0);
         }
         catch (Exception p_exeception)
         {
