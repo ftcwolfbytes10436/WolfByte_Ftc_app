@@ -124,6 +124,8 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
         telemetry.addData ("09", "GP2 Y: " + gamepad2.y);
         telemetry.addData ("10", "GP1 LT: " + gamepad1.left_trigger);
         telemetry.addData ("11", "GP1 RT: " + gamepad1.right_trigger);
+        telemetry.addData ("12", "upper servo: " + a_upper_left_hand_position());
+        telemetry.addData ("13", "lower servo: " + a_lower_hand_position());
 
     } // update_gamepad_telemetry
 
