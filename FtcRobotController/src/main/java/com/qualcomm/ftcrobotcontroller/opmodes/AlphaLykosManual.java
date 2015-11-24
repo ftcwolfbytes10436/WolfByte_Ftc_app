@@ -11,7 +11,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class AlphaLykosManual extends AlphaLykosTelemetry {
 
     final float a_left_arm_speed = .01f;
-    final float a_hand_speed = .01f;
+    final float a_hand_speed = .05f;
     int controller1ControlScheme = 2;
     int controller2ControlScheme = 1;
     boolean switchControlSchemesC1 = false;
@@ -218,24 +218,10 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // [0,1].
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
-        if (gamepad2.right_stick_x > 0)
-        {
-            m_hand_position (a_upper_hand_position () + gamepad2.right_stick_x * a_hand_speed, a_lower_hand_position());
-        }
-        else if (gamepad2.right_stick_x < 0 )
-        {
-            m_hand_position (a_upper_hand_position () + gamepad2.right_stick_x * -a_hand_speed, a_lower_hand_position());
-        }
 
-        if (gamepad2.right_stick_y > 0)
-        {
-            m_hand_position (a_upper_hand_position(), a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed);
+        if (gamepad2.right_stick_x != 0 || gamepad2.right_stick_y != 0) {
+            m_left_hand_position(a_upper_left_hand_position() + gamepad2.right_stick_x * a_hand_speed, a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed);
         }
-        else if (gamepad2.right_stick_y < 0)
-        {
-            m_hand_position (a_upper_hand_position(), a_lower_hand_position() + gamepad2.right_stick_y * -a_hand_speed);
-        }
-
     }
 
-} // PushBotManual
+} // AlphaLykosManual

@@ -161,12 +161,12 @@ public class AlphaLykosHardware extends OpMode
 
         try
         {
-            v_hand_upper_left_servo = hardwareMap.servo.get ("upper_right_hand");
+            v_hand_upper_left_servo = hardwareMap.servo.get ("upper_left_hand");
             v_hand_upper_left_servo.setPosition(l_hand_position);
         }
         catch (Exception p_exeception)
         {
-            m_warning_message ("upper_right_hand");
+            m_warning_message ("upper_left_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_hand_upper_left_servo = null;
@@ -174,15 +174,41 @@ public class AlphaLykosHardware extends OpMode
 
         try
         {
-            v_hand_lower_left_servo = hardwareMap.servo.get ("lower_right_hand");
+            v_hand_lower_left_servo = hardwareMap.servo.get ("lower_left_hand");
             v_hand_lower_left_servo.setPosition(l_hand_position);
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("lower_left_hand");
+            DbgLog.msg (p_exeception.getLocalizedMessage ());
+
+            v_hand_lower_left_servo = null;
+        }
+
+        try
+        {
+            v_hand_upper_right_servo = hardwareMap.servo.get ("upper_right_hand");
+            v_hand_upper_right_servo.setPosition(l_hand_position);
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("upper_right_hand");
+            DbgLog.msg (p_exeception.getLocalizedMessage ());
+
+            v_hand_upper_right_servo = null;
+        }
+
+        try
+        {
+            v_hand_lower_right_servo = hardwareMap.servo.get ("lower_right_hand");
+            v_hand_lower_right_servo.setPosition(l_hand_position);
         }
         catch (Exception p_exeception)
         {
             m_warning_message ("lower_right_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
-            v_hand_lower_left_servo = null;
+            v_hand_lower_right_servo = null;
         }
 
     } // init
@@ -968,7 +994,7 @@ public class AlphaLykosHardware extends OpMode
     /**
      * Access the upper hand position.
      */
-    double a_upper_hand_position ()
+    double a_upper_left_hand_position()
     {
         double l_return = 0.0;
 
@@ -998,12 +1024,12 @@ public class AlphaLykosHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
-    // m_hand_position
+    // m_left_hand_position
     //
     /**
      * Mutate the hand position.
      */
-    void m_hand_position (double upper_position,double lower_position)
+    void m_left_hand_position(double upper_position, double lower_position)
     {
         //
         // Ensure the specific values are legal.
@@ -1024,15 +1050,15 @@ public class AlphaLykosHardware extends OpMode
         //
         if (v_hand_lower_left_servo != null)
         {
-            v_hand_lower_left_servo.setPosition (u_position);
+            v_hand_lower_left_servo.setPosition (l_position);
         }
 
         if (v_hand_upper_left_servo != null)
         {
-            v_hand_upper_left_servo.setPosition (l_position);
+            v_hand_upper_left_servo.setPosition (u_position);
         }
 
-    } // m_hand_position
+    } // m_left_hand_position
 
 
     //--------------------------------------------------------------------------
@@ -1116,5 +1142,23 @@ public class AlphaLykosHardware extends OpMode
      * Manage the aspects of the upper_left_hand_servo.
      */
     private Servo v_hand_upper_left_servo;
+
+    //--------------------------------------------------------------------------
+    //
+    // v_hand_lower_left_servo
+    //
+    /**
+     * Manage the aspects of the hand servo.
+     */
+    private Servo v_hand_lower_right_servo;
+
+    //----------------------------------------------------------------------------
+    //
+    // v_hand_upper_left_servo
+    //
+    /**
+     * Manage the aspects of the upper_left_hand_servo.
+     */
+    private Servo v_hand_upper_right_servo;
 
 } // PushBotHardware

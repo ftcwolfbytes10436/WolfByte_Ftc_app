@@ -74,6 +74,7 @@ public class AlphaLykosAutoTest extends AlphaLykosTelemetry
                 }
             },7 * 1000);
             driveForward = true;
+            timerScheduled = true;
         }
 
         if (!driveMoterSet) {
