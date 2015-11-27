@@ -1024,12 +1024,12 @@ public class AlphaLykosHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
-    // m_left_hand_position
+    // m_upper_left_hand_position
     //
     /**
      * Mutate the hand position.
      */
-    void m_left_hand_position(double upper_position, double lower_position)
+    void m_upper_left_hand_position(double upper_position)
     {
         //
         // Ensure the specific values are legal.
@@ -1040,6 +1040,28 @@ public class AlphaLykosHardware extends OpMode
                         , Servo.MAX_POSITION
                 );
 
+        //
+        // Set the values.
+        //
+        if (v_hand_upper_left_servo != null)
+        {
+            v_hand_upper_left_servo.setPosition (u_position);
+        }
+
+    } // m_upper_left_hand_position
+
+    //--------------------------------------------------------------------------
+    //
+    // m_lower_left_hand_position
+    //
+    /**
+     * Mutate the hand position.
+     */
+    void m_lower_left_hand_position(double lower_position)
+    {
+        //
+        // Ensure the specific values are legal.
+        //
         double l_position = Range.clip
                 ( lower_position
                         , Servo.MIN_POSITION
@@ -1053,12 +1075,7 @@ public class AlphaLykosHardware extends OpMode
             v_hand_lower_left_servo.setPosition (l_position);
         }
 
-        if (v_hand_upper_left_servo != null)
-        {
-            v_hand_upper_left_servo.setPosition (u_position);
-        }
-
-    } // m_left_hand_position
+    } // m_upper_left_hand_position
 
 
     //--------------------------------------------------------------------------

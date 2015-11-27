@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import android.os.SystemClock;
+
 /**
  * Provide a Alternate manual operational mode that uses the left and right
  * drive motors, left arm motor, servo motors and gamepad input from two
@@ -11,7 +13,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class AlphaLykosManual extends AlphaLykosTelemetry {
 
     final float a_left_arm_speed = .01f;
-    final float a_hand_speed = .05f;
+    final float a_hand_speed = .1f;
     int controller1ControlScheme = 2;
     int controller2ControlScheme = 1;
     boolean switchControlSchemesC1 = false;
@@ -19,6 +21,8 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     float l_left_arm_power = 0;
     float l_extendable_arm_power = 0;
     float l_vacuum_power = 0;
+    long lastLoop;
+    double detaTime ;
 
     //--------------------------------------------------------------------------
     //
@@ -44,6 +48,11 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
     } // PushBotManual
 
+    @Override public void start() {
+        lastLoop = SystemClock.elapsedRealtime();
+        super.start();
+    }
+
     //--------------------------------------------------------------------------
     //
     // loop
@@ -58,6 +67,9 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     @Override public void loop ()
 
     {
+        detaTime = (lastLoop - SystemClock.elapsedRealtime()) / 1000;
+        lastLoop = SystemClock.elapsedRealtime();
+
         //----------------------------------------------------------------------
         //
         // DC Motors
@@ -143,10 +155,11 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         //
         // Send telemetry data to the driver station.
         //
-        update_telemetry (); // Update common telemetry
-        update_gamepad_telemetry ();
+        update_telemetry(); // Update common telemetry
+        update_gamepad_telemetry();
         telemetry.addData("12",controller1ControlScheme);
         telemetry.addData("13",controller2ControlScheme);
+
 
     } // loop
 
@@ -219,8 +232,16 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
 
-        if (gamepad2.right_stick_x != 0 || gamepad2.right_stick_y != 0 && !(a_upper_left_hand_position() >= 0.2)) {
-            m_left_hand_position(a_upper_left_hand_position() + gamepad2.right_stick_x * a_hand_speed, a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed);
+        double upper_left_hand = a_upper_left_hand_position() + gamepad2.right_stick_x * a_hand_speed * detaTime;
+
+        if (gamepad2.right_stick_x != 0 && (upper_left_hand >= 0.2)) {
+            m_upper_left_hand_position(upper_left_hand);
+        }
+
+        double lower_left_hand = a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed * detaTime;
+
+        if (gamepad2.right_stick_y != 0) {
+            m_lower_left_hand_position(lower_left_hand);
         }
     }
 
