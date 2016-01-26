@@ -162,7 +162,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_upper_left_servo = hardwareMap.servo.get ("upper_left_hand");
-            v_hand_upper_left_servo.setPosition(0.2);
+            v_hand_upper_left_servo.setPosition(0.35);
         }
         catch (Exception p_exeception)
         {
@@ -175,7 +175,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_lower_left_servo = hardwareMap.servo.get ("lower_left_hand");
-            v_hand_lower_left_servo.setPosition(0);
+            v_hand_lower_left_servo.setPosition(0.1);
         }
         catch (Exception p_exeception)
         {
@@ -188,7 +188,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_upper_right_servo = hardwareMap.servo.get ("upper_right_hand");
-            v_hand_upper_right_servo.setPosition(l_hand_position);
+            v_hand_upper_right_servo.setPosition(1);
         }
         catch (Exception p_exeception)
         {
@@ -201,7 +201,7 @@ public class AlphaLykosHardware extends OpMode
         try
         {
             v_hand_lower_right_servo = hardwareMap.servo.get ("lower_right_hand");
-            v_hand_lower_right_servo.setPosition(l_hand_position);
+            v_hand_lower_right_servo.setPosition(0.6);
         }
         catch (Exception p_exeception)
         {
@@ -984,8 +984,15 @@ public class AlphaLykosHardware extends OpMode
     // m_extendable_arm_power
     //
     /**
-     *  Acces
+     *  Access the extendable arm motor's power level.
      */
+    void m_extendable_arm_power (double p_level) {
+
+        if (v_motor_extendible_arm != null)
+        {
+            v_motor_extendible_arm.setPower (p_level);
+        }
+    }
 
     //--------------------------------------------------------------------------
     //
@@ -1010,13 +1017,48 @@ public class AlphaLykosHardware extends OpMode
     /**
      * Access the lower upper hand position
      */
-    double a_lower_hand_position ()
+    double a_lower_left_hand_position()
     {
         double l_return = 0.0;
 
         if (v_hand_lower_left_servo != null)
         {
             l_return = v_hand_lower_left_servo.getPosition();
+        }
+
+        return l_return;
+    }
+
+    //--------------------------------------------------------------------------
+    //
+    // a_hand_position
+    //
+    /**
+     * Access the upper hand position.
+     */
+    double a_upper_right_hand_position()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_upper_right_servo != null)
+        {
+            l_return = v_hand_upper_right_servo.getPosition ();
+        }
+
+        return l_return;
+
+    } // a_hand_position
+
+    /**
+     * Access the lower upper hand position
+     */
+    double a_lower_right_hand_position ()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_lower_right_servo != null)
+        {
+            l_return = v_hand_lower_right_servo.getPosition();
         }
 
         return l_return;
@@ -1076,6 +1118,61 @@ public class AlphaLykosHardware extends OpMode
         }
 
     } // m_upper_left_hand_position
+
+    //--------------------------------------------------------------------------
+    //
+    // m_upper_left_hand_position
+    //
+    /**
+     * Mutate the hand position.
+     */
+    void m_upper_right_hand_position(double upper_position)
+    {
+        //
+        // Ensure the specific values are legal.
+        //
+        double u_position = Range.clip
+                ( upper_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION
+                );
+
+        //
+        // Set the values.
+        //
+        if (v_hand_upper_right_servo != null)
+        {
+            v_hand_upper_right_servo.setPosition (u_position);
+        }
+
+    } // m_upper_right_hand_position
+
+    //--------------------------------------------------------------------------
+    //
+    // m_lower_right_hand_position
+    //
+    /**
+     * Mutate the hand position.
+     */
+    void m_lower_right_hand_position(double lower_position)
+    {
+        //
+        // Ensure the specific values are legal.
+        //
+        double l_position = Range.clip
+                ( lower_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION);
+
+        //
+        // Set the values.
+        //
+        if (v_hand_lower_right_servo != null)
+        {
+            v_hand_lower_right_servo.setPosition (l_position);
+        }
+
+    } // m_upper_right_hand_position
 
 
     //--------------------------------------------------------------------------

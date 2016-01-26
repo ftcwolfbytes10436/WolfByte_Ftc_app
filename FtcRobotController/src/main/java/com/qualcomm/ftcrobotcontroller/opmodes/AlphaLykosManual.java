@@ -1,6 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.os.SystemClock;
 
 /**
  * Provide a Alternate manual operational mode that uses the left and right
@@ -13,7 +12,8 @@ import android.os.SystemClock;
 public class AlphaLykosManual extends AlphaLykosTelemetry {
 
     final float a_left_arm_speed = .01f;
-    final float a_hand_speed = .1f;
+    final float a_x_hand_speed = .05f;
+    final float a_y_hand_speed = .03f;
     int controller1ControlScheme = 2;
     int controller2ControlScheme = 1;
     boolean switchControlSchemesC1 = false;
@@ -21,8 +21,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     float l_left_arm_power = 0;
     float l_extendable_arm_power = 0;
     float l_vacuum_power = 0;
-    long lastLoop;
-    double detaTime ;
+    int ticker = 1;
 
     //--------------------------------------------------------------------------
     //
@@ -48,11 +47,6 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
     } // PushBotManual
 
-    @Override public void start() {
-        lastLoop = SystemClock.elapsedRealtime();
-        super.start();
-    }
-
     //--------------------------------------------------------------------------
     //
     // loop
@@ -67,8 +61,6 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     @Override public void loop ()
 
     {
-        detaTime = (lastLoop - SystemClock.elapsedRealtime()) / 1000;
-        lastLoop = SystemClock.elapsedRealtime();
 
         //----------------------------------------------------------------------
         //
@@ -209,13 +201,15 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         //
         // Manage the arm motor.
         //
-        l_left_arm_power = scale_motor_power (-gamepad2.left_stick_y);
+        l_left_arm_power = scale_motor_power (-gamepad1.right_stick_y);
 
         //
         // Manage the extendable arm
         //
-        l_extendable_arm_power = gamepad2.right_trigger;
-        l_extendable_arm_power = scale_motor_power( l_extendable_arm_power - gamepad2.left_trigger);
+        l_extendable_arm_power = gamepad2.left_trigger;
+        l_extendable_arm_power = scale_motor_power( l_extendable_arm_power - gamepad2.right_trigger);
+
+        m_extendable_arm_power(l_extendable_arm_power);
 
         //
         // manage the vacuum
@@ -232,16 +226,34 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
 
-        double upper_left_hand = a_upper_left_hand_position() + gamepad2.right_stick_x * a_hand_speed * detaTime;
 
-        if (gamepad2.right_stick_x != 0 && (upper_left_hand >= 0.2)) {
-            m_upper_left_hand_position(upper_left_hand);
-        }
+        if (ticker == 2) {
+            double upper_left_hand = a_upper_left_hand_position() + -gamepad2.left_stick_x * a_x_hand_speed;
 
-        double lower_left_hand = a_lower_hand_position() + gamepad2.right_stick_y * a_hand_speed * detaTime;
+            if (gamepad2.left_stick_x != 0 && upper_left_hand >= 0.2) {
+                m_upper_left_hand_position(upper_left_hand);
+            }
 
-        if (gamepad2.right_stick_y != 0) {
-            m_lower_left_hand_position(lower_left_hand);
+            double lower_left_hand = a_lower_left_hand_position() + gamepad2.left_stick_y * a_y_hand_speed;
+
+            if (gamepad2.left_stick_y != 0) {
+                m_lower_left_hand_position(lower_left_hand);
+            }
+
+            double upper_right_hand = a_upper_right_hand_position() + -gamepad2.right_stick_x * a_x_hand_speed;
+
+            if (gamepad2.right_stick_x != 0) {
+                m_upper_right_hand_position(upper_right_hand);
+            }
+
+            double lower_right_hand = a_lower_right_hand_position() + -gamepad2.right_stick_y * a_y_hand_speed;
+
+            if (gamepad2.right_stick_y != 0) {
+                m_lower_right_hand_position(lower_right_hand);
+            }
+            ticker = 1;
+        } else {
+            ticker++;
         }
     }
 
