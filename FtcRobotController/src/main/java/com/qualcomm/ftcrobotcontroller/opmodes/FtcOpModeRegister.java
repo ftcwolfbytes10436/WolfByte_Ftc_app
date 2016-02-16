@@ -65,6 +65,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register("PushBotManualTriggerControl",PushBotManualTriggerControl.class);
     //manager.register("AlphaLykosAutoTest",AlphaLykosAutoTest.class);
     manager.register("AlphaLykosManual",AlphaLykosManual.class);
+    manager.register("AlphaLykosManualTest",AlphaLykosManualTestRun1.class);
 
 
 
