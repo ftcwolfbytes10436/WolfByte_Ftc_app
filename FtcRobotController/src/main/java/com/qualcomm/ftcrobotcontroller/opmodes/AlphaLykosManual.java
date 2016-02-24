@@ -163,7 +163,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         if (scale_motor_power(gamepad1.right_stick_x) < 0){
             l_left_drive_power = l_left_drive_power * (gamepad1.right_stick_x - 1);
         }
-        else if (scale_motor_power(gamepad1.left_stick_x) > 0){
+        else if (scale_motor_power(gamepad1.right_stick_x) > 0){
             l_right_drive_power = l_right_drive_power * (-gamepad1.right_stick_x - 1);
         }
 
@@ -178,13 +178,12 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         //
         // Manage the extendable arm
         //
-        l_extendable_arm_power = scale_motor_power (-gamepad2.left_trigger);
+        l_extendable_arm_power = scale_motor_power (gamepad2.left_trigger);
         l_extendable_arm_power = scale_motor_power( l_extendable_arm_power - gamepad2.right_trigger);
 
         m_extendable_arm_power (l_extendable_arm_power);
 
-       l_left_arm_power = scale_motor_power(gamepad2.left_stick_y);
-        
+        l_left_arm_power = scale_motor_power(-gamepad2.left_stick_y);
         m_left_arm_power(l_left_arm_power);
 
 
