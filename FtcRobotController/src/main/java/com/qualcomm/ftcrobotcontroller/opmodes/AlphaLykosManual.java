@@ -160,11 +160,11 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
         // determine which way to turn and slow down that wheel
 
-        if (scale_motor_power(gamepad1.right_stick_x) < 0){
-            l_left_drive_power = l_left_drive_power * (gamepad1.right_stick_x - 1);
+        if (scale_motor_power(gamepad1.left_stick_x) < 0){
+            l_left_drive_power = l_left_drive_power * (gamepad1.left_stick_x - 1);
         }
-        else if (scale_motor_power(gamepad1.right_stick_x) > 0){
-            l_right_drive_power = l_right_drive_power * (-gamepad1.right_stick_x - 1);
+        else if (scale_motor_power(gamepad1.left_stick_x) > 0){
+            l_right_drive_power = l_right_drive_power * (-gamepad1.left_stick_x - 1);
         }
 
         // set the drive power
