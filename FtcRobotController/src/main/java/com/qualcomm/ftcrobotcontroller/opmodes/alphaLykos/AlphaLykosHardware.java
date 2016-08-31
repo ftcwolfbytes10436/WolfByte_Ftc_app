@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.alphaLykos;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,16 +13,18 @@ import com.qualcomm.robotcore.util.Range;
 //
 /**
  * Provides a single hardware access point between custom op-modes and the
- * OpMode class for the Push Bot.
+ * OpMode class for the AlphaLykos.
  *
  * This class prevents the custom op-mode from throwing an exception at runtime.
  * If any hardware fails to map, a warning will be shown via telemetry data,
  * calls to methods will fail, but will not cause the application to crash.
  *
+ * This is a modification of PushBotHardware
+ *
  * @author SSI Robotics
  * @version 2015-08-13-20-04
  */
-public class PushBotHardware extends OpMode
+public class AlphaLykosHardware extends OpMode
 
 {
     //--------------------------------------------------------------------------
@@ -34,7 +36,7 @@ public class PushBotHardware extends OpMode
      *
      * The system calls this member when the class is instantiated.
      */
-    public PushBotHardware ()
+    public AlphaLykosHardware ()
 
     {
         //
@@ -120,6 +122,21 @@ public class PushBotHardware extends OpMode
         }
 
         //
+        // Connect the extendable arm motor
+        //
+        try
+        {
+            v_motor_extendible_arm = hardwareMap.dcMotor.get ("extendable_arm");
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("extendable_arm");
+            DbgLog.msg (p_exeception.getLocalizedMessage());
+
+            v_motor_extendible_arm = null;
+        }
+
+        //
         // Connect the servo motors.
         //
         // Indicate the initial position of both the left and right servos.  The
@@ -129,28 +146,54 @@ public class PushBotHardware extends OpMode
 
         try
         {
-            v_servo_left_hand = hardwareMap.servo.get ("left_hand");
-            v_servo_left_hand.setPosition (l_hand_position);
+            v_hand_upper_left_servo = hardwareMap.servo.get ("upper_left_hand");
+            v_hand_upper_left_servo.setPosition(0.35);
         }
         catch (Exception p_exeception)
         {
-            m_warning_message ("left_hand");
+            m_warning_message ("upper_left_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
-            v_servo_left_hand = null;
+            v_hand_upper_left_servo = null;
         }
 
         try
         {
-            v_servo_right_hand = hardwareMap.servo.get ("right_hand");
-            v_servo_right_hand.setPosition (l_hand_position);
+            v_hand_lower_left_servo = hardwareMap.servo.get ("lower_left_hand");
+            v_hand_lower_left_servo.setPosition(0.1);
         }
         catch (Exception p_exeception)
         {
-            m_warning_message ("right_hand");
+            m_warning_message ("lower_left_hand");
             DbgLog.msg (p_exeception.getLocalizedMessage ());
 
-            v_servo_right_hand = null;
+            v_hand_lower_left_servo = null;
+        }
+
+        try
+        {
+            v_hand_upper_right_servo = hardwareMap.servo.get ("upper_right_hand");
+            v_hand_upper_right_servo.setPosition(1);
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("upper_right_hand");
+            DbgLog.msg (p_exeception.getLocalizedMessage ());
+
+            v_hand_upper_right_servo = null;
+        }
+
+        try
+        {
+            v_hand_lower_right_servo = hardwareMap.servo.get ("lower_right_hand");
+            v_hand_lower_right_servo.setPosition(0.6);
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("lower_right_hand");
+            DbgLog.msg (p_exeception.getLocalizedMessage ());
+
+            v_hand_lower_right_servo = null;
         }
 
     } // init
@@ -285,11 +328,11 @@ public class PushBotHardware extends OpMode
         float l_power = Range.clip (p_power, -1, 1);
 
         float[] l_array =
-            { 0.00f, 0.05f, 0.09f, 0.10f, 0.12f
-            , 0.15f, 0.18f, 0.24f, 0.30f, 0.36f
-            , 0.43f, 0.50f, 0.60f, 0.72f, 0.85f
-            , 1.00f, 1.00f
-            };
+                { 0.00f, 0.05f, 0.09f, 0.10f, 0.12f
+                        , 0.15f, 0.18f, 0.24f, 0.30f, 0.36f
+                        , 0.43f, 0.50f, 0.60f, 0.72f, 0.85f
+                        , 1.00f, 1.00f
+                };
 
         //
         // Get the corresponding index for the specified argument/parameter.
@@ -391,8 +434,8 @@ public class PushBotHardware extends OpMode
         if (v_motor_left_drive != null)
         {
             v_motor_left_drive.setMode
-                ( DcMotorController.RunMode.RUN_USING_ENCODERS
-                );
+                    ( DcMotorController.RunMode.RUN_USING_ENCODERS
+                    );
         }
 
     } // run_using_left_drive_encoder
@@ -410,8 +453,8 @@ public class PushBotHardware extends OpMode
         if (v_motor_right_drive != null)
         {
             v_motor_right_drive.setMode
-                ( DcMotorController.RunMode.RUN_USING_ENCODERS
-                );
+                    ( DcMotorController.RunMode.RUN_USING_ENCODERS
+                    );
         }
 
     } // run_using_right_drive_encoder
@@ -447,11 +490,11 @@ public class PushBotHardware extends OpMode
         if (v_motor_left_drive != null)
         {
             if (v_motor_left_drive.getMode () ==
-                DcMotorController.RunMode.RESET_ENCODERS)
+                    DcMotorController.RunMode.RESET_ENCODERS)
             {
                 v_motor_left_drive.setMode
-                    ( DcMotorController.RunMode.RUN_WITHOUT_ENCODERS
-                    );
+                        ( DcMotorController.RunMode.RUN_WITHOUT_ENCODERS
+                        );
             }
         }
 
@@ -470,11 +513,11 @@ public class PushBotHardware extends OpMode
         if (v_motor_right_drive != null)
         {
             if (v_motor_right_drive.getMode () ==
-                DcMotorController.RunMode.RESET_ENCODERS)
+                    DcMotorController.RunMode.RESET_ENCODERS)
             {
                 v_motor_right_drive.setMode
-                    ( DcMotorController.RunMode.RUN_WITHOUT_ENCODERS
-                    );
+                        ( DcMotorController.RunMode.RUN_WITHOUT_ENCODERS
+                        );
             }
         }
 
@@ -511,8 +554,8 @@ public class PushBotHardware extends OpMode
         if (v_motor_left_drive != null)
         {
             v_motor_left_drive.setMode
-                ( DcMotorController.RunMode.RESET_ENCODERS
-                );
+                    ( DcMotorController.RunMode.RESET_ENCODERS
+                    );
         }
 
     } // reset_left_drive_encoder
@@ -530,8 +573,8 @@ public class PushBotHardware extends OpMode
         if (v_motor_right_drive != null)
         {
             v_motor_right_drive.setMode
-                ( DcMotorController.RunMode.RESET_ENCODERS
-                );
+                    ( DcMotorController.RunMode.RESET_ENCODERS
+                    );
         }
 
     } // reset_right_drive_encoder
@@ -679,9 +722,9 @@ public class PushBotHardware extends OpMode
      * Indicate whether the drive motors' encoders have reached a value.
      */
     boolean have_drive_encoders_reached
-        ( double p_left_count
-        , double p_right_count
-        )
+    ( double p_left_count
+            , double p_right_count
+    )
 
     {
         //
@@ -693,7 +736,7 @@ public class PushBotHardware extends OpMode
         // Have the encoders reached the specified values?
         //
         if (has_left_drive_encoder_reached (p_left_count) &&
-            has_right_drive_encoder_reached (p_right_count))
+                has_right_drive_encoder_reached (p_right_count))
         {
             //
             // Set the status to a positive indication.
@@ -716,11 +759,11 @@ public class PushBotHardware extends OpMode
      * Indicate whether the drive motors' encoders have reached a value.
      */
     boolean drive_using_encoders
-        ( double p_left_power
-        , double p_right_power
-        , double p_left_count
-        , double p_right_count
-        )
+    ( double p_left_power
+            , double p_right_power
+            , double p_left_count
+            , double p_right_count
+    )
 
     {
         //
@@ -904,81 +947,218 @@ public class PushBotHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
-    // a_hand_position
+    // a_extendable_arm_power
     //
     /**
-     * Access the hand position.
+     * Access the extendable arm motors's power level.
      */
-    double a_hand_position ()
+    double a_extendable_arm_power ()
     {
         double l_return = 0.0;
 
-        if (v_servo_left_hand != null)
+        if (v_motor_extendible_arm != null)
         {
-            l_return = v_servo_left_hand.getPosition ();
+            l_return = v_motor_extendible_arm.getPower();
+        }
+
+        return l_return;
+    } // a_extendable_arm_power
+
+    //--------------------------------------------------------------------------
+    //
+    // m_extendable_arm_power
+    //
+    /**
+     *  Access the extendable arm motor's power level.
+     */
+    void m_extendable_arm_power (double p_level) {
+
+        if (v_motor_extendible_arm != null)
+        {
+            v_motor_extendible_arm.setPower (p_level);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    //
+    // a_hand_position
+    //
+    /**
+     * Access the upper hand position.
+     */
+    double a_upper_left_hand_position()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_upper_left_servo != null)
+        {
+            l_return = v_hand_upper_left_servo.getPosition ();
         }
 
         return l_return;
 
     } // a_hand_position
 
+    /**
+     * Access the lower upper hand position
+     */
+    double a_lower_left_hand_position()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_lower_left_servo != null)
+        {
+            l_return = v_hand_lower_left_servo.getPosition();
+        }
+
+        return l_return;
+    }
+
     //--------------------------------------------------------------------------
     //
-    // m_hand_position
+    // a_hand_position
+    //
+    /**
+     * Access the upper hand position.
+     */
+    double a_upper_right_hand_position()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_upper_right_servo != null)
+        {
+            l_return = v_hand_upper_right_servo.getPosition ();
+        }
+
+        return l_return;
+
+    } // a_hand_position
+
+    /**
+     * Access the lower upper hand position
+     */
+    double a_lower_right_hand_position ()
+    {
+        double l_return = 0.0;
+
+        if (v_hand_lower_right_servo != null)
+        {
+            l_return = v_hand_lower_right_servo.getPosition();
+        }
+
+        return l_return;
+    }
+
+    //--------------------------------------------------------------------------
+    //
+    // m_upper_left_hand_position
     //
     /**
      * Mutate the hand position.
      */
-    void m_hand_position (double p_position)
+    void m_upper_left_hand_position(double upper_position)
     {
         //
-        // Ensure the specific value is legal.
+        // Ensure the specific values are legal.
         //
-        double l_position = Range.clip
-            ( p_position
-            , Servo.MIN_POSITION
-            , Servo.MAX_POSITION
-            );
+        double u_position = Range.clip
+                ( upper_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION
+                );
 
         //
-        // Set the value.  The right hand value must be opposite of the left
-        // value.
+        // Set the values.
         //
-        if (v_servo_left_hand != null)
+        if (v_hand_upper_left_servo != null)
         {
-            v_servo_left_hand.setPosition (l_position);
-        }
-        if (v_servo_right_hand != null)
-        {
-            v_servo_right_hand.setPosition (1.0 - l_position);
+            v_hand_upper_left_servo.setPosition (u_position);
         }
 
-    } // m_hand_position
+    } // m_upper_left_hand_position
 
     //--------------------------------------------------------------------------
     //
-    // open_hand
+    // m_lower_left_hand_position
     //
     /**
-     * Open the hand to its fullest.
+     * Mutate the hand position.
      */
-    void open_hand ()
-
+    void m_lower_left_hand_position(double lower_position)
     {
         //
-        // Set the value.  The right hand value must be opposite of the left
-        // value.
+        // Ensure the specific values are legal.
         //
-        if (v_servo_left_hand != null)
+        double l_position = Range.clip
+                ( lower_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION);
+
+        //
+        // Set the values.
+        //
+        if (v_hand_lower_left_servo != null)
         {
-            v_servo_left_hand.setPosition (Servo.MAX_POSITION);
-        }
-        if (v_servo_right_hand != null)
-        {
-            v_servo_right_hand.setPosition (Servo.MIN_POSITION);
+            v_hand_lower_left_servo.setPosition (l_position);
         }
 
-    } // open_hand
+    } // m_upper_left_hand_position
+
+    //--------------------------------------------------------------------------
+    //
+    // m_upper_left_hand_position
+    //
+    /**
+     * Mutate the hand position.
+     */
+    void m_upper_right_hand_position(double upper_position)
+    {
+        //
+        // Ensure the specific values are legal.
+        //
+        double u_position = Range.clip
+                ( upper_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION
+                );
+
+        //
+        // Set the values.
+        //
+        if (v_hand_upper_right_servo != null)
+        {
+            v_hand_upper_right_servo.setPosition (u_position);
+        }
+
+    } // m_upper_right_hand_position
+
+    //--------------------------------------------------------------------------
+    //
+    // m_lower_right_hand_position
+    //
+    /**
+     * Mutate the hand position.
+     */
+    void m_lower_right_hand_position(double lower_position)
+    {
+        //
+        // Ensure the specific values are legal.
+        //
+        double l_position = Range.clip
+                ( lower_position
+                        , Servo.MIN_POSITION
+                        , Servo.MAX_POSITION);
+
+        //
+        // Set the values.
+        //
+        if (v_hand_lower_right_servo != null)
+        {
+            v_hand_lower_right_servo.setPosition (l_position);
+        }
+
+    } // m_upper_right_hand_position
+
 
     //--------------------------------------------------------------------------
     //
@@ -1027,20 +1207,47 @@ public class PushBotHardware extends OpMode
 
     //--------------------------------------------------------------------------
     //
-    // v_servo_left_hand
+    // v_moter_extendible_arm
     //
     /**
-     * Manage the aspects of the left hand servo.
+     * Manage the aspects of the extendible_arm.
      */
-    private Servo v_servo_left_hand;
+    private DcMotor v_motor_extendible_arm;
 
     //--------------------------------------------------------------------------
     //
-    // v_servo_right_hand
+    // v_hand_lower_left_servo
     //
     /**
-     * Manage the aspects of the right hand servo.
+     * Manage the aspects of the hand servo.
      */
-    private Servo v_servo_right_hand;
+    private Servo v_hand_lower_left_servo;
+
+    //----------------------------------------------------------------------------
+    //
+    // v_hand_upper_left_servo
+    //
+    /**
+     * Manage the aspects of the upper_left_hand_servo.
+     */
+    private Servo v_hand_upper_left_servo;
+
+    //--------------------------------------------------------------------------
+    //
+    // v_hand_lower_left_servo
+    //
+    /**
+     * Manage the aspects of the hand servo.
+     */
+    private Servo v_hand_lower_right_servo;
+
+    //----------------------------------------------------------------------------
+    //
+    // v_hand_upper_left_servo
+    //
+    /**
+     * Manage the aspects of the upper_left_hand_servo.
+     */
+    private Servo v_hand_upper_right_servo;
 
 } // PushBotHardware

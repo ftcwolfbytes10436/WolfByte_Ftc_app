@@ -1,15 +1,12 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
-
+package com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos;
 //------------------------------------------------------------------------------
 //
 // PushBotTelemetry
 //
 /**
- * Provide telemetry provided by the PushBotHardware class.
+ * Provide telemetry provided by the BetaLykosMecanumHardware class.
  *
- * Modified version of PushBot
- *
- * Insert this class between a custom op-mode and the PushBotHardware class to
+ * Insert this class between a custom op-mode and the BetaLykosMecanumHardware class to
  * display telemetry available from the hardware class.
  *
  * @author SSI Robotics
@@ -35,7 +32,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  *     10 - The value of gamepad 1's left trigger value.
  *     11 - The value of gamepad 1's right trigger value.
  */
-public class AlphaLykosTelemetry extends AlphaLykosHardware
+public class BetaLykosMecanumTelemetry extends BetaLykosMecanumHardware
 
 {
     //--------------------------------------------------------------------------
@@ -47,7 +44,7 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
      *
      * The system calls this member when the class is instantiated.
      */
-    public AlphaLykosTelemetry ()
+    public BetaLykosMecanumTelemetry ()
 
     {
         //
@@ -60,7 +57,7 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
         //
         // All via self-construction.
 
-    } // AlphaLykosTelemetry
+    } // PushBotTelemetry
 
     //--------------------------------------------------------------------------
     //
@@ -81,26 +78,40 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
         //
         telemetry.addData
                 ( "01"
-                        , "Left Drive: "
-                                + a_left_drive_power ()
+                        , "Front Left Drive: "
+                                + a_front_left_drive_power ()
                                 + ", "
-                                + a_left_encoder_count ()
+                                + a_front_left_encoder_count ()
                 );
         telemetry.addData
                 ( "02"
-                        , "Right Drive: "
-                                + a_right_drive_power ()
+                        , "Front Right Drive: "
+                                + a_front_right_drive_power ()
                                 + ", "
-                                + a_right_encoder_count ()
+                                + a_front_right_encoder_count ()
                 );
         telemetry.addData
                 ( "03"
+                        , "Back Left Drive: "
+                                + a_back_left_drive_power ()
+                                + ", "
+                                + a_back_left_encoder_count ()
+                );
+        telemetry.addData
+                ( "04"
+                        , "Back Right Drive: "
+                                + a_back_right_drive_power ()
+                                + ", "
+                                + a_back_right_encoder_count ()
+                );
+        telemetry.addData
+                ( "05"
                         , "Left Arm: " + a_left_arm_power ()
                 );
-      //  telemetry.addData
-                //( "04"
-                //        , "Hand Position: " + a_hand_position ()
-               // );
+        telemetry.addData
+                ( "06"
+                        , "Hand Position: " + a_hand_position ()
+                );
 
     } // update_telemetry
 
@@ -117,18 +128,13 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
         //
         // Send telemetry data concerning gamepads to the driver station.
         //
-        telemetry.addData ("05", "GP1 Left: " + -gamepad1.left_stick_y);
-        telemetry.addData ("06", "GP1 Right: " + -gamepad1.right_stick_y);
-        telemetry.addData ("07", "GP2 Left: " + -gamepad2.left_stick_y);
-        telemetry.addData ("08", "GP2 X: " + gamepad2.x);
-        telemetry.addData ("09", "GP2 Y: " + gamepad2.y);
-        telemetry.addData ("10", "GP1 LT: " + gamepad1.left_trigger);
-        telemetry.addData ("11", "GP1 RT: " + gamepad1.right_trigger);
-        telemetry.addData ("12", "left upper servo: " + a_upper_left_hand_position());
-        telemetry.addData ("13", "left lower servo: " + a_lower_left_hand_position());
-        telemetry.addData("14", "right upper servo: " + a_upper_right_hand_position());
-        telemetry.addData("15", "right lower servo: " + a_lower_right_hand_position());
-
+        telemetry.addData ("07", "GP1 Left: " + -gamepad1.left_stick_y);
+        telemetry.addData ("08", "GP1 Right: " + -gamepad1.right_stick_y);
+        telemetry.addData ("09", "GP2 Left: " + -gamepad2.left_stick_y);
+        telemetry.addData ("10", "GP2 X: " + gamepad2.x);
+        telemetry.addData ("11", "GP2 Y: " + gamepad2.y);
+        telemetry.addData ("12", "GP1 LT: " + gamepad1.left_trigger);
+        telemetry.addData ("13", "GP1 RT: " + gamepad1.right_trigger);
 
     } // update_gamepad_telemetry
 
@@ -160,4 +166,4 @@ public class AlphaLykosTelemetry extends AlphaLykosHardware
 
     } // set_error_message
 
-} // PushBotTelemetry
+} // BetaLykosMecanumTelemetry

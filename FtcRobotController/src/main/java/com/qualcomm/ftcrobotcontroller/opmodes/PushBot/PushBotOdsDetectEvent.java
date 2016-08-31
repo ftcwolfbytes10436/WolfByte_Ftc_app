@@ -1,29 +1,30 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.PushBot;
 
 //------------------------------------------------------------------------------
 //
-// PushBotTouchEvent
+// PushBotOdsDetectEvent
 //
 /**
  * Provide a basic autonomous operational mode that demonstrates the use of an
- * touch sensor to control the arm using a state machine for the Push Bot.
+ * optical distance sensor to detect a line implemented using a state machine
+ * for the Push Bot.
  *
  * @author SSI Robotics
  * @version 2015-08-30-11-45
  */
-public class PushBotTouchEvent extends PushBotTelemetrySensors
+public class PushBotOdsDetectEvent extends PushBotTelemetrySensors
 
 {
     //--------------------------------------------------------------------------
     //
-    // PushBotTouchEvent
+    // PushBotOdsDetectEvent
     //
     /**
      * Construct the class.
      *
      * The system calls this member when the class is instantiated.
      */
-    public PushBotTouchEvent ()
+    public PushBotOdsDetectEvent ()
 
     {
         //
@@ -36,7 +37,7 @@ public class PushBotTouchEvent extends PushBotTelemetrySensors
         //
         // All via self-construction.
 
-    } // PushBotTouchEvent
+    } // PushBotOdsDetectEvent
 
     //--------------------------------------------------------------------------
     //
@@ -51,16 +52,9 @@ public class PushBotTouchEvent extends PushBotTelemetrySensors
 
     {
         //
-        // NOTE: The touch sensor controls the WHEELS in this op-mode.  The main
-        // use of the touch sensor in the other PushBot[...]Sensor classes is to
-        // operate the arm.  This method operates the DRIVE WHEELS.
+        // If a white line has been detected, then set the power level to zero.
         //
-
-        //
-        // If a touch sensor has been detected, then set the power level to
-        // zero.
-        //
-        if (is_touch_sensor_pressed ())
+        if (a_ods_white_tape_detected ())
         {
             set_drive_power (0.0, 0.0);
         }
@@ -80,4 +74,4 @@ public class PushBotTouchEvent extends PushBotTelemetrySensors
 
     } // loop
 
-} // PushBotTouchEvent
+} // PushBotOdsDetectEvent

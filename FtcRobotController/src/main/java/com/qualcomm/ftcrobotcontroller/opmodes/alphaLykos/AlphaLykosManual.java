@@ -1,4 +1,5 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.alphaLykos;
+import java.lang.Math;
 
 
 /**
@@ -16,8 +17,10 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
     final float a_y_hand_speed = .03f;
     int controller1ControlScheme = 2;
     int controller2ControlScheme = 1;
+    boolean squaredAcceleration = false;
     float l_left_arm_power = 0;
     float l_extendable_arm_power = 0;
+    float motorX;
     int ticker = 1;
 
     //--------------------------------------------------------------------------
@@ -120,6 +123,15 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
             } else if (controller2ControlScheme == 2) {
                 useController1ControlScheme1();
         }
+
+        if (gamepad1.dpad_up)
+        {
+            squaredAcceleration = true;
+        } else if (gamepad1.dpad_down)
+        {
+            squaredAcceleration = false;
+        }
+
         //
         // Send telemetry data to the driver station.
         //
@@ -127,6 +139,7 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
         update_gamepad_telemetry();
         telemetry.addData("12",controller1ControlScheme);
         telemetry.addData("13",controller2ControlScheme);
+        telemetry.addData("13",squaredAcceleration);
 
 
     } // loop
@@ -157,6 +170,14 @@ public class AlphaLykosManual extends AlphaLykosTelemetry {
 
         l_left_drive_power = l_left_drive_power - scale_motor_power(gamepad1.left_trigger);
         l_right_drive_power = l_right_drive_power - scale_motor_power(gamepad1.left_trigger);
+
+        if (squaredAcceleration)
+        {
+            motorX *= (float)Math.min(Math.abs(Math.ceil(gamepad1.right_trigger + gamepad1.left_trigger)),1);
+            motorX += scale_motor_power(gamepad1.right_trigger - gamepad1.left_trigger);
+            l_left_drive_power = Math.max(Math.min(0.0005f * ((float)Math.pow(motorX, 3))/Math.abs(motorX),gamepad1.right_trigger),-gamepad1.left_trigger);
+            l_right_drive_power = l_left_drive_power;
+        }
 
         // determine which way to turn and slow down that wheel
 

@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.alphaLykos;
 
 import java.util.Timer;
 import java.util.TimerTask;

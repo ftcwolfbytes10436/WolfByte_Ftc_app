@@ -1,30 +1,30 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.PushBot;
 
 //------------------------------------------------------------------------------
 //
-// PushBotOdsDetectEvent
+// PushBotOdsFollowEvent
 //
 /**
  * Provide a basic autonomous operational mode that demonstrates the use of an
- * optical distance sensor to detect a line implemented using a state machine
+ * optical distance sensor to follow a line implemented using a state machine
  * for the Push Bot.
  *
  * @author SSI Robotics
  * @version 2015-08-30-11-45
  */
-public class PushBotOdsDetectEvent extends PushBotTelemetrySensors
+public class PushBotOdsFollowEvent extends PushBotTelemetrySensors
 
 {
     //--------------------------------------------------------------------------
     //
-    // PushBotOdsDetectEvent
+    // PushBotOdsFollowEvent
     //
     /**
      * Construct the class.
      *
      * The system calls this member when the class is instantiated.
      */
-    public PushBotOdsDetectEvent ()
+    public PushBotOdsFollowEvent ()
 
     {
         //
@@ -37,7 +37,7 @@ public class PushBotOdsDetectEvent extends PushBotTelemetrySensors
         //
         // All via self-construction.
 
-    } // PushBotOdsDetectEvent
+    } // PushBotOdsFollowEvent
 
     //--------------------------------------------------------------------------
     //
@@ -52,19 +52,18 @@ public class PushBotOdsDetectEvent extends PushBotTelemetrySensors
 
     {
         //
-        // If a white line has been detected, then set the power level to zero.
+        // If a white line has been detected, then turn left.
         //
         if (a_ods_white_tape_detected ())
         {
-            set_drive_power (0.0, 0.0);
+            set_drive_power (0.0, 0.2);
         }
         //
-        // Else a white line has not been detected, so set the power level to
-        // full forward.
+        // Else a white line has not been detected, so turn right.
         //
         else
         {
-            set_drive_power (1.0, 1.0);
+            set_drive_power (0.2, 0.0);
         }
 
         //
@@ -74,4 +73,4 @@ public class PushBotOdsDetectEvent extends PushBotTelemetrySensors
 
     } // loop
 
-} // PushBotOdsDetectEvent
+} // PushBotOdsFollowEvent

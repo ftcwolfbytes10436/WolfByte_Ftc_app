@@ -1,4 +1,4 @@
-package com.qualcomm.ftcrobotcontroller.opmodes;
+package com.qualcomm.ftcrobotcontroller.opmodes.PushBot;
 
 /**
  * Provide a Alternate manual operational mode that uses the left and right
