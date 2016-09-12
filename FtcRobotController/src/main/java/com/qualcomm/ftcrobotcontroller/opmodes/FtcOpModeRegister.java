@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos.BetaLykosMecanumManual;
+import com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos.BetaLykosHolonomicManual;
 import com.qualcomm.ftcrobotcontroller.opmodes.alphaLykos.AlphaLykosManual;
 import com.qualcomm.ftcrobotcontroller.opmodes.alphaLykos.AlphaLykosManualTestRun1;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
@@ -69,7 +69,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register("AlphaLykosAutoTest",AlphaLykosAutoTest.class);
     manager.register("AlphaLykosManual",AlphaLykosManual.class);
     manager.register("AlphaLykosManualTest",AlphaLykosManualTestRun1.class);
-    manager.register("BetaLykosManual", BetaLykosMecanumManual.class);
+    manager.register("BetaLykosManual", BetaLykosHolonomicManual.class);
 
 
 

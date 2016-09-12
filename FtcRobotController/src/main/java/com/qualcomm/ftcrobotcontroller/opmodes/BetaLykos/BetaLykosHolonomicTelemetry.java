@@ -4,9 +4,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos;
 // PushBotTelemetry
 //
 /**
- * Provide telemetry provided by the BetaLykosMecanumHardware class.
+ * Provide telemetry provided by the BetaLykosHolonomicHardware class.
  *
- * Insert this class between a custom op-mode and the BetaLykosMecanumHardware class to
+ * Insert this class between a custom op-mode and the BetaLykosHolonomicHardware class to
  * display telemetry available from the hardware class.
  *
  * @author SSI Robotics
@@ -32,7 +32,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos;
  *     10 - The value of gamepad 1's left trigger value.
  *     11 - The value of gamepad 1's right trigger value.
  */
-public class BetaLykosMecanumTelemetry extends BetaLykosMecanumHardware
+public class BetaLykosHolonomicTelemetry extends BetaLykosHolonomicHardware
 
 {
     //--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ public class BetaLykosMecanumTelemetry extends BetaLykosMecanumHardware
      *
      * The system calls this member when the class is instantiated.
      */
-    public BetaLykosMecanumTelemetry ()
+    public BetaLykosHolonomicTelemetry()
 
     {
         //
@@ -166,4 +166,4 @@ public class BetaLykosMecanumTelemetry extends BetaLykosMecanumHardware
 
     } // set_error_message
 
-} // BetaLykosMecanumTelemetry
+} // BetaLykosHolonomicTelemetry

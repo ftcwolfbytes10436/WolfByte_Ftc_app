@@ -2,14 +2,14 @@ package com.qualcomm.ftcrobotcontroller.opmodes.BetaLykos;
 
 //------------------------------------------------------------------------------
 //
-// BetaLykosMecanumManual
+// BetaLykosHolonomicManual
 //
 /**
  * Provide a basic manual operational mode that uses the left and right
  * drive motors, left arm motor, servo motors and gamepad input from two
  * gamepads for Beta Lykos Mecanum.
  */
-public class BetaLykosMecanumManual extends BetaLykosMecanumTelemetry
+public class BetaLykosHolonomicManual extends BetaLykosHolonomicTelemetry
 
 {
     //--------------------------------------------------------------------------
@@ -21,7 +21,7 @@ public class BetaLykosMecanumManual extends BetaLykosMecanumTelemetry
      *
      * The system calls this member when the class is instantiated.
      */
-    public BetaLykosMecanumManual ()
+    public BetaLykosHolonomicManual()
 
     {
         //
@@ -68,21 +68,17 @@ public class BetaLykosMecanumManual extends BetaLykosMecanumTelemetry
         // class, but the power levels aren't applied until this method ends.
         //
 
+        float gamepad1RightY = -gamepad1.right_stick_y;
+        float gamepad1RightX = -gamepad1.right_stick_x;
+        float gamepad1LeftX = -gamepad1.left_stick_x;
+
         //
         // Manage the drive wheel motors.
         //
-        float l_front_left_drive_power = scale_motor_power (clamp(-gamepad1.right_stick_y + -gamepad1.right_stick_x,-1,1));
-        float l_front_right_drive_power = scale_motor_power (clamp(-gamepad1.right_stick_y + gamepad1.right_stick_x,-1,1));
-        float l_back_left_drive_power = scale_motor_power (clamp(-gamepad1.right_stick_y + gamepad1.right_stick_x,-1,1));
-        float l_back_right_drive_power = scale_motor_power (clamp(-gamepad1.right_stick_y + -gamepad1.right_stick_x,-1,1));
-
-        float turn = gamepad1.right_trigger - gamepad1.left_trigger;
-        if (turn != 0) {
-            l_front_left_drive_power = scale_motor_power(turn);
-            l_front_right_drive_power = scale_motor_power(-turn);
-            l_back_left_drive_power = scale_motor_power(turn);
-            l_back_right_drive_power = scale_motor_power(turn);
-        }
+        float l_front_left_drive_power = scale_motor_power (gamepad1RightY + gamepad1RightX + gamepad1LeftX);
+        float l_front_right_drive_power = scale_motor_power (gamepad1RightY - gamepad1RightX - gamepad1LeftX);
+        float l_back_left_drive_power = scale_motor_power (gamepad1RightY - gamepad1RightX + gamepad1LeftX);
+        float l_back_right_drive_power = scale_motor_power (gamepad1RightY + gamepad1RightX - gamepad1LeftX);
 
         set_drive_power (l_front_left_drive_power, l_front_right_drive_power,
                 l_back_left_drive_power, l_back_right_drive_power);

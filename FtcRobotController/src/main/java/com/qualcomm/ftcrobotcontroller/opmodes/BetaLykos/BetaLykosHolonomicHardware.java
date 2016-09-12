@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 
 //------------------------------------------------------------------------------
 //
-// BetaLykosMecanumHardware
+// BetaLykosHolonomicHardware
 //
 /**
  * Provides a single hardware access point between custom op-modes and the
@@ -19,19 +19,19 @@ import com.qualcomm.robotcore.util.Range;
  * If any hardware fails to map, a warning will be shown via telemetry data,
  * calls to methods will fail, but will not cause the application to crash.
  */
-public class BetaLykosMecanumHardware extends OpMode
+public class BetaLykosHolonomicHardware extends OpMode
 
 {
     //--------------------------------------------------------------------------
     //
-    // BetaLykosMecanumHardware
+    // BetaLykosHolonomicHardware
     //
     /**
      * Construct the class.
      *
      * The system calls this member when the class is instantiated.
      */
-    public BetaLykosMecanumHardware()
+    public BetaLykosHolonomicHardware()
 
     {
         //
