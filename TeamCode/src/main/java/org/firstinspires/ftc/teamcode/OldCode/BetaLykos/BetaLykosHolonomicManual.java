@@ -70,15 +70,15 @@ public class BetaLykosHolonomicManual extends BetaLykosHolonomicTelemetry
 
         float gamepad1RightY = -gamepad1.right_stick_y;
         float gamepad1RightX = -gamepad1.right_stick_x;
-        float gamepad1LeftX = -gamepad1.left_stick_x;
+        float gamepad1LeftX  = -gamepad1.left_stick_x;
 
         //
         // Manage the drive wheel motors.
         //
-        float l_front_left_drive_power = scale_motor_power (gamepad1RightY + gamepad1RightX + gamepad1LeftX);
+        float l_front_left_drive_power  = scale_motor_power (gamepad1RightY + gamepad1RightX + gamepad1LeftX);
         float l_front_right_drive_power = scale_motor_power (gamepad1RightY - gamepad1RightX - gamepad1LeftX);
-        float l_back_left_drive_power = scale_motor_power (gamepad1RightY - gamepad1RightX + gamepad1LeftX);
-        float l_back_right_drive_power = scale_motor_power (gamepad1RightY + gamepad1RightX - gamepad1LeftX);
+        float l_back_left_drive_power   = scale_motor_power (gamepad1RightY - gamepad1RightX + gamepad1LeftX);
+        float l_back_right_drive_power  = scale_motor_power (gamepad1RightY + gamepad1RightX - gamepad1LeftX);
 
         set_drive_power (l_front_left_drive_power, l_front_right_drive_power,
                 l_back_left_drive_power, l_back_right_drive_power);
