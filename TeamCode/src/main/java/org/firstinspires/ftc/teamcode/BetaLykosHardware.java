@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This is NOT an opmode.
@@ -103,6 +107,38 @@ public class BetaLykosHardware
 
         // Reset the cycle clock for the next pass.
         period.reset();
+    }
+
+    public void moveRobot(float xAxis, float yAxis, float rotation, Telemetry telemetry) {
+
+        double fLeft  = Range.clip(yAxis + xAxis + rotation,-1,1);
+        double fRight = Range.clip(yAxis - xAxis - rotation,-1,1);
+        double bLeft  = Range.clip(yAxis - xAxis + rotation,-1,1);
+        double bRight = Range.clip(yAxis + xAxis - rotation,-1,1);
+
+        frontLeftMotor.setPower(fLeft);
+        frontRightMotor.setPower(fRight);
+        backLeftMotor.setPower(bLeft);
+        backRightMotor.setPower(bRight);
+
+        // Send telemetry message to signify robot running;
+        telemetry.addData("front left",  "%.2f", fLeft);
+        telemetry.addData("front right", "%.2f", fRight);
+        telemetry.addData("back left",  "%.2f", bLeft);
+        telemetry.addData("back right", "%.2f", bRight);
+    }
+
+    public void moveRobotForSeconds(float xAxis, float yAxis, float rotation, LinearOpMode opMode, float secs) throws InterruptedException {
+
+        ElapsedTime runtime = new ElapsedTime();
+        runtime.reset();
+        moveRobot(xAxis, yAxis, rotation, opMode.telemetry);
+        opMode.telemetry.update();
+        while (opMode.opModeIsActive() && runtime.seconds() > secs) {
+            opMode.idle();
+        }
+        moveRobot(0,0,0,opMode.telemetry);
+        opMode.telemetry.update();
     }
 }
 

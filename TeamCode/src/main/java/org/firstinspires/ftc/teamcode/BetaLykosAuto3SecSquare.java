@@ -32,27 +32,15 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
-
-/**
- * This OpMode uses the common BetaLykos hardware class to define the devices on the robot.
- * All device access is managed through the BetaLykosHardware class.
- * The code is structured as a LinearOpMode
- *
- * This particular OpMode executes a holonomic Game style Teleop for a holonomic drive
- * In this mode the left stick moves the robot's position, the Right stick turns left and right.
- *
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
-
-@TeleOp(name="BetaLykos: Holonomic TeleOp", group="BetaLykos")
-//@Disabled
-public class BetaLykosHolonomicTeleop extends LinearOpMode {
+@Autonomous(name="3 second square", group="BetaLykos")  // @Autonomous(...) is the other common choice
+@Disabled
+public class BetaLykosAuto3SecSquare extends LinearOpMode {
 
     /* Declare OpMode members. */
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
@@ -60,36 +48,20 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        /* Initialize the hardware variables.
+         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            float gamepad1RightY = -gamepad1.right_stick_y;
-            float gamepad1RightX = -gamepad1.right_stick_x;
-            float gamepad1LeftX  = -gamepad1.left_stick_x;
-
-            //robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
-
-            robot.frontRightMotor.setPower(gamepad1.right_stick_y);
-            robot.frontLeftMotor.setPower(gamepad1.left_stick_y);
-
-            // Send telemetry message to signify robot running;
-            telemetry.update();
-
-            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
-            idle();
-        }
+        robot.moveRobotForSeconds(0,1,0,this,3);
+        robot.moveRobotForSeconds(1,0,0,this,3);
+        robot.moveRobotForSeconds(0,-1,0,this,3);
+        robot.moveRobotForSeconds(-1,0,0,this,3);
     }
 }

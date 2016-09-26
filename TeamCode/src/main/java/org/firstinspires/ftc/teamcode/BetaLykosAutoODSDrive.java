@@ -32,42 +32,41 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * This OpMode uses the common BetaLykos hardware class to define the devices on the robot.
- * All device access is managed through the BetaLykosHardware class.
- * The code is structured as a LinearOpMode
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
  *
- * This particular OpMode executes a holonomic Game style Teleop for a holonomic drive
- * In this mode the left stick moves the robot's position, the Right stick turns left and right.
+ * This particular OpMode just executes a basic Tank Drive Teleop for a PushBot
+ * It includes all the skeletal structure that all linear OpModes contain.
  *
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="BetaLykos: Holonomic TeleOp", group="BetaLykos")
+@Autonomous(name="BetaLykos Auto ODS Drive", group="BetaLykos")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class BetaLykosHolonomicTeleop extends LinearOpMode {
+public class BetaLykosAutoODSDrive extends LinearOpMode {
 
     /* Declare OpMode members. */
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
+    OpticalDistanceSensor odsSensor;  // Hardware Device Object
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
         robot.init(hardwareMap);
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
-        telemetry.update();
+        odsSensor = hardwareMap.opticalDistanceSensor.get("ods");
+        float speed = 0.2f;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -75,21 +74,17 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            float gamepad1RightY = -gamepad1.right_stick_y;
-            float gamepad1RightX = -gamepad1.right_stick_x;
-            float gamepad1LeftX  = -gamepad1.left_stick_x;
+            if (odsSensor.getLightDetected() == 0) {
+                robot.moveRobot(0,speed,0,telemetry);
+            } else {
+                robot.moveRobot(0,0,0,telemetry);
+            }
 
-            //robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
-
-            robot.frontRightMotor.setPower(gamepad1.right_stick_y);
-            robot.frontLeftMotor.setPower(gamepad1.left_stick_y);
-
-            // Send telemetry message to signify robot running;
+            // send the info back to driver station using telemetry function.
+            telemetry.addData("Raw",    odsSensor.getRawLightDetected());
+            telemetry.addData("Normal", odsSensor.getLightDetected());
             telemetry.update();
-
-            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
-            idle();
+            idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
     }
 }
