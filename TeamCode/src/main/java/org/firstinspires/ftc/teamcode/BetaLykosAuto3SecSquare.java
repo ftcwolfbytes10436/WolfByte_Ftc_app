@@ -38,8 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="3 second square", group="BetaLykos")  // @Autonomous(...) is the other common choice
-@Disabled
+@Autonomous(name="3 second square", group="BetaLykos")
+//@Disabled
 public class BetaLykosAuto3SecSquare extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -48,20 +48,22 @@ public class BetaLykosAuto3SecSquare extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        float speed = 0.2f;
          /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("Color", "test");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.moveRobotForSeconds(0,1,0,this,3);
-        robot.moveRobotForSeconds(1,0,0,this,3);
-        robot.moveRobotForSeconds(0,-1,0,this,3);
-        robot.moveRobotForSeconds(-1,0,0,this,3);
+        robot.moveRobotForSeconds(0,speed,0,this,3);
+        robot.moveRobotForSeconds(speed,0,0,this,3);
+        robot.moveRobotForSeconds(0,-speed,0,this,3);
+        robot.moveRobotForSeconds(-speed,0,0,this,3);
     }
 }

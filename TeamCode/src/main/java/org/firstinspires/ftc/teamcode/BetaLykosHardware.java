@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,6 +11,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import java.util.Locale;
 
 /**
  * This is NOT an opmode.
@@ -33,13 +41,20 @@ public class BetaLykosHardware
     public DcMotor  frontRightMotor = null;
     public DcMotor  backLeftMotor   = null;
     public DcMotor  backRightMotor  = null;
-    public DcMotor  armMotor        = null;
     public Servo    leftClaw        = null;
     public Servo    rightClaw       = null;
+
+    // The IMU sensor object
+    BNO055IMU imu;
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
+    public static final double powerPerDegree = .005;
+    public static double heading;
+    public static boolean updateHeading = false;
+    public static boolean rotating = false;
+    public static boolean red = false;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -60,7 +75,7 @@ public class BetaLykosHardware
         frontRightMotor = hwMap.dcMotor.get("front_right_drive");
         backLeftMotor = hwMap.dcMotor.get("back_left_drive");
         backRightMotor = hwMap.dcMotor.get("back_right_drive");
-        //armMotor    = hwMap.dcMotor.get("left_arm");
+
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -71,7 +86,6 @@ public class BetaLykosHardware
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-        //armMotor.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -79,15 +93,36 @@ public class BetaLykosHardware
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         // Define and initialize ALL installed servos.
         //leftClaw = hwMap.servo.get("left_hand");
         //rightClaw = hwMap.servo.get("right_hand");
         //leftClaw.setPosition(MID_SERVO);
         //rightClaw.setPosition(MID_SERVO);
+
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
 
+    public double getHeading() {
+        Orientation angles   = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        return AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle);
+    }
     /***
      *
      * waitForTick implements a periodic delay. However, this acts like a metronome with a regular
@@ -110,6 +145,20 @@ public class BetaLykosHardware
     }
 
     public void moveRobot(float xAxis, float yAxis, float rotation, Telemetry telemetry) {
+
+        double currentHeading = getHeading();
+        if (rotation != 0){
+            rotating = true;
+        } else if (rotating) {
+            rotating = false;
+            updateHeading = true;
+        } else if (updateHeading) {
+            heading = currentHeading;
+            updateHeading = false;
+        } else if (currentHeading != heading) {
+            float dif = (float) (heading - currentHeading);
+            rotation = (float) (dif * powerPerDegree);
+        }
 
         double fLeft  = Range.clip(yAxis + xAxis + rotation,-1,1);
         double fRight = Range.clip(yAxis - xAxis - rotation,-1,1);
@@ -134,7 +183,7 @@ public class BetaLykosHardware
         runtime.reset();
         moveRobot(xAxis, yAxis, rotation, opMode.telemetry);
         opMode.telemetry.update();
-        while (opMode.opModeIsActive() && runtime.seconds() > secs) {
+        while (opMode.opModeIsActive() && runtime.seconds() < secs) {
             opMode.idle();
         }
         moveRobot(0,0,0,opMode.telemetry);
