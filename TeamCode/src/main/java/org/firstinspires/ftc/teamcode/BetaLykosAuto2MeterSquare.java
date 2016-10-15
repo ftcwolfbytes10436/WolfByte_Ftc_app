@@ -32,27 +32,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
- * This OpMode uses the common BetaLykos hardware class to define the devices on the robot.
- * All device access is managed through the BetaLykosHardware class.
- * The code is structured as a LinearOpMode
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
+ * class is instantiated on the Robot Controller and executed.
  *
- * This particular OpMode executes a holonomic Game style Teleop for a holonomic drive
- * In this mode the left stick moves the robot's position, the Right stick turns left and right.
+ * This particular OpMode just executes a basic Teleop
+ * It includes all the skeletal structure that all linear OpModes contain.
  *
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Holonomic TeleOp", group="BetaLykos")
-//@Disabled
-public class BetaLykosHolonomicTeleop extends LinearOpMode {
+@Autonomous(name="2 Meter Square", group="BetaLykos")
+public class BetaLykosAuto2MeterSquare extends LinearOpMode {
 
     /* Declare OpMode members. */
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
@@ -60,13 +58,10 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-
-        boolean lowGear = false;
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        BetaLykosHardware.red = true;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
@@ -75,38 +70,9 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
-
-            // Send telemetry message to signify robot running;
-            telemetry.addData("Status", "Running");
-
-            if (gamepad1.a) {
-                lowGear = true;
-            } else if (gamepad1.b && lowGear) {
-                lowGear = false;
-            }
-
-            float gamepad1RightY = -gamepad1.right_stick_y;
-            float gamepad1RightX = -gamepad1.right_stick_x;
-            float gamepad1LeftX  = -gamepad1.left_stick_x;
-
-            if (lowGear) {
-                gamepad1RightX /= 2;
-                gamepad1RightY /= 2;
-                gamepad1LeftX /= 4;
-            }
-
-            gamepad1RightX *= gamepad1RightX * gamepad1RightX;
-            gamepad1RightY *= gamepad1RightY * gamepad1RightY;
-
-            robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
-
-            telemetry.update();
-
-            // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            robot.waitForTick(40);
-            idle();
-        }
+        robot.moveRobotToPosition(0,2,1,false,this);
+        robot.moveRobotToPosition(2,2,1,false,this);
+        robot.moveRobotToPosition(2,0,1,false,this);
+        robot.moveRobotToPosition(0,0,1,false,this);
     }
 }

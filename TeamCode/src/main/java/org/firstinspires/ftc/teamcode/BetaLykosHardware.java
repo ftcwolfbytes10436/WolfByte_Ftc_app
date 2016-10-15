@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,17 +12,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 import java.util.Locale;
 
 /**
  * This is NOT an opmode.
  *
- * This class can be used to define all the specific hardware for a single robot.
+ * This class is used to define all the specific hardware for a single robot.
  *
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
@@ -30,9 +33,9 @@ import java.util.Locale;
  * Motor channel:  front Right drive motor:  "front_right_drive"
  * Motor channel:  back Left  drive motor:   "back_left_drive"
  * Motor channel:  back Right drive motor:   "back_right_drive"
- * Motor channel:  Manipulator drive motor:  "left_arm"
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
+ * I2C   channel:  IMU sensor for gyro:      "imu"
  */
 public class BetaLykosHardware
 {
@@ -51,7 +54,9 @@ public class BetaLykosHardware
     public static final double ARM_UP_POWER    =  0.45 ;
     public static final double ARM_DOWN_POWER  = -0.45 ;
     public static final double powerPerDegree = .005;
-    public static double heading;
+
+    public static double heading = 0;
+
     public static boolean updateHeading = false;
     public static boolean rotating = false;
     public static boolean red = false;
@@ -117,12 +122,31 @@ public class BetaLykosHardware
         // and named "imu".
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        while (!imu.isAccelerometerCalibrated()) {}
+        imu.startAccelerationIntegration(null,imu.getVelocity(),100);
     }
 
+    /**
+     * Get the heading of the robot from the IMU
+     *
+     * @return Heading of the robot in degrees
+     */
+
     public double getHeading() {
-        Orientation angles   = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         return AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle);
     }
+
+    /**
+     * Get the position of the robot using the IMU, specifically the accelerometer on the IMU
+     *
+     * @return The position of the robot as a position class
+     */
+
+    public Position getPosition() {
+        return imu.getPosition();
+    }
+
     /***
      *
      * waitForTick implements a periodic delay. However, this acts like a metronome with a regular
@@ -132,6 +156,7 @@ public class BetaLykosHardware
      * @param periodMs  Length of wait cycle in mSec.
      * @throws InterruptedException
      */
+
     public void waitForTick(long periodMs) throws InterruptedException {
 
         long  remaining = periodMs - (long)period.milliseconds();
@@ -143,6 +168,16 @@ public class BetaLykosHardware
         // Reset the cycle clock for the next pass.
         period.reset();
     }
+
+    /**
+     * Moves the robot in the desired direction and power or rotates the robot with the desired power.
+     * It will try to self correct its heading if it turns with out getting any rotation power.
+     *
+     * @param xAxis the power of the motors in the x axis
+     * @param yAxis the power of the motors in the y axis
+     * @param rotation the power of rotation of the robot
+     * @param telemetry a reference to the telemetry class to report any data to the driver station
+     */
 
     public void moveRobot(float xAxis, float yAxis, float rotation, Telemetry telemetry) {
 
@@ -157,7 +192,7 @@ public class BetaLykosHardware
             updateHeading = false;
         } else if (currentHeading != heading) {
             float dif = (float) (heading - currentHeading);
-            rotation = (float) (dif * powerPerDegree);
+            rotation =  (float) (dif * powerPerDegree);
         }
 
         double fLeft  = Range.clip(yAxis + xAxis + rotation,-1,1);
@@ -165,17 +200,33 @@ public class BetaLykosHardware
         double bLeft  = Range.clip(yAxis - xAxis + rotation,-1,1);
         double bRight = Range.clip(yAxis + xAxis - rotation,-1,1);
 
-        frontLeftMotor.setPower(fLeft);
+        frontLeftMotor.setPower (fLeft);
         frontRightMotor.setPower(fRight);
-        backLeftMotor.setPower(bLeft);
-        backRightMotor.setPower(bRight);
+        backLeftMotor.setPower  (bLeft);
+        backRightMotor.setPower (bRight);
 
+        if (!rotating) {
+            rotation = 0;
+        }
         // Send telemetry message to signify robot running;
-        telemetry.addData("front left",  "%.2f", fLeft);
-        telemetry.addData("front right", "%.2f", fRight);
-        telemetry.addData("back left",  "%.2f", bLeft);
-        telemetry.addData("back right", "%.2f", bRight);
+        telemetry.addData("MoveRobot input"  , "XPower: " + xAxis + "    YPower: " + yAxis + "Rotation: " + rotation);
+        telemetry.addData("Front Wheel Power", "Left:   " + fLeft + "    Right:  " + fRight);
+        telemetry.addData("Back  Wheel Power", "Left:   " + bLeft + "    Right:  " + bRight);
+        telemetry.addData("Heading" , "%.2f" ,heading);
+        telemetry.addData("Position", "("+ getPosition().x + "," + getPosition().y + ")");
     }
+
+    /**
+     * Moves the robot in the desired direction and power or rotates the robot with the desired power
+     * for the specifed amount of time. It uses the moveRobot method.
+     *
+     * @param xAxis the power of the motors in the x axis
+     * @param yAxis the power of the motors in the y axis
+     * @param rotation the power of rotation of the robot
+     * @param opMode a reference to the linear opMode
+     * @param secs amount of seconds to drive for
+     * @throws InterruptedException
+     */
 
     public void moveRobotForSeconds(float xAxis, float yAxis, float rotation, LinearOpMode opMode, float secs) throws InterruptedException {
 
@@ -188,6 +239,52 @@ public class BetaLykosHardware
         }
         moveRobot(0,0,0,opMode.telemetry);
         opMode.telemetry.update();
+    }
+
+    /**
+     * Moves the robot to the specified location at the specified power. This method uses the IMU accelerometer to mesure
+     * distance to go the location.
+     *
+     * @param x The target x position to go to
+     * @param y The target y position to go to
+     * @param power the max amount of power to apply to the motors
+     * @param turnToDestination whether or not to turn to the destination
+     * @param opMode a reference to the LinerOpMode
+     * @throws InterruptedException
+     */
+
+    public void moveRobotToPosition(float x, float y, float power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
+
+        Position position = getPosition();
+        float distanceX = (float) (x - position.x);
+        float distanceY = (float) (y - position.y);
+        float powerX;
+        float powerY;
+//        if (turnToDestination) {
+//            double targetHeading =
+//        }
+        while (distanceX > 0.01 && distanceY > 0.01 && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("Status", "Running");
+
+            position = getPosition();
+            distanceX = (float) (x - position.x);
+            distanceY = (float) (y - position.y);
+
+            if (distanceX >= distanceY) {
+                powerX = power;
+                powerY = distanceY / distanceX * power;
+            } else {
+                powerX = distanceX / distanceY * power;
+                powerY = power;
+            }
+
+            moveRobot(powerX,powerY,0,opMode.telemetry);
+
+            opMode.telemetry.addData("Target position","(" + x + "," + y + ")");
+            opMode.telemetry.update();
+            opMode.idle();
+        }
+        moveRobot(0,0,0,opMode.telemetry);
     }
 }
 
