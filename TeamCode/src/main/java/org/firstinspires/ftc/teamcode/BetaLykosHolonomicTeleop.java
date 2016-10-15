@@ -62,6 +62,11 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
 
 
         boolean lowGear = false;
+        boolean runParticleMotor = false;
+        boolean particleMoterButtonHeld = false;
+        boolean railsUnlocked = false;
+        boolean unlockRailButtonHeld = false;
+
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
@@ -101,6 +106,33 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             gamepad1RightY *= gamepad1RightY * gamepad1RightY;
 
             robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
+
+            // unlock or lock rails
+            if (gamepad1.left_bumper && !unlockRailButtonHeld) {
+                railsUnlocked = !railsUnlocked;
+                unlockRailButtonHeld = true;
+            } else if (!gamepad1.left_bumper && unlockRailButtonHeld) {
+                unlockRailButtonHeld = false;
+            }
+            telemetry.addData("Rails unlocked",railsUnlocked);
+
+            // toggle the particle motor
+            if (gamepad2.a && !particleMoterButtonHeld) {
+                runParticleMotor = !runParticleMotor;
+                if (runParticleMotor) {
+                    robot.particleMotor.setPower(1);
+                } else {
+                    robot.particleMotor.setPower(0);
+                }
+                particleMoterButtonHeld = true;
+            } else if (!gamepad2.a && particleMoterButtonHeld) {
+                particleMoterButtonHeld = false;
+            }
+            telemetry.addData("Run Particle motor", runParticleMotor);
+
+            // run the particle launcher motor
+            robot.particleLauncher.setPower(gamepad2.right_trigger);
+            telemetry.addData("particle lancher power", gamepad2.right_trigger);
 
             telemetry.update();
 

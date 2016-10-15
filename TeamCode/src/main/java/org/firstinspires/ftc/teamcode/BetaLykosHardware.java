@@ -3,23 +3,18 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
-
-import java.util.Locale;
 
 /**
  * This is NOT an opmode.
@@ -29,30 +24,33 @@ import java.util.Locale;
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
  *
- * Motor channel:  front Left  drive motor:  "front_left_drive"
- * Motor channel:  front Right drive motor:  "front_right_drive"
- * Motor channel:  back Left  drive motor:   "back_left_drive"
- * Motor channel:  back Right drive motor:   "back_right_drive"
- * Servo channel:  Servo to open left claw:  "left_hand"
- * Servo channel:  Servo to open right claw: "right_hand"
- * I2C   channel:  IMU sensor for gyro:      "imu"
+ * Motor channel:  front Left  drive motor:      "front_left_drive"
+ * Motor channel:  front Right drive motor:      "front_right_drive"
+ * Motor channel:  back Left  drive motor:       "back_left_drive"
+ * Motor channel:  back Right drive motor:       "back_right_drive"
+ * Motor channel:  particle collector:           "particle_motor"
+ * Motor channel:  particle launcher:            "particle_launcher"
+ * Servo channel:  Servo to hold the left rail:  "left_rail"
+ * Servo channel:  Servo to hold the right rail: "right_rail"
+ * I2C   channel:  IMU sensor for gyro:          "imu"
  */
 public class BetaLykosHardware
 {
     /* Public OpMode members. */
-    public DcMotor  frontLeftMotor  = null;
-    public DcMotor  frontRightMotor = null;
-    public DcMotor  backLeftMotor   = null;
-    public DcMotor  backRightMotor  = null;
-    public Servo    leftClaw        = null;
-    public Servo    rightClaw       = null;
+    public DcMotor  frontLeftMotor   = null;
+    public DcMotor  frontRightMotor  = null;
+    public DcMotor  backLeftMotor    = null;
+    public DcMotor  backRightMotor   = null;
+    public DcMotor  particleMotor    = null;
+    public DcMotor  particleLauncher = null;
+    public Servo    leftRail         = null;
+    public Servo    rightRail        = null;
 
     // The IMU sensor object
     BNO055IMU imu;
 
-    public static final double MID_SERVO       =  0.5 ;
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
+    public static final double OPEN_SERVO_POSITION  =  0.5 ;
+    public static final double CLOSED_SERVO_POSITION = 0;
     public static final double powerPerDegree = .005;
 
     public static double heading = 0;
@@ -80,17 +78,23 @@ public class BetaLykosHardware
         frontRightMotor = hwMap.dcMotor.get("front_right_drive");
         backLeftMotor = hwMap.dcMotor.get("back_left_drive");
         backRightMotor = hwMap.dcMotor.get("back_right_drive");
+        particleMotor = hwMap.dcMotor.get("particle_motor");
+        particleLauncher = hwMap.dcMotor.get("particle_launcher");
 
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        particleMotor.setDirection(DcMotor.Direction.FORWARD);
+        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+        particleMotor.setPower(0);
+        particleLauncher.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -98,13 +102,12 @@ public class BetaLykosHardware
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        particleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        particleLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-        //leftClaw = hwMap.servo.get("left_hand");
-        //rightClaw = hwMap.servo.get("right_hand");
-        //leftClaw.setPosition(MID_SERVO);
-        //rightClaw.setPosition(MID_SERVO);
+        leftRail = hwMap.servo.get("left_rail");
+        rightRail = hwMap.servo.get("right_rail");
 
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
@@ -170,6 +173,21 @@ public class BetaLykosHardware
     }
 
     /**
+     * Unlock or lock both rails
+     *
+     * @param unlocked whether to lock or unlock the rails
+     */
+    public void lockUnlockRails(boolean unlocked) {
+        if (unlocked) {
+            leftRail.setPosition(OPEN_SERVO_POSITION);
+            rightRail.setPosition(OPEN_SERVO_POSITION);
+        } else {
+            leftRail.setPosition(CLOSED_SERVO_POSITION);
+            rightRail.setPosition(CLOSED_SERVO_POSITION);
+        }
+    }
+
+    /**
      * Moves the robot in the desired direction and power or rotates the robot with the desired power.
      * It will try to self correct its heading if it turns with out getting any rotation power.
      *
@@ -232,11 +250,13 @@ public class BetaLykosHardware
 
         ElapsedTime runtime = new ElapsedTime();
         runtime.reset();
+        opMode.telemetry.addData("Status", "Running");
         moveRobot(xAxis, yAxis, rotation, opMode.telemetry);
         opMode.telemetry.update();
         while (opMode.opModeIsActive() && runtime.seconds() < secs) {
             opMode.idle();
         }
+        opMode.telemetry.addData("Status", "Running");
         moveRobot(0,0,0,opMode.telemetry);
         opMode.telemetry.update();
     }
