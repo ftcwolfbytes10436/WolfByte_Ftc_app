@@ -105,6 +105,9 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             gamepad1RightX *= gamepad1RightX * gamepad1RightX;
             gamepad1RightY *= gamepad1RightY * gamepad1RightY;
 
+            if (robot.getFrontRangeDistance() <= 6 && gamepad1RightY > 0) {
+                gamepad1RightY = 0;
+            }
             robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
 
             // unlock or lock rails

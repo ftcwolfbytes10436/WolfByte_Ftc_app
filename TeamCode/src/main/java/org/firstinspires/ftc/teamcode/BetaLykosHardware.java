@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -24,27 +25,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
  *
- * Motor channel:  front Left  drive motor:      "front_left_drive"
- * Motor channel:  front Right drive motor:      "front_right_drive"
- * Motor channel:  back Left  drive motor:       "back_left_drive"
- * Motor channel:  back Right drive motor:       "back_right_drive"
- * Motor channel:  particle collector:           "particle_motor"
- * Motor channel:  particle launcher:            "particle_launcher"
- * Servo channel:  Servo to hold the left rail:  "left_rail"
- * Servo channel:  Servo to hold the right rail: "right_rail"
- * I2C   channel:  IMU sensor for gyro:          "imu"
+ * Motor  channel:  front Left  drive motor:      "front_left_drive"
+ * Motor  channel:  front Right drive motor:      "front_right_drive"
+ * Motor  channel:  back Left  drive motor:       "back_left_drive"
+ * Motor  channel:  back Right drive motor:       "back_right_drive"
+ * Motor  channel:  particle collector:           "particle_motor"
+ * Motor  channel:  particle launcher:            "particle_launcher"
+ * Servo  channel:  Servo to hold the left rail:  "left_rail"
+ * Servo  channel:  Servo to hold the right rail: "right_rail"
+ * I2C    channel:  IMU sensor for gyro:          "imu"
+ * analog channel:  Front sonar range sensor:     "front_range_sensor"
+ * analog channel:  Right sonar range sensor:     "right_range_sensor"
  */
 public class BetaLykosHardware
 {
     /* Public OpMode members. */
-    public DcMotor  frontLeftMotor   = null;
-    public DcMotor  frontRightMotor  = null;
-    public DcMotor  backLeftMotor    = null;
-    public DcMotor  backRightMotor   = null;
-    public DcMotor  particleMotor    = null;
-    public DcMotor  particleLauncher = null;
-    public Servo    leftRail         = null;
-    public Servo    rightRail        = null;
+    public DcMotor      frontLeftMotor   = null;
+    public DcMotor      frontRightMotor  = null;
+    public DcMotor      backLeftMotor    = null;
+    public DcMotor      backRightMotor   = null;
+    public DcMotor      particleMotor    = null;
+    public DcMotor      particleLauncher = null;
+    public Servo        leftRail         = null;
+    public Servo        rightRail        = null;
+    public AnalogSensor frontRangeSensor = null;
+    public AnalogSensor rightRangeSensor = null;
 
     // The IMU sensor object
     BNO055IMU imu;
@@ -127,6 +132,9 @@ public class BetaLykosHardware
         imu.initialize(parameters);
         while (!imu.isAccelerometerCalibrated()) {}
         imu.startAccelerationIntegration(null,imu.getVelocity(),100);
+
+        frontRangeSensor = hwMap.get(AnalogSensor.class, "front_range_sensor");
+        rightRangeSensor = hwMap.get(AnalogSensor.class, "right_range_sensor");
     }
 
     /**
@@ -148,6 +156,14 @@ public class BetaLykosHardware
 
     public Position getPosition() {
         return imu.getPosition();
+    }
+
+    public double getFrontRangeDistance() {
+        return frontRangeSensor.readRawVoltage() / 9.8 * 1000;
+    }
+
+    public double getRightRangeDistance() {
+        return rightRangeSensor.readRawVoltage() / 9.8 * 1000;
     }
 
     /***
