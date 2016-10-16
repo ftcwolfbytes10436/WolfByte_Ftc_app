@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
-import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -114,16 +113,13 @@ public class BetaLykosHardware
         leftRail = hwMap.servo.get("left_rail");
         rightRail = hwMap.servo.get("right_rail");
 
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
+        // Set up the parameters with which we will use our IMU.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
@@ -206,14 +202,13 @@ public class BetaLykosHardware
     /**
      * Moves the robot in the desired direction and power or rotates the robot with the desired power.
      * It will try to self correct its heading if it turns with out getting any rotation power.
-     *
-     * @param xAxis the power of the motors in the x axis
+     *  @param xAxis the power of the motors in the x axis
      * @param yAxis the power of the motors in the y axis
      * @param rotation the power of rotation of the robot
      * @param telemetry a reference to the telemetry class to report any data to the driver station
      */
 
-    public void moveRobot(float xAxis, float yAxis, float rotation, Telemetry telemetry) {
+    public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telemetry) {
 
         double currentHeading = getHeading();
         if (rotation != 0){
@@ -281,6 +276,7 @@ public class BetaLykosHardware
      * Moves the robot to the specified location at the specified power. This method uses the IMU accelerometer to mesure
      * distance to go the location.
      *
+     * @return whether or not the the robot got to the destination
      * @param x The target x position to go to
      * @param y The target y position to go to
      * @param power the max amount of power to apply to the motors
@@ -289,16 +285,22 @@ public class BetaLykosHardware
      * @throws InterruptedException
      */
 
-    public void moveRobotToPosition(float x, float y, float power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
+    public boolean moveRobotToPosition(double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
 
+        final double maxAmountOfSamePosition = 20;
+        final double amountOfdiffenceForSame = 0.1;
+        int amountOfSamePos = 0;
         Position position = getPosition();
-        float distanceX = (float) (x - position.x);
-        float distanceY = (float) (y - position.y);
-        float powerX;
-        float powerY;
+        Position lastPosition = position;
+        double distanceX =  x - position.x;
+        double distanceY = y - position.y;
+        double powerX;
+        double powerY;
+        
 //        if (turnToDestination) {
 //            double targetHeading =
 //        }
+
         while (distanceX > 0.01 && distanceY > 0.01 && opMode.opModeIsActive()) {
             opMode.telemetry.addData("Status", "Running");
 
@@ -316,11 +318,30 @@ public class BetaLykosHardware
 
             moveRobot(powerX,powerY,0,opMode.telemetry);
 
+            if (opMode.gamepad1.left_stick_button && opMode.gamepad1.right_stick_button) {
+                moveRobot(0,0,0,opMode.telemetry);
+                return false;
+            }
+
+            double xDiff = lastPosition.x - position.x;
+            double yDiff = lastPosition.y - position.y;
+
+            if ( xDiff < amountOfdiffenceForSame * power && xDiff > -amountOfdiffenceForSame * power &&
+                    yDiff < amountOfdiffenceForSame * power && yDiff > -amountOfdiffenceForSame * power) {
+                amountOfSamePos ++;
+            }
+
+            if (amountOfSamePos >= maxAmountOfSamePosition) {
+                moveRobot(0,0,0,opMode.telemetry);
+                return false;
+            }
+
             opMode.telemetry.addData("Target position","(" + x + "," + y + ")");
             opMode.telemetry.update();
             opMode.idle();
         }
         moveRobot(0,0,0,opMode.telemetry);
+        return true;
     }
 }
 
