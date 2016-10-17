@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  */
 
 @Autonomous(name="2 Meter Square", group="BetaLykos")
-public class BetaLykosAuto2MeterSquare extends LinearOpMode {
+public class BetaLykosAuto1FootSquare extends LinearOpMode {
 
     /* Declare OpMode members. */
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
@@ -70,9 +70,9 @@ public class BetaLykosAuto2MeterSquare extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.moveRobotToPosition(0,2,1,false,this);
-        robot.moveRobotToPosition(2,2,1,false,this);
-        robot.moveRobotToPosition(2,0,1,false,this);
+        robot.moveRobotToPosition(0,1,1,false,this);
+        robot.moveRobotToPosition(1,1,1,false,this);
+        robot.moveRobotToPosition(1,0,1,false,this);
         robot.moveRobotToPosition(0,0,1,false,this);
     }
 }

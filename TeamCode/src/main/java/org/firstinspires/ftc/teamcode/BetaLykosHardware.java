@@ -151,7 +151,10 @@ public class BetaLykosHardware
      */
 
     public Position getPosition() {
-        return imu.getPosition();
+        Position position = imu.getPosition();
+        position.x *= 3.28;
+        position.y *= 3.28;
+        return position;
     }
 
     public double getFrontRangeDistance() {
@@ -296,7 +299,7 @@ public class BetaLykosHardware
         double distanceY = y - position.y;
         double powerX;
         double powerY;
-        
+
 //        if (turnToDestination) {
 //            double targetHeading =
 //        }
