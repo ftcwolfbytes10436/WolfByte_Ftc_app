@@ -74,7 +74,7 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        ArrayList<Position> targets = new ArrayList<>();
+        Position targets[] = new Position[10];
         int selectedElement = 0;
         float xPosition = 0 ;
         float yPosition = 0;
@@ -83,39 +83,39 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            Position position = new Position(DistanceUnit.METER,xPosition,yPosition,power,0);
+            targets[selectedElement] = position;
+
             // Send telemetry message to signify robot running;
-            telemetry.addData("Status", "Running");
-            for (int i = 0; i < targets.size(); i++) {
+            telemetry.addData("Status", "Running"+selectedElement);
+            for (int i = 0; i < targets.length; i++) {
 
                 if (selectedElement == i) {
-                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets.get(i).x +
-                            " , " + targets.get(i).y + ")" + "   Power: " + targets.get(i).z + "  <----Selected");
+                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets[i].x +
+                            " , " + targets[i].y + ")" + "   Power: " + targets[i].z + "  <----Selected");
 
                 } else {
-                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets.get(i).x +
-                            " , " + targets.get(i).y + ")" + "   Power: " + targets.get(i).z);
+                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets[i].x +
+                            " , " + targets[i].y + ")" + "   Power: " + targets[i].z);
                 }
             }
             telemetry.update();
 
             if (gamepad1.a) {
-                for(int i = 0; i < targets.size(); i++) {
-                    if (targets.get(i) != null) {
-                        Boolean succeeded = robot.moveRobotToPosition(targets.get(i).x, targets.get(i).y, targets.get(i).z, false, this);
+                for (Position target : targets) {
+                    if (target != null) {
+                        Boolean succeeded = robot.moveRobotToPosition(target.x, target.y, target.z, false, this);
                         if (!succeeded) {
                             break;
                         }
                     }
                 }
-                targets = new ArrayList<>();
+                targets = new Position[10];
                 xPosition = 0;
                 yPosition = 0;
                 power = 0;
 
-            } else if (-gamepad1.right_stick_y < 0 && !buttonPressed) {
-                Position position = new Position(DistanceUnit.METER,xPosition,yPosition,power,0);
-                targets.ensureCapacity(selectedElement+1);
-                targets.set(selectedElement, position);
+            } else if (-gamepad1.right_stick_y < 0 && !buttonPressed && selectedElement < 10) {
                 xPosition = 0;
                 yPosition = 0;
                 power = 0;
@@ -123,11 +123,10 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
                 buttonPressed = true;
                 
             } else if (-gamepad1.right_stick_y > 0 && !buttonPressed) {
-                if (xPosition != 0 || yPosition != 0 || selectedElement != targets.size() - 1) {
-                    Position position = new Position(DistanceUnit.METER, xPosition, yPosition, power, 0);
-                    targets.set(selectedElement, position);
+                if (xPosition != 0 || yPosition != 0 || selectedElement != targets.length - 1) {
+                    targets[selectedElement] = position;
                 } else {
-                    targets.set(selectedElement,null);
+                    targets[selectedElement] = null;
                 }
                 xPosition = 0;
                 yPosition = 0;

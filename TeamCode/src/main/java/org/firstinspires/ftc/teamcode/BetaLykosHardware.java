@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -13,8 +15,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * This is NOT an opmode.
@@ -34,34 +38,41 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
  * Servo  channel:  Servo to hold the right rail: "right_rail"
  * I2C    channel:  IMU sensor for gyro:          "imu"
  * analog channel:  Front sonar range sensor:     "front_range_sensor"
- * analog channel:  Right sonar range sensor:     "right_range_sensor"
+ * analog channel:  Side sonar range sensor:      "side_range_sensor"
  */
 public class BetaLykosHardware
 {
     /* Public OpMode members. */
-    public DcMotor      frontLeftMotor   = null;
-    public DcMotor      frontRightMotor  = null;
-    public DcMotor      backLeftMotor    = null;
-    public DcMotor      backRightMotor   = null;
-    public DcMotor      particleMotor    = null;
-    public DcMotor      particleLauncher = null;
-    public Servo        leftRail         = null;
-    public Servo        rightRail        = null;
-    public AnalogSensor frontRangeSensor = null;
-    public AnalogSensor rightRangeSensor = null;
+    public DcMotor      frontLeftMotor     = null;
+    public DcMotor      frontRightMotor    = null;
+    public DcMotor      backLeftMotor      = null;
+    public DcMotor      backRightMotor     = null;
+    public DcMotor      particleMotor      = null;
+    public DcMotor      particleLauncher   = null;
+    public Servo        leftRail           = null;
+    public Servo        rightRail          = null;
 
-    // The IMU sensor object
-    BNO055IMU imu;
+    public AnalogSensor frontRangeSensor   = null;
+    public AnalogSensor sideRangeSensor    = null;
+    public OpticalDistanceSensor odsSensor = null;
+    public ColorSensor sensorRGB           = null;
+    public BNO055IMU imu;
+
+    public boolean useDistanceSensorForInitialPosition = false;
+    public boolean onRedAlliance = false;
 
     public static final double OPEN_SERVO_POSITION  =  0.5 ;
     public static final double CLOSED_SERVO_POSITION = 0;
     public static final double powerPerDegree = .005;
+    public static final double distanceFromFrontSensorToCenter = 0;
+    public static final double distanceFromSideSensorToCenter = 0;
+    public static final double distanceFromBackToCenter = 0;
+
 
     public static double heading = 0;
 
     public static boolean updateHeading = false;
     public static boolean rotating = false;
-    public static boolean red = false;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -82,23 +93,23 @@ public class BetaLykosHardware
         frontRightMotor = hwMap.dcMotor.get("front_right_drive");
         backLeftMotor = hwMap.dcMotor.get("back_left_drive");
         backRightMotor = hwMap.dcMotor.get("back_right_drive");
-        particleMotor = hwMap.dcMotor.get("particle_motor");
-        particleLauncher = hwMap.dcMotor.get("particle_launcher");
+//        particleMotor = hwMap.dcMotor.get("particle_motor");
+//        particleLauncher = hwMap.dcMotor.get("particle_launcher");
 
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        particleMotor.setDirection(DcMotor.Direction.FORWARD);
-        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
+//        particleMotor.setDirection(DcMotor.Direction.FORWARD);
+//        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-        particleMotor.setPower(0);
-        particleLauncher.setPower(0);
+//        particleMotor.setPower(0);
+//        particleLauncher.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -106,12 +117,18 @@ public class BetaLykosHardware
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        particleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        particleLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        particleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        particleLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
-        leftRail = hwMap.servo.get("left_rail");
-        rightRail = hwMap.servo.get("right_rail");
+//        leftRail = hwMap.servo.get("left_rail");
+//        rightRail = hwMap.servo.get("right_rail");
+
+//        frontRangeSensor = hwMap.get(AnalogSensor.class, "front_range_sensor");
+//        sideRangeSensor = hwMap.get(AnalogSensor.class, "side_range_sensor");
+//        odsSensor = hwMap.opticalDistanceSensor.get("ods");
+//        sensorRGB = hwMap.colorSensor.get("sensor_color");
+
 
         // Set up the parameters with which we will use our IMU.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -127,10 +144,29 @@ public class BetaLykosHardware
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
         while (!imu.isAccelerometerCalibrated()) {}
-        imu.startAccelerationIntegration(null,imu.getVelocity(),100);
+        Position initalPosition = new Position(DistanceUnit.METER,0,0,0,0);
 
-        frontRangeSensor = hwMap.get(AnalogSensor.class, "front_range_sensor");
-        rightRangeSensor = hwMap.get(AnalogSensor.class, "right_range_sensor");
+        if (useDistanceSensorForInitialPosition) {
+            double xPosition = 0;
+            double yPosition = 0;
+
+            if (onRedAlliance) {
+                yPosition = 12 - distanceFromBackToCenter;
+                xPosition = 12 - getSideRangeDistance() - distanceFromSideSensorToCenter;
+
+            } else {
+                xPosition = 12 - distanceFromBackToCenter;
+                yPosition = 12 - getSideRangeDistance() - distanceFromSideSensorToCenter;
+
+            }
+
+            xPosition /= 3.28;
+            yPosition /= 3.28;
+
+            initalPosition = new Position(DistanceUnit.METER,xPosition,yPosition,0,0);
+        }
+
+        imu.startAccelerationIntegration(initalPosition,new Velocity(DistanceUnit.METER,0,0,0,0),1000);
     }
 
     /**
@@ -158,11 +194,15 @@ public class BetaLykosHardware
     }
 
     public double getFrontRangeDistance() {
-        return frontRangeSensor.readRawVoltage() / 9.8 * 1000;
+        return frontRangeSensor.readRawVoltage() / 9.8 * 1000 /12;
     }
 
-    public double getRightRangeDistance() {
-        return rightRangeSensor.readRawVoltage() / 9.8 * 1000;
+    public double getSideRangeDistance() {
+        return sideRangeSensor.readRawVoltage() / 9.8 * 1000 / 12;
+    }
+
+    public double getODSLightLevel() {
+        return odsSensor.getLightDetected();
     }
 
     /***
@@ -202,6 +242,47 @@ public class BetaLykosHardware
         }
     }
 
+    public double getAnglefromADirection(double x, double y) {
+        Position position = getPosition();
+        double xDistance = x - position.x;
+        double yDistance = y - position.y;
+        double heading = 0;
+        if (xDistance > 0 && yDistance > 0) {
+            heading = -Math.atan(xDistance / yDistance);
+
+        } else if (xDistance < 0 && yDistance > 0) {
+            heading = Math.atan(xDistance / yDistance);
+
+        } else if (xDistance < 0 && yDistance < 0) {
+            heading = Math.atan(yDistance / xDistance) + 90;
+
+        } else if (xDistance > 0 && yDistance < 0) {
+            heading = -Math.atan(yDistance / xDistance) - 90;
+        }
+        return heading;
+    }
+
+    public void turnRobotToHeading(double heading, double power, LinearOpMode opMode) {
+        final double angleTolerance = 1;
+        double currentAngle = getHeading();
+        double targetAngle = heading;
+        double diff = targetAngle - currentAngle;
+        double rotation;
+
+        while (Math.abs(diff) >= angleTolerance) {
+            currentAngle = getHeading();
+            diff = targetAngle - currentAngle;
+            rotation = diff * powerPerDegree * power;
+
+            moveRobot(0,0,rotation,opMode.telemetry);
+            opMode.idle();
+        }
+    }
+
+    public void turnRobotTowardsPoint(double x, double y, double power, LinearOpMode opMode) {
+        turnRobotToHeading(getAnglefromADirection(x,y),power,opMode);
+    }
+
     /**
      * Moves the robot in the desired direction and power or rotates the robot with the desired power.
      * It will try to self correct its heading if it turns with out getting any rotation power.
@@ -211,7 +292,7 @@ public class BetaLykosHardware
      * @param telemetry a reference to the telemetry class to report any data to the driver station
      */
 
-    public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telemetry) {
+    public void moveRobot(double xAxis, double yAxis, double rotation, double separate, Telemetry telemetry) {
 
         double currentHeading = getHeading();
         if (rotation != 0){
@@ -227,10 +308,10 @@ public class BetaLykosHardware
             rotation =  (float) (dif * powerPerDegree);
         }
 
-        double fLeft  = Range.clip(yAxis + xAxis + rotation,-1,1);
-        double fRight = Range.clip(yAxis - xAxis - rotation,-1,1);
-        double bLeft  = Range.clip(yAxis - xAxis + rotation,-1,1);
-        double bRight = Range.clip(yAxis + xAxis - rotation,-1,1);
+        double fLeft  = Range.clip(yAxis + xAxis + rotation + separate,-1,1);
+        double fRight = Range.clip(yAxis - xAxis - rotation + separate,-1,1);
+        double bLeft  = Range.clip(yAxis - xAxis + rotation - separate,-1,1);
+        double bRight = Range.clip(yAxis + xAxis - rotation - separate,-1,1);
 
         frontLeftMotor.setPower (fLeft);
         frontRightMotor.setPower(fRight);
@@ -246,6 +327,10 @@ public class BetaLykosHardware
         telemetry.addData("Back  Wheel Power", "Left:   " + bLeft + "    Right:  " + bRight);
         telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Position", "("+ getPosition().x + "," + getPosition().y + ")");
+    }
+
+    public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telementry) {
+        moveRobot(xAxis,yAxis,rotation,0,telementry);
     }
 
     /**
@@ -291,7 +376,7 @@ public class BetaLykosHardware
     public boolean moveRobotToPosition(double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
 
         final double maxAmountOfSamePosition = 20;
-        final double amountOfdiffenceForSame = 0.1;
+        final double amountOfToleranceForSame = 0.1;
         int amountOfSamePos = 0;
         Position position = getPosition();
         Position lastPosition = position;
@@ -300,9 +385,9 @@ public class BetaLykosHardware
         double powerX;
         double powerY;
 
-//        if (turnToDestination) {
-//            double targetHeading =
-//        }
+        if (turnToDestination) {
+            //turnRobotTowardsPoint(x,y,power,opMode);
+        }
 
         while (distanceX > 0.01 && distanceY > 0.01 && opMode.opModeIsActive()) {
             opMode.telemetry.addData("Status", "Running");
@@ -329,8 +414,8 @@ public class BetaLykosHardware
             double xDiff = lastPosition.x - position.x;
             double yDiff = lastPosition.y - position.y;
 
-            if ( xDiff < amountOfdiffenceForSame * power && xDiff > -amountOfdiffenceForSame * power &&
-                    yDiff < amountOfdiffenceForSame * power && yDiff > -amountOfdiffenceForSame * power) {
+            if ( xDiff < amountOfToleranceForSame * power && xDiff > -amountOfToleranceForSame * power &&
+                    yDiff < amountOfToleranceForSame * power && yDiff > -amountOfToleranceForSame * power) {
                 amountOfSamePos ++;
             }
 
@@ -345,6 +430,11 @@ public class BetaLykosHardware
         }
         moveRobot(0,0,0,opMode.telemetry);
         return true;
+    }
+
+    // TODO: 10/19/16  implement moving the robot an amount of feet reletive to the robot
+    public boolean moveRobotFeetRelitive(double x, double y, double power, LinearOpMode opMode) throws InterruptedException {
+        return false;
     }
 }
 

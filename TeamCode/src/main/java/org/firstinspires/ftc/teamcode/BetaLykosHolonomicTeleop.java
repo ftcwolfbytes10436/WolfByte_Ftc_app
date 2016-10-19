@@ -71,7 +71,6 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        BetaLykosHardware.red = true;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
@@ -95,6 +94,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             float gamepad1RightY = -gamepad1.right_stick_y;
             float gamepad1RightX = -gamepad1.right_stick_x;
             float gamepad1LeftX  = -gamepad1.left_stick_x;
+            float extendRobot = gamepad1.right_trigger - gamepad1.left_trigger;
 
             if (lowGear) {
                 gamepad1RightX /= 2;
@@ -105,15 +105,17 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             gamepad1RightX *= gamepad1RightX * gamepad1RightX;
             gamepad1RightY *= gamepad1RightY * gamepad1RightY;
 
-            if (robot.getFrontRangeDistance() <= 6 && gamepad1RightY > 0) {
-                gamepad1RightY = 0;
-            }
-            robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry);
+//            if (robot.getFrontRangeDistance() <= 6 && gamepad1RightY > 0) {
+//                gamepad1RightY = 0;
+//            }
+            robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,extendRobot,telemetry);
 
             // unlock or lock rails
             if (gamepad1.left_bumper && !unlockRailButtonHeld) {
                 railsUnlocked = !railsUnlocked;
                 unlockRailButtonHeld = true;
+                robot.lockUnlockRails(railsUnlocked);
+
             } else if (!gamepad1.left_bumper && unlockRailButtonHeld) {
                 unlockRailButtonHeld = false;
             }
