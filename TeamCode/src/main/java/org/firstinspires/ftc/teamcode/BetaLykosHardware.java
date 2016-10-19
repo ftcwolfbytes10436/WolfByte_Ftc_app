@@ -20,6 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import java.util.IllegalFormatException;
+
 /**
  * This is NOT an opmode.
  *
@@ -132,19 +134,20 @@ public class BetaLykosHardware
 
         // Set up the parameters with which we will use our IMU.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        while (!imu.isAccelerometerCalibrated()) {}
-        Position initalPosition = new Position(DistanceUnit.METER,0,0,0,0);
+        while (!imu.isAccelerometerCalibrated()) {
+        }
+        Position initalPosition = new Position(DistanceUnit.METER, 0, 0, 0, 0);
 
         if (useDistanceSensorForInitialPosition) {
             double xPosition = 0;
@@ -163,10 +166,10 @@ public class BetaLykosHardware
             xPosition /= 3.28;
             yPosition /= 3.28;
 
-            initalPosition = new Position(DistanceUnit.METER,xPosition,yPosition,0,0);
+            initalPosition = new Position(DistanceUnit.METER, xPosition, yPosition, 0, 0);
         }
 
-        imu.startAccelerationIntegration(initalPosition,new Velocity(DistanceUnit.METER,0,0,0,0),1000);
+        imu.startAccelerationIntegration(initalPosition, new Velocity(DistanceUnit.METER, 0, 0, 0, 0), 1000);
     }
 
     /**
@@ -187,10 +190,13 @@ public class BetaLykosHardware
      */
 
     public Position getPosition() {
-        Position position = imu.getPosition();
-        position.x *= 3.28;
-        position.y *= 3.28;
-        return position;
+        if (imu != null) {
+            Position position = imu.getPosition();
+            position.x *= 3.28;
+            position.y *= 3.28;
+            return position;
+        }
+        return new Position();
     }
 
     public double getFrontRangeDistance() {
@@ -233,12 +239,14 @@ public class BetaLykosHardware
      * @param unlocked whether to lock or unlock the rails
      */
     public void lockUnlockRails(boolean unlocked) {
-        if (unlocked) {
-            leftRail.setPosition(OPEN_SERVO_POSITION);
-            rightRail.setPosition(OPEN_SERVO_POSITION);
-        } else {
-            leftRail.setPosition(CLOSED_SERVO_POSITION);
-            rightRail.setPosition(CLOSED_SERVO_POSITION);
+        if (leftRail != null && rightRail != null) {
+            if (unlocked) {
+                leftRail.setPosition(OPEN_SERVO_POSITION);
+                rightRail.setPosition(OPEN_SERVO_POSITION);
+            } else {
+                leftRail.setPosition(CLOSED_SERVO_POSITION);
+                rightRail.setPosition(CLOSED_SERVO_POSITION);
+            }
         }
     }
 

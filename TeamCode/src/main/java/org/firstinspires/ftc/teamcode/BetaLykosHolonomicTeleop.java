@@ -136,7 +136,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             telemetry.addData("Run Particle motor", runParticleMotor);
 
             // run the particle launcher motor
-            robot.particleLauncher.setPower(gamepad2.right_trigger);
+//            robot.particleLauncher.setPower(gamepad2.right_trigger);
             telemetry.addData("particle lancher power", gamepad2.right_trigger);
 
             telemetry.update();
