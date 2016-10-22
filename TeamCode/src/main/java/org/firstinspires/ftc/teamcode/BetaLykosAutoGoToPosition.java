@@ -81,6 +81,10 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
         float power = 0;
         boolean buttonPressed = false;
 
+        for (int i = 0; i < targets.length; i++) {
+            targets[i] = new Position(DistanceUnit.METER, 0, 0, 0, 0);
+        }
+
         while (opModeIsActive()) {
 
             Position position = new Position(DistanceUnit.METER,xPosition,yPosition,power,0);
@@ -89,14 +93,16 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
             // Send telemetry message to signify robot running;
             telemetry.addData("Status", "Running"+selectedElement);
             for (int i = 0; i < targets.length; i++) {
+                if (targets[i] != null) {
 
-                if (selectedElement == i) {
-                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets[i].x +
-                            " , " + targets[i].y + ")" + "   Power: " + targets[i].z + "  <----Selected");
+                    if (selectedElement == i) {
+                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %2.f)     Power: %2.f  <----Selected"
+                                , targets[i].x, targets[i].y ,targets[i].z);
 
-                } else {
-                    telemetry.addData("Target " + selectedElement + 1, "Position: " + "(" + targets[i].x +
-                            " , " + targets[i].y + ")" + "   Power: " + targets[i].z);
+                    } else {
+                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %2.f)     Power: %2.f "
+                                , targets[i].x, targets[i].y ,targets[i].z);
+                    }
                 }
             }
             telemetry.update();
@@ -110,7 +116,9 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
                         }
                     }
                 }
-                targets = new Position[10];
+                for (int i = 0; i < targets.length; i++) {
+                    targets[i] = new Position(DistanceUnit.METER, 0, 0, 0, 0);
+                }
                 xPosition = 0;
                 yPosition = 0;
                 power = 0;
@@ -123,11 +131,6 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
                 buttonPressed = true;
                 
             } else if (-gamepad1.right_stick_y > 0 && !buttonPressed) {
-                if (xPosition != 0 || yPosition != 0 || selectedElement != targets.length - 1) {
-                    targets[selectedElement] = position;
-                } else {
-                    targets[selectedElement] = null;
-                }
                 xPosition = 0;
                 yPosition = 0;
                 power = 0;

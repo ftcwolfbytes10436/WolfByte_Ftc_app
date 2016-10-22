@@ -65,7 +65,7 @@ public class BetaLykosHardware
 
     public static final double OPEN_SERVO_POSITION  =  0.5 ;
     public static final double CLOSED_SERVO_POSITION = 0;
-    public static final double powerPerDegree = .005;
+    public static final double powerPerDegree = .01  ;
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
@@ -79,6 +79,7 @@ public class BetaLykosHardware
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
+    Orientation currentHeading;
 
     /* Constructor */
     public BetaLykosHardware(){
@@ -145,8 +146,6 @@ public class BetaLykosHardware
         // and named "imu".
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        while (!imu.isAccelerometerCalibrated()) {
-        }
         Position initalPosition = new Position(DistanceUnit.METER, 0, 0, 0, 0);
 
         if (useDistanceSensorForInitialPosition) {
@@ -179,8 +178,10 @@ public class BetaLykosHardware
      */
 
     public double getHeading() {
-        Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        return AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle);
+        if (currentHeading == null || currentHeading.acquisitionTime != System.nanoTime()) {
+            currentHeading = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        }
+        return AngleUnit.DEGREES.fromUnit(currentHeading.angleUnit, currentHeading.firstAngle);
     }
 
     /**
@@ -302,17 +303,15 @@ public class BetaLykosHardware
 
     public void moveRobot(double xAxis, double yAxis, double rotation, double separate, Telemetry telemetry) {
 
+        final double tolorance = 1;
         double currentHeading = getHeading();
+        float dif = (float) (heading - currentHeading);
         if (rotation != 0){
             rotating = true;
-        } else if (rotating) {
-            rotating = false;
-            updateHeading = true;
-        } else if (updateHeading) {
+        } else if (currentHeading != heading && rotating) {
             heading = currentHeading;
-            updateHeading = false;
-        } else if (currentHeading != heading) {
-            float dif = (float) (heading - currentHeading);
+            rotating = false;
+        } else if (dif > tolorance) {
             rotation =  (float) (dif * powerPerDegree);
         }
 
@@ -330,11 +329,11 @@ public class BetaLykosHardware
             rotation = 0;
         }
         // Send telemetry message to signify robot running;
-        telemetry.addData("MoveRobot input"  , "XPower: " + xAxis + "    YPower: " + yAxis + "Rotation: " + rotation);
-        telemetry.addData("Front Wheel Power", "Left:   " + fLeft + "    Right:  " + fRight);
-        telemetry.addData("Back  Wheel Power", "Left:   " + bLeft + "    Right:  " + bRight);
+        telemetry.addData("MoveRobot input"  , "XPower: %.2f    YPower: %.2f    Rotation: %.2f", xAxis, yAxis, rotation);
+        telemetry.addData("Front Wheel Power", "Left:  %.2f     Right:  %.2f", fLeft, fRight);
+        telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
         telemetry.addData("Heading" , "%.2f" ,heading);
-        telemetry.addData("Position", "("+ getPosition().x + "," + getPosition().y + ")");
+        telemetry.addData("Position", "( %.2f, %.2f)", getPosition().x, getPosition().y);
     }
 
     public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telementry) {
@@ -432,7 +431,7 @@ public class BetaLykosHardware
                 return false;
             }
 
-            opMode.telemetry.addData("Target position","(" + x + "," + y + ")");
+            opMode.telemetry.addData("Target position","( %.2f, %2f )",x,y);
             opMode.telemetry.update();
             opMode.idle();
         }
