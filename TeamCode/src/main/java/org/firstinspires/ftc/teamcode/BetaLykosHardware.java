@@ -203,6 +203,7 @@ public class BetaLykosHardware
 //        }
         double frontDistance = getFrontRangeDistance();
         double sideDistance = getSideRangeDistance();
+        double heading = Math.abs(getHeading() % 90);
         double c;
         double f;
         double x;
@@ -216,7 +217,6 @@ public class BetaLykosHardware
             f = sideDistance;
         }
 
-        double heading = getHeading();
         double B = 180 - (heading + 90);
         double b = c / Math.sin(90) * Math.sin(B);
         double e = f / Math.sin(90) * Math.sin(B);
