@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import java.sql.Time;
 import java.util.IllegalFormatException;
 
 /**
@@ -54,8 +56,8 @@ public class BetaLykosHardware
     public Servo        leftRail           = null;
     public Servo        rightRail          = null;
 
-    public AnalogSensor frontRangeSensor   = null;
-    public AnalogSensor sideRangeSensor    = null;
+    public AnalogInput frontRangeSensor   = null;
+    public AnalogInput sideRangeSensor    = null;
     public OpticalDistanceSensor odsSensor = null;
     public ColorSensor sensorRGB           = null;
     public BNO055IMU imu;
@@ -69,6 +71,8 @@ public class BetaLykosHardware
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
+    public static final double LENGTHOFRAMP = 3;
+    public static final double FIELDDIMENSION = 12;
 
 
     public static double heading = 0;
@@ -127,7 +131,7 @@ public class BetaLykosHardware
 //        leftRail = hwMap.servo.get("left_rail");
 //        rightRail = hwMap.servo.get("right_rail");
 
-//        frontRangeSensor = hwMap.get(AnalogSensor.class, "front_range_sensor");
+        frontRangeSensor = hwMap.get(AnalogInput.class, "front_range_sensor");
 //        sideRangeSensor = hwMap.get(AnalogSensor.class, "side_range_sensor");
 //        odsSensor = hwMap.opticalDistanceSensor.get("ods");
 //        sensorRGB = hwMap.colorSensor.get("sensor_color");
@@ -191,21 +195,81 @@ public class BetaLykosHardware
      */
 
     public Position getPosition() {
-        if (imu != null) {
-            Position position = imu.getPosition();
-            position.x *= 3.28;
-            position.y *= 3.28;
-            return position;
+//        if (imu != null) {
+//            Position position = imu.getPosition();
+//            position.x *= 3.28;
+//            position.y *= 3.28;
+//            return position;
+//        }
+        double frontDistance = getFrontRangeDistance();
+        double sideDistance = getSideRangeDistance();
+        double c;
+        double f;
+        double x;
+        double y;
+
+        if ((heading >= 0 && heading <= 90) || (heading <= -90 && heading >= -180)){
+            c = sideDistance;
+            f = frontDistance;
+        } else {
+            c = frontDistance;
+            f = sideDistance;
         }
-        return new Position();
+
+        double heading = getHeading();
+        double B = 180 - (heading + 90);
+        double b = c / Math.sin(90) * Math.sin(B);
+        double e = f / Math.sin(90) * Math.sin(B);
+        double h = Math.sqrt(Math.pow(f,2) + Math.pow(e,2));
+        double i = b - h;
+        double k = LENGTHOFRAMP - i;
+
+        if (heading >= 0 && heading <= 90) {
+            if (k == 0) {
+                x = b;
+                y = e;
+            } else {
+                x = b;
+                y = e + k;
+            }
+            y = FIELDDIMENSION - y;
+        } else if (heading >= 90 && heading <= 180) {
+            if (k == 0) {
+                x = e;
+                y = b;
+            } else {
+                x = e + k;
+                y = b;
+            }
+        } else if (heading <= 0 && heading >= -90) {
+            if (k == 0) {
+                x = e;
+                y = b;
+            } else {
+                x = e + k;
+                y = b;
+            }
+            x = FIELDDIMENSION - x;
+            y = FIELDDIMENSION - y;
+        } else {
+            if (k == 0) {
+                x = b;
+                y = e;
+            } else {
+                x = b;
+                y = e + k;
+            }
+            x = FIELDDIMENSION - x;
+        }
+        return new Position(DistanceUnit.METER,x,y,0, System.currentTimeMillis());
     }
 
     public double getFrontRangeDistance() {
-        return frontRangeSensor.readRawVoltage() / 9.8 * 1000 /12;
+        return frontRangeSensor.getVoltage() / 9.8 * 1000 /12;
     }
 
     public double getSideRangeDistance() {
-        return sideRangeSensor.readRawVoltage() / 9.8 * 1000 / 12;
+        return sideRangeSensor.getVoltage() / 9.8 * 1000 / 12;
     }
 
     public double getODSLightLevel() {
@@ -334,6 +398,7 @@ public class BetaLykosHardware
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
         telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Position", "( %.2f, %.2f)", getPosition().x, getPosition().y);
+        telemetry.addData("front Range", getFrontRangeDistance());
     }
 
     public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telementry) {
