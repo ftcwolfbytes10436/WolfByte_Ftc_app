@@ -1,17 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by rps on 10/27/16.
  */
+@Autonomous(name="Test Speed and Acuracy", group="BetaLykos")  // @Autonomous(...) is the other common choice
 
 public class TestSpeedAndAcuracy extends LinearOpMode {
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
     ElapsedTime elapsedTime = new ElapsedTime();
 
-    @Override
     public void runOpMode() throws InterruptedException {
 
         double secs = 0;
