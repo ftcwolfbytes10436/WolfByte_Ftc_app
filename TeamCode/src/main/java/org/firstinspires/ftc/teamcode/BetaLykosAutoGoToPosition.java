@@ -53,7 +53,7 @@ import java.util.ArrayList;
  *
  */
 
-@Autonomous(name="Template: Linear OpMode", group="BetaLykos")
+@Autonomous(name="Go to position", group="BetaLykos")
 public class BetaLykosAutoGoToPosition extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -96,11 +96,11 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
                 if (targets[i] != null) {
 
                     if (selectedElement == i) {
-                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %2.f)     Power: %2.f  <----Selected"
+                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %.2f)     Power: %.2f  <----Selected"
                                 , targets[i].x, targets[i].y ,targets[i].z);
 
                     } else {
-                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %2.f)     Power: %2.f "
+                        telemetry.addData("Target " + selectedElement + 1, "Position: ( %.2f, %.2f)     Power: %.2f "
                                 , targets[i].x, targets[i].y ,targets[i].z);
                     }
                 }
@@ -130,7 +130,7 @@ public class BetaLykosAutoGoToPosition extends LinearOpMode {
                 selectedElement ++;
                 buttonPressed = true;
                 
-            } else if (-gamepad1.right_stick_y > 0 && !buttonPressed) {
+            } else if (-gamepad1.right_stick_y > 0 && !buttonPressed && selectedElement > 0) {
                 xPosition = 0;
                 yPosition = 0;
                 power = 0;

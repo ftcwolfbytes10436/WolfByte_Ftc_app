@@ -84,6 +84,7 @@ public class BetaLykosHardware
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     Orientation currentHeading;
+    Position currentPosition;
 
     /* Constructor */
     public BetaLykosHardware(){
@@ -201,9 +202,10 @@ public class BetaLykosHardware
 //            position.y *= 3.28;
 //            return position;
 //        }
+        final double MAXCHANGEALLOWED = .5;
         double frontDistance = getFrontRangeDistance();
         double sideDistance = getSideRangeDistance();
-        double heading = Math.abs(getHeading() % 90);
+        double heading = getHeading();
         double c;
         double f;
         double x;
@@ -217,7 +219,9 @@ public class BetaLykosHardware
             f = sideDistance;
         }
 
-        double B = 180 - (heading + 90);
+        double angleHeading = Math.abs(heading % 90);
+
+        double B = 180 - (angleHeading + 90);
         double b = c / Math.sin(90) * Math.sin(B);
         double e = f / Math.sin(90) * Math.sin(B);
         double h = Math.sqrt(Math.pow(f,2) + Math.pow(e,2));
@@ -261,15 +265,33 @@ public class BetaLykosHardware
             }
             x = FIELDDIMENSION - x;
         }
-        return new Position(DistanceUnit.METER,x,y,0, System.currentTimeMillis());
+        Position position = new Position(DistanceUnit.METER,x,y,0, System.currentTimeMillis());
+        if (currentPosition == null) {
+            currentPosition = position;
+        }
+        double xDiff = Math.abs(currentPosition.x - position.x);
+        double yDiff = Math.abs(currentPosition.y - position.y);
+        if (xDiff < MAXCHANGEALLOWED) {
+            currentPosition.x = position.x;
+        }
+        if (yDiff < MAXCHANGEALLOWED) {
+            currentPosition.y = position.y;
+        }
+        return currentPosition;
     }
 
     public double getFrontRangeDistance() {
-        return frontRangeSensor.getVoltage() / 9.8 * 1000 /12;
+        if (frontRangeSensor != null) {
+            return frontRangeSensor.getVoltage() / 9.8 * 1000 / 12;
+        }
+        return 0;
     }
 
     public double getSideRangeDistance() {
-        return sideRangeSensor.getVoltage() / 9.8 * 1000 / 12;
+        if (sideRangeSensor != null) {
+            return sideRangeSensor.getVoltage() / 9.8 * 1000 / 12;
+        }
+        return 0;
     }
 
     public double getODSLightLevel() {
@@ -397,6 +419,7 @@ public class BetaLykosHardware
         telemetry.addData("Front Wheel Power", "Left:  %.2f     Right:  %.2f", fLeft, fRight);
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
         telemetry.addData("Heading" , "%.2f" ,heading);
+        telemetry.addData("Current heading", "%.2f", getHeading());
         telemetry.addData("Position", "( %.2f, %.2f)", getPosition().x, getPosition().y);
         telemetry.addData("front Range", getFrontRangeDistance());
     }

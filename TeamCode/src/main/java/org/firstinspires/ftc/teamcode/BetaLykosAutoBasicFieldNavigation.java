@@ -46,8 +46,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Template: Linear OpMode", group="BetaLykos")  // @Autonomous(...) is the other common choice
-@Disabled
+@TeleOp(name="Basic Field Navigation", group="BetaLykos")  // @Autonomous(...) is the other common choice
 public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     /* Declare OpMode members. */
