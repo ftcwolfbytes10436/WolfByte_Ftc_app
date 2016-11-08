@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,9 +19,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import java.sql.Time;
-import java.util.IllegalFormatException;
 
 /**
  * This is NOT an opmode.
@@ -79,6 +75,7 @@ public class BetaLykosHardware
 
     public static boolean updateHeading = false;
     public static boolean rotating = false;
+    public static boolean twoMotorDrive = false;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -389,6 +386,11 @@ public class BetaLykosHardware
 
     public void moveRobot(double xAxis, double yAxis, double rotation, double separate, Telemetry telemetry) {
 
+        double fLeft;
+        double fRight;
+        double bRight;
+        double bLeft;
+
         final double tolorance = 1;
         double currentHeading = getHeading();
         float dif = (float) (heading - currentHeading);
@@ -401,10 +403,17 @@ public class BetaLykosHardware
             rotation =  (float) (dif * powerPerDegree);
         }
 
-        double fLeft  = Range.clip(yAxis + xAxis + rotation + separate,-1,1);
-        double fRight = Range.clip(yAxis - xAxis - rotation + separate,-1,1);
-        double bLeft  = Range.clip(yAxis - xAxis + rotation - separate,-1,1);
-        double bRight = Range.clip(yAxis + xAxis - rotation - separate,-1,1);
+        if (!twoMotorDrive) {
+            fLeft = Range.clip(yAxis + xAxis + rotation + separate, -1, 1);
+            fRight = Range.clip(yAxis - xAxis - rotation + separate, -1, 1);
+            bLeft = Range.clip(yAxis - xAxis + rotation - separate, -1, 1);
+            bRight = Range.clip(yAxis + xAxis - rotation - separate, -1, 1);
+        } else {
+            fLeft = 0;
+            fRight = 0;
+            bLeft = Range.clip(yAxis + rotation, -1, 1);
+            bRight = Range.clip(yAxis - rotation, -1, 1);
+        }
 
         frontLeftMotor.setPower (fLeft);
         frontRightMotor.setPower(fRight);
@@ -484,7 +493,7 @@ public class BetaLykosHardware
             //turnRobotTowardsPoint(x,y,power,opMode);
         }
 
-        while (distanceX > 0.01 && distanceY > 0.01 && opMode.opModeIsActive()) {
+        while (distanceX < 0.01 && distanceY < 0.01 && opMode.opModeIsActive()) {
             opMode.telemetry.addData("Status", "Running");
 
             position = getPosition();

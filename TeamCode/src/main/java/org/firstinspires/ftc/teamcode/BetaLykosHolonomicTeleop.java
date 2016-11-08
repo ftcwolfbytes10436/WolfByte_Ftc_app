@@ -91,6 +91,12 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
                 lowGear = false;
             }
 
+            if (gamepad1.x) {
+                robot.twoMotorDrive = true;
+            } else if (gamepad1.y && robot.twoMotorDrive) {
+                robot.twoMotorDrive = false;
+            }
+
             float gamepad1RightY = -gamepad1.right_stick_y;
             float gamepad1RightX = -gamepad1.right_stick_x;
             float gamepad1LeftX  = -gamepad1.left_stick_x;
