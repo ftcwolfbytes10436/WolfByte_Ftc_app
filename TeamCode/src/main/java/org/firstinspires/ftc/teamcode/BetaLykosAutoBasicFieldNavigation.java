@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -77,7 +76,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         if (robot.onRedAlliance) {
             runRedVersion();
         } else {
-            runBlueVersion();
+            pressRedConorBeconButton();
         }
     }
 
@@ -108,7 +107,19 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     }
 
-    void runBlueVersion() {
-
+    void pressRedConorBeconButton() throws InterruptedException {
+        robot.turnRobotToHeading(90,0.5,this);//turns to face the becon
+        robot.moveRobotFeetRelitive(-1,0,1,this);//move left of the line
+        robot.moveRobot(.5,0,0,telemetry); // start moving the robot to the right
+        while (robot.getODSLightLevel() == 0) {} // wait until the ods sensor sees white
+        robot.moveRobot(0,0,0,telemetry); // stop the robot
+        robot.turnRobotToHeading(90,0.5,this); // turn towards the beacon
+        robot.moveRobotFeetRelitive(0,3,1,this); // go forward and rely on the method to stop when it can not move
+        double diff = robot.sensorRGB.red() - robot.sensorRGB.blue(); // calculate the diffence between the red and the blue channels
+        if (diff > MINREDBLUEDIFF) { // if the red channel is greater than the blue channel by the minRedBlueDiffence variable
+            // push the button
+        } else { // if the red is not greater than blue
+            // push the other button
+        }
     }
 }
