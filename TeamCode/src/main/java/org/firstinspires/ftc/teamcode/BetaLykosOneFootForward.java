@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
@@ -69,8 +71,18 @@ public class BetaLykosOneFootForward extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        robot.twoMotorDrive = true;
 
-        robot.moveRobotToPosition(robot.getPosition().x, robot.getPosition().y - 1, 1, true, this);
+        //boolean result = robot.moveRobotToPosition(robot.getPosition().x, robot.getPosition().y + 1, 0.1, true, this);
+        double targetYPos = robot.getFrontRangeDistance() + 1;
+        double diffY = 1;
+        while (!(diffY < 0.1) && opModeIsActive()) {
+            diffY = targetYPos - robot.getFrontRangeDistance();
+            robot.moveRobot(0,.1,0,telemetry);
+            telemetry.update();
+        }
+        robot.moveRobot(0,0,0,telemetry);
+        //telemetry.addData("result",result);
+        telemetry.update();
+        while (opModeIsActive()){}
     }
 }

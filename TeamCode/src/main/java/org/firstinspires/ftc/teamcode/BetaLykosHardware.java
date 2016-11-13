@@ -63,7 +63,7 @@ public class BetaLykosHardware
 
     public static final double OPEN_SERVO_POSITION  =  0.5 ;
     public static final double CLOSED_SERVO_POSITION = 0;
-    public static final double powerPerDegree = .01  ;
+    public static final double rotationCorrectionPower = .5  ;
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
@@ -75,7 +75,6 @@ public class BetaLykosHardware
 
     public static boolean updateHeading = false;
     public static boolean rotating = false;
-    public static boolean twoMotorDrive = false;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -364,7 +363,7 @@ public class BetaLykosHardware
         while (Math.abs(diff) >= angleTolerance) {
             currentAngle = getHeading();
             diff = targetAngle - currentAngle;
-            rotation = diff * powerPerDegree * power;
+            rotation = diff + power ;
 
             moveRobot(0,0,rotation,opMode.telemetry);
             opMode.idle();
@@ -400,25 +399,18 @@ public class BetaLykosHardware
             heading = currentHeading;
             rotating = false;
         } else if (dif > tolorance) {
-            rotation =  (float) (dif * powerPerDegree);
+            //rotation = dif + rotationCorrectionPower;
         }
 
-        if (!twoMotorDrive) {
-            fLeft = Range.clip(yAxis + xAxis + rotation + separate, -1, 1);
-            fRight = Range.clip(yAxis - xAxis - rotation + separate, -1, 1);
-            bLeft = Range.clip(yAxis - xAxis + rotation - separate, -1, 1);
-            bRight = Range.clip(yAxis + xAxis - rotation - separate, -1, 1);
-        } else {
-            fLeft = 0;
-            fRight = 0;
-            bLeft = Range.clip(yAxis + rotation, -1, 1);
-            bRight = Range.clip(yAxis - rotation, -1, 1);
-        }
+        fLeft = Range.clip(yAxis + xAxis + rotation + separate, -1, 1);
+        fRight = Range.clip(yAxis - xAxis - rotation + separate, -1, 1);
+        bLeft = Range.clip(yAxis - xAxis + rotation - separate, -1, 1);
+        bRight = Range.clip(yAxis + xAxis - rotation - separate, -1, 1);
 
         frontLeftMotor.setPower (fLeft);
         frontRightMotor.setPower(fRight);
-        backLeftMotor.setPower  (bLeft);
         backRightMotor.setPower (bRight);
+        backLeftMotor.setPower  (bLeft);
 
         if (!rotating) {
             rotation = 0;
@@ -461,6 +453,7 @@ public class BetaLykosHardware
         }
         opMode.telemetry.addData("Status", "Running");
         moveRobot(0,0,0,opMode.telemetry);
+        opMode.telemetry.addData("Time", runtime.seconds());
         opMode.telemetry.update();
     }
 
@@ -479,11 +472,11 @@ public class BetaLykosHardware
 
     public boolean moveRobotToPosition(double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
 
-        final double maxAmountOfSamePosition = 20;
-        final double amountOfToleranceForSame = 0.1;
+        final double maxAmountOfSamePosition = 1000;
+        final double amountOfToleranceForSame = 0.01;
         int amountOfSamePos = 0;
         Position position = getPosition();
-        Position lastPosition = position;
+        Position lastPosition;
         double distanceX =  x - position.x;
         double distanceY = y - position.y;
         double powerX;
@@ -493,9 +486,10 @@ public class BetaLykosHardware
             //turnRobotTowardsPoint(x,y,power,opMode);
         }
 
-        while (distanceX < 0.01 && distanceY < 0.01 && opMode.opModeIsActive()) {
+        while (Math.abs(distanceX) > 0.01 || Math.abs(distanceY) > 0.01) {
             opMode.telemetry.addData("Status", "Running");
 
+            lastPosition = position;
             position = getPosition();
             distanceX = (float) (x - position.x);
             distanceY = (float) (y - position.y);
@@ -524,8 +518,12 @@ public class BetaLykosHardware
             }
 
             if (amountOfSamePos >= maxAmountOfSamePosition) {
-                moveRobot(0,0,0,opMode.telemetry);
-                return false;
+                //moveRobot(0,0,0,opMode.telemetry);
+                //return false;
+            }
+
+            if (!opMode.opModeIsActive()) {
+                break;
             }
 
             opMode.telemetry.addData("Target position","( %.2f, %2f )",x,y);
@@ -538,7 +536,15 @@ public class BetaLykosHardware
 
     // TODO: 10/19/16  implement moving the robot an amount of feet reletive to the robot
     public boolean moveRobotFeetRelitive(double x, double y, double power, LinearOpMode opMode) throws InterruptedException {
-        return false;
+        double targetYPos = getFrontRangeDistance() + y;
+        double diffY = 1;
+        while (!(diffY < 0.1) && opMode.opModeIsActive()) {
+            diffY = targetYPos - getFrontRangeDistance();
+            moveRobot(0,.1,0,opMode.telemetry);
+            opMode.telemetry.update();
+        }
+        moveRobot(0,0,0,opMode.telemetry);
+        return true;
     }
 }
 
