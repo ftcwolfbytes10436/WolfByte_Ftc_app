@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 /**
  * Created by rps on 10/27/16.
  */
-@Autonomous(name="Test Speed and Acuracy", group="BetaLykos")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Test Speed and Accuracy", group="BetaLykos")  // @Autonomous(...) is the other common choice
 
-public class TestSpeedAndAcuracy extends LinearOpMode {
+public class TestSpeedAndAccuracy extends LinearOpMode {
     BetaLykosHardware robot           = new BetaLykosHardware();   // Use betaLykos' hardware
     ElapsedTime elapsedTime = new ElapsedTime();
 
@@ -28,6 +28,9 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        while(opModeIsActive())
+        {
+
         robot.moveRobotToPosition(2, 2, .1, false, this);
         robot.moveRobotForSeconds(0, 0, 0, this, 2);
         elapsedTime.reset();
@@ -40,9 +43,9 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         telemetry.addData("Time", secs);
         telemetry.update();
 
-        while (!gamepad1.a) {
-            idle();
-        }
+            while (!gamepad1.a && opModeIsActive())
+            {idle();}
+
 
         robot.moveRobotToPosition(2, 2, .1, false, this);
         robot.moveRobotForSeconds(0, 0, 0, this, 2);
@@ -56,9 +59,9 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         telemetry.addData("Time", secs);
         telemetry.update();
 
-        while (!gamepad1.a) {
-            idle();
-        }
+            while (!gamepad1.a && opModeIsActive())
+            {idle();}
+
 
         robot.moveRobotToPosition(2, 2, .1, false, this);
         robot.moveRobotForSeconds(0, 0, 0, this, 2);
@@ -72,9 +75,8 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         telemetry.addData("Time", secs);
         telemetry.update();
 
-        while (!gamepad1.a) {
-            idle();
-        }
+            while (!gamepad1.a && opModeIsActive())
+            {idle();}
 
         robot.moveRobotToPosition(2, 2, .1, false, this);
         robot.moveRobotForSeconds(0, 0, 0, this, 2);
@@ -88,9 +90,8 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         telemetry.addData("Time", secs);
         telemetry.update();
 
-        while (!gamepad1.a) {
-            idle();
-        }
+            while (!gamepad1.a && opModeIsActive())
+            {idle();}
 
         robot.moveRobotToPosition(2, 2, .1, false, this);
         robot.moveRobotForSeconds(0, 0, 0, this, 2);
@@ -104,8 +105,8 @@ public class TestSpeedAndAcuracy extends LinearOpMode {
         telemetry.addData("Time", secs);
         telemetry.update();
 
-        while (!gamepad1.a) {
-            idle();
+            while (!gamepad1.a && opModeIsActive())
+            {idle();}
         }
     }
 }
