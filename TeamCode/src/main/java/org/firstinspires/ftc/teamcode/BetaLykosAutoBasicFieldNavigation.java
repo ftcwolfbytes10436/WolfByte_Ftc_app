@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -45,7 +46,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic Field Navigation", group="BetaLykos")  // @Autonomous(...) is the other common choice
+@Autonomous(name="Basic Field Navigation", group="BetaLykos")
 public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -59,10 +60,78 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
         robot.onRedAlliance = gamepad1.a;
         robot.useDistanceSensorForInitialPosition = true;
+        int alliance = 0;
+        int startPosition = 0;
+        int question3;
+        int question4;
+        int question5;
+        int question6;
+        int question7;
+        int question8;
+
+
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+
+        telemetry.addData("Alliance","b = red   x = blue");
+        telemetry.update();
+        while (alliance == 0) {
+            if (gamepad1.b) {
+                alliance = 1;
+                telemetry.addData("Alliance","Red");
+            } else if (gamepad1.x) {
+                alliance = 2;
+                telemetry.addData("Alliance","Blue");
+            }
+            idle();
+        }
+        waitForNoButton();
+
+        telemetry.addData("Start Position", "a = start position 1 b = start position 2");
+        telemetry.update();
+        startPosition = getInput(2);
+
+        telemetry.addData("Move 1","a = beacon 1   b = beacon 2   x = center V");
+        telemetry.update();
+        question3 = getInput(3);
+
+        telemetry.addData("question 4","a   b   x   Y");
+        telemetry.update();
+        question4 = getInput(4);
+
+        telemetry.addData("question 5","a   b   x   Y");
+        telemetry.update();
+        question5 = getInput(4);
+
+        telemetry.addData("question 6","a   b   x   Y");
+        telemetry.update();
+        question6 = getInput(4);
+
+        telemetry.addData("question 7","a   b   x   Y");
+        telemetry.update();
+        question7 = getInput(4);
+
+        telemetry.addData("question 8","a   b   x   Y");
+        telemetry.update();
+        question8 = getInput(4);
+
+        switch (alliance) {
+            case 1 :
+                telemetry.addData("Alliance","Red");
+                break;
+            case 2 :
+                telemetry.addData("Alliance","Blue");
+                break;
+        }
+        telemetry.addData("Start Position", startPosition);
+        telemetry.addData("Move 1", question3);
+        telemetry.addData("question 4", question4);
+        telemetry.addData("question 5", question5);
+        telemetry.addData("question 6", question6);
+        telemetry.addData("question 7", question7);
+        telemetry.addData("question 8", question8);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
@@ -73,9 +142,9 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
         BetaLykosHardware.heading = robot.getHeading();
 
-        if (robot.onRedAlliance) {
+        if (alliance == 1) {
             runRedVersion();
-        } else {
+        } else if(alliance == 2) {
             pressRedConorBeconButton();
         }
     }
@@ -122,4 +191,30 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             // push the other button
         }
     }
+
+    int getInput(int numAnswers) {
+        int input = 0;
+        while (input == 0) {
+            if (gamepad1.a) {
+                input = 1;
+            } else if (gamepad1.b) {
+                input = 2;
+            } else if (gamepad1.x && numAnswers >= 3) {
+                input = 3;
+            } else if (gamepad1.y && numAnswers >= 4) {
+                input = 4;
+            } else if (gamepad1.right_bumper && numAnswers >= 5)
+            idle();
+        }
+        waitForNoButton();
+        return input;
+    }
+
+    void waitForNoButton() {
+        while (gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) {
+            idle();
+        }
+    }
 }
+
+
