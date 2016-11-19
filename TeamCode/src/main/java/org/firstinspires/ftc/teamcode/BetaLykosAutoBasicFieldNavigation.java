@@ -67,7 +67,8 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         int question5;
         int question6;
         int question7;
-        int question8;
+        int question8 = 0;
+        String[] options = {"beacon 1", "beacon 2", "push ball", "shoot", "cornerV", "centerV", "stay"};
 
 
         /* Initialize the hardware variables.
@@ -75,80 +76,80 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
-        telemetry.addData("Alliance","b = red   x = blue");
-        telemetry.update();
-        while (alliance == 0) {
-            if (gamepad1.b) {
-                alliance = 1;
-                telemetry.addData("Alliance","Red");
-            } else if (gamepad1.x) {
-                alliance = 2;
-                telemetry.addData("Alliance","Blue");
+        while (question8 != 1) {
+            telemetry.addData("Alliance", "b = red   x = blue");
+            telemetry.update();
+            alliance = 0;
+            while (alliance == 0) {
+                if (gamepad1.b) {
+                    alliance = 1;
+                    telemetry.addData("Alliance", "Red");
+                } else if (gamepad1.x) {
+                    alliance = 2;
+                    telemetry.addData("Alliance", "Blue");
+                }
+                idle();
             }
-            idle();
+            waitForNoButton();
+
+            telemetry.addData("Start Position", "a = start position 1 b = start position 2");
+            telemetry.update();
+            startPosition = getInput(2);
+
+            telemetry.addData("Move 1", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
+            telemetry.update();
+            question3 = getInput(7);
+
+            telemetry.addData("Move 2", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
+            telemetry.update();
+            question4 = getInput(7);
+
+            telemetry.addData("Move 3", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
+            telemetry.update();
+            question5 = getInput(7);
+
+            telemetry.addData("Move 4", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
+            telemetry.update();
+            question6 = getInput(7);
+
+            telemetry.addData("Move 5", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
+            telemetry.update();
+            question7 = getInput(7);
+
+            switch (alliance) {
+                case 1:
+                    telemetry.addData("Alliance", "Red");
+                    break;
+                case 2:
+                    telemetry.addData("Alliance", "Blue");
+                    break;
+            }
+            telemetry.addData("Start Position", startPosition);
+            telemetry.addData("Move 1", options[question3 - 1]);
+            telemetry.addData("Move 2", options[question4 - 1]);
+            telemetry.addData("Move 3", options[question5 - 1]);
+            telemetry.addData("Move 4", options[question6 - 1]);
+            telemetry.addData("Move 5", options[question7 - 1]);
+            telemetry.addData("Is this corredt?", "a = yes b = no");
+
+            // Send telemetry message to signify robot waiting;
+            telemetry.addData("Status", "Initialized");
+            telemetry.update();
+
+            question8 = getInput(2);
         }
-        waitForNoButton();
+            // Wait for the game to start (driver presses PLAY)
+            waitForStart();
 
-        telemetry.addData("Start Position", "a = start position 1 b = start position 2");
-        telemetry.update();
-        startPosition = getInput(2);
+            BetaLykosHardware.heading = robot.getHeading();
 
-        telemetry.addData("Move 1","a = beacon 1   b = beacon 2   x = center V");
-        telemetry.update();
-        question3 = getInput(3);
+            if (alliance == 1) {
+                runRedVersion();
+            } else if (alliance == 2) {
+                pressRedConorBeconButton();
+            }
 
-        telemetry.addData("question 4","a   b   x   Y");
-        telemetry.update();
-        question4 = getInput(4);
-
-        telemetry.addData("question 5","a   b   x   Y");
-        telemetry.update();
-        question5 = getInput(4);
-
-        telemetry.addData("question 6","a   b   x   Y");
-        telemetry.update();
-        question6 = getInput(4);
-
-        telemetry.addData("question 7","a   b   x   Y");
-        telemetry.update();
-        question7 = getInput(4);
-
-        telemetry.addData("question 8","a   b   x   Y");
-        telemetry.update();
-        question8 = getInput(4);
-
-        switch (alliance) {
-            case 1 :
-                telemetry.addData("Alliance","Red");
-                break;
-            case 2 :
-                telemetry.addData("Alliance","Blue");
-                break;
-        }
-        telemetry.addData("Start Position", startPosition);
-        telemetry.addData("Move 1", question3);
-        telemetry.addData("question 4", question4);
-        telemetry.addData("question 5", question5);
-        telemetry.addData("question 6", question6);
-        telemetry.addData("question 7", question7);
-        telemetry.addData("question 8", question8);
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-
-        BetaLykosHardware.heading = robot.getHeading();
-
-        if (alliance == 1) {
-            runRedVersion();
-        } else if(alliance == 2) {
-            pressRedConorBeconButton();
-        }
     }
-
     void pushBeaconButton() throws InterruptedException {
         robot.moveRobotFeetRelitive(1,0,1,this);
     }
@@ -203,7 +204,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                 input = 3;
             } else if (gamepad1.y && numAnswers >= 4) {
                 input = 4;
-            } else if (gamepad1.right_bumper && numAnswers >= 5)
+            } else if (gamepad2.a && numAnswers >= 5) {
+                input = 5;
+            } else if (gamepad2.b && numAnswers >= 6) {
+                input = 6;
+            } else if (gamepad2.x && numAnswers >= 7) {
+                input = 7;
+            }
             idle();
         }
         waitForNoButton();
