@@ -72,18 +72,13 @@ public class BetaLykosHardware
     public boolean onRedAlliance = false;
     public Position currentPosition = new Position();
 
-<<<<<<< Updated upstream
-    public static final double OPEN_SERVO_POSITION  =  0;
-    public static final double CLOSED_SERVO_POSITION = 0;
-    public static final double rotationCorrectionPower = .1;
-=======
+
     static final int LED_CHANNEL = 5;
     public static final double OPEN_SERVO_POSITION  =  0.5 ;
     public static final double CLOSED_SERVO_POSITION = 0;
     public static final double SERVOPUSHEDPOSSITION = 1;
     public static final double SERVOUNPUSHEDPOSSITION = 0;
     public static final double rotationCorrectionPower = .5  ;
->>>>>>> Stashed changes
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
