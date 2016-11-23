@@ -60,10 +60,11 @@ public class BetaLykosHardware
 
     public boolean useDistanceSensorForInitialPosition = false;
     public boolean onRedAlliance = false;
+    public Position currentPosition = new Position();
 
-    public static final double OPEN_SERVO_POSITION  =  0.5 ;
+    public static final double OPEN_SERVO_POSITION  =  0;
     public static final double CLOSED_SERVO_POSITION = 0;
-    public static final double rotationCorrectionPower = .5  ;
+    public static final double rotationCorrectionPower = .1;
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
@@ -80,7 +81,7 @@ public class BetaLykosHardware
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     Orientation currentHeading;
-    Position currentPosition;
+    Position lastPostion;
 
     /* Constructor */
     public BetaLykosHardware(){
@@ -191,7 +192,7 @@ public class BetaLykosHardware
      * @return The position of the robot as a position class
      */
 
-    public Position getPosition() {
+    public Position getPositionfromRangeSensor() {
 //        if (imu != null) {
 //            Position position = imu.getPosition();
 //            position.x *= 3.28;
@@ -262,18 +263,18 @@ public class BetaLykosHardware
             x = FIELDDIMENSION - x;
         }
         Position position = new Position(DistanceUnit.METER,x,y,0, System.currentTimeMillis());
-        if (currentPosition == null) {
-            currentPosition = position;
+        if (lastPostion == null) {
+            lastPostion = position;
         }
         double xDiff = Math.abs(currentPosition.x - position.x);
         double yDiff = Math.abs(currentPosition.y - position.y);
         if (xDiff < MAXCHANGEALLOWED) {
-            currentPosition.x = position.x;
+            lastPostion.x = position.x;
         }
         if (yDiff < MAXCHANGEALLOWED) {
-            currentPosition.y = position.y;
+            lastPostion.y = position.y;
         }
-        return currentPosition;
+        return lastPostion;
     }
 
     public double getFrontRangeDistance() {
@@ -334,7 +335,7 @@ public class BetaLykosHardware
     }
 
     public double getAnglefromADirection(double x, double y) {
-        Position position = getPosition();
+        Position position = getPositionfromRangeSensor();
         double xDistance = x - position.x;
         double yDistance = y - position.y;
         double heading = 0;
@@ -351,6 +352,18 @@ public class BetaLykosHardware
             heading = -Math.atan(yDistance / xDistance) - 90;
         }
         return heading;
+    }
+
+    public Position getDirectionFromXAndYDistance(double x, double y) {
+        Position output = new Position();
+        if (x >= y) {
+            output.x = 1;
+            output.y = y / x;
+        } else {
+            output.x = x / y;
+            output.y = 1;
+        }
+        return output;
     }
 
     public void turnRobotToHeading(double heading, double power, LinearOpMode opMode) {
@@ -374,6 +387,16 @@ public class BetaLykosHardware
         turnRobotToHeading(getAnglefromADirection(x,y),power,opMode);
     }
 
+    public void accelerateRobot(double xAxis, double yAxis, double power, double time, LinearOpMode opMode) {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        while (timer.seconds() < time && opMode.opModeIsActive()) {
+            double finalpower = power * timer.seconds()/time;
+            moveRobot(xAxis * finalpower, yAxis * finalpower,0,opMode.telemetry);
+            opMode.idle();
+        }
+    }
+
     /**
      * Moves the robot in the desired direction and power or rotates the robot with the desired power.
      * It will try to self correct its heading if it turns with out getting any rotation power.
@@ -390,7 +413,7 @@ public class BetaLykosHardware
         double bRight;
         double bLeft;
 
-        final double tolorance = 1;
+        final double tolorance = 4;
         double currentHeading = getHeading();
         float dif = (float) (heading - currentHeading);
         if (rotation != 0){
@@ -399,7 +422,7 @@ public class BetaLykosHardware
             heading = currentHeading;
             rotating = false;
         } else if (Math.abs(dif) > tolorance) {
-            rotation = dif + rotationCorrectionPower;
+//            rotation = Math.copySign(rotationCorrectionPower,dif);
         }
 
         fLeft = Range.clip(yAxis + xAxis + rotation + separate, -1, 1);
@@ -421,7 +444,7 @@ public class BetaLykosHardware
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
         telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Current heading", "%.2f", getHeading());
-        telemetry.addData("Position", "( %.2f, %.2f)", getPosition().x, getPosition().y);
+        telemetry.addData("Position", "( %.2f, %.2f)", getPositionfromRangeSensor().x, getPositionfromRangeSensor().y);
         telemetry.addData("front Range", getFrontRangeDistance());
         telemetry.addData("side Range", getSideRangeDistance());
     }
@@ -442,7 +465,7 @@ public class BetaLykosHardware
      * @throws InterruptedException
      */
 
-    public void moveRobotForSeconds(float xAxis, float yAxis, float rotation, LinearOpMode opMode, float secs) throws InterruptedException {
+    public void moveRobotForSeconds(float xAxis, float yAxis, float rotation, LinearOpMode opMode, double secs) throws InterruptedException {
 
         ElapsedTime runtime = new ElapsedTime();
         runtime.reset();
@@ -456,6 +479,25 @@ public class BetaLykosHardware
         moveRobot(0,0,0,opMode.telemetry);
         opMode.telemetry.addData("Time", runtime.seconds());
         opMode.telemetry.update();
+    }
+
+    public void moveRobotToPositionUsingTime(double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
+
+        double distX = x - currentPosition.x;
+        double distY = y - currentPosition.y;
+        double distance = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+//        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
+        double time = (distance * 12 + 3.8368) / 38.194;
+
+        Position direction = getDirectionFromXAndYDistance(distX,distY);
+        direction.x *= power;
+        direction.y *= power;
+
+//        accelerateRobot(direction.x,direction.y,power,1,opMode);
+        moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
+
+        currentPosition = new Position(DistanceUnit.METER,x,y,0,System.currentTimeMillis());
+        opMode.telemetry.addData("target",time);
     }
 
     /**
@@ -476,7 +518,7 @@ public class BetaLykosHardware
         final double maxAmountOfSamePosition = 1000;
         final double amountOfToleranceForSame = 0.01;
         int amountOfSamePos = 0;
-        Position position = getPosition();
+        Position position = getPositionfromRangeSensor();
         Position lastPosition;
         double distanceX =  x - position.x;
         double distanceY = y - position.y;
@@ -491,17 +533,13 @@ public class BetaLykosHardware
             opMode.telemetry.addData("Status", "Running");
 
             lastPosition = position;
-            position = getPosition();
+            position = getPositionfromRangeSensor();
             distanceX = (float) (x - position.x);
             distanceY = (float) (y - position.y);
 
-            if (distanceX >= distanceY) {
-                powerX = power;
-                powerY = distanceY / distanceX * power;
-            } else {
-                powerX = distanceX / distanceY * power;
-                powerY = power;
-            }
+            Position direction = getDirectionFromXAndYDistance(distanceX,distanceY);
+            powerX = direction.x * power;
+            powerY = direction.y * power;
 
             moveRobot(powerX,powerY,0,opMode.telemetry);
 
@@ -546,16 +584,12 @@ public class BetaLykosHardware
             diffY = targetYPos - getFrontRangeDistance();
             diffX = targetXPos - getSideRangeDistance();
 
-            if (diffX >= diffY) {
-                powerX = power;
-                powerY = diffY / diffX * power;
-            } else {
-                powerX = diffX / diffY * power;
-                powerY = power;
-            }
+            Position direction = getDirectionFromXAndYDistance(diffX,diffY);
+            powerX = direction.x * power;
+            powerY = direction.y * power;
 
             moveRobot(powerX,powerY,0,opMode.telemetry);
-            opMode.telemetry.addData("distance to target","x: %.2   y: %.2",diffX,diffY);
+            opMode.telemetry.addData("distance to target","x: %.2f   y: %.2f",diffX,diffY);
             opMode.telemetry.update();
             opMode.idle();
         }

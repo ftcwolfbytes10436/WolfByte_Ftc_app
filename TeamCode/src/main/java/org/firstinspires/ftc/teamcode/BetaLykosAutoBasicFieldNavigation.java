@@ -34,7 +34,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 /**
  * This Opmode is a basic autonomous mode that can navigate the field using the accelerometer and
@@ -156,7 +155,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
 
     void runRedVersion() throws InterruptedException {
-        robot.moveRobotToPosition(robot.getPosition().x,10,1,false,this); // move away from the wall to be able to turn
+        robot.moveRobotToPosition(robot.getPositionfromRangeSensor().x,10,1,false,this); // move away from the wall to be able to turn
         robot.moveRobotToPosition(1.5,7,1,true,this); // move to the area that the line is in
         robot.turnRobotToHeading(90,.5,this); // turn towards the beacon
         robot.moveRobotToPosition(1.5,6,1,false,this); // go to the left of the beacon

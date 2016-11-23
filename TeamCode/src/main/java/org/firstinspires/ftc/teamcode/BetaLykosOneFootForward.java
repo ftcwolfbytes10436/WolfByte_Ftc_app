@@ -72,17 +72,26 @@ public class BetaLykosOneFootForward extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        //boolean result = robot.moveRobotToPosition(robot.getPosition().x, robot.getPosition().y + 1, 0.1, true, this);
-        double targetYPos = robot.getFrontRangeDistance() + 1;
+        //boolean result = robot.moveRobotToPosition(robot.getPositionfromRangeSensor().x, robot.getPositionfromRangeSensor().y + 1, 0.1, true, this);
+        while (!gamepad1.a && opModeIsActive()){
+            idle();
+            robot.moveRobot(0,0,0,telemetry);
+            telemetry.update();
+        }
+        double targetYPos = robot.getFrontRangeDistance() - 1;
         double diffY = 1;
-        while (!(diffY < 0.1) && opModeIsActive()) {
+        while (!(Math.abs(diffY) < 0.1) && opModeIsActive()) {
             diffY = targetYPos - robot.getFrontRangeDistance();
             robot.moveRobot(0,.1,0,telemetry);
             telemetry.update();
         }
         robot.moveRobot(0,0,0,telemetry);
         //telemetry.addData("result",result);
+//        robot.moveRobotFeetRelitive(0,1,.1,this);
         telemetry.update();
-        while (opModeIsActive()){}
+        while (opModeIsActive()){
+            robot.moveRobot(0,0,0,telemetry);
+            telemetry.update();
+        }
     }
 }
