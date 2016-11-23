@@ -3,11 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.ServoConfiguration;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -28,17 +32,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
  *
- * Motor  channel:  front Left  drive motor:      "front_left_drive"
- * Motor  channel:  front Right drive motor:      "front_right_drive"
- * Motor  channel:  back Left  drive motor:       "back_left_drive"
- * Motor  channel:  back Right drive motor:       "back_right_drive"
- * Motor  channel:  particle collector:           "particle_motor"
- * Motor  channel:  particle launcher:            "particle_launcher"
- * Servo  channel:  Servo to hold the left rail:  "left_rail"
- * Servo  channel:  Servo to hold the right rail: "right_rail"
- * I2C    channel:  IMU sensor for gyro:          "imu"
- * analog channel:  Front sonar range sensor:     "front_range_sensor"
- * analog channel:  Side sonar range sensor:      "side_range_sensor"
+ * Motor  channel:  front Left  drive motor:            "front_left_drive"
+ * Motor  channel:  front Right drive motor:            "front_right_drive"
+ * Motor  channel:  back Left  drive motor:             "back_left_drive"
+ * Motor  channel:  back Right drive motor:             "back_right_drive"
+ * Motor  channel:  particle collector:                 "particle_motor"
+ * Motor  channel:  particle launcher:                  "particle_launcher"
+ * Servo  channel:  Servo to hold the left rail:        "left_rail"
+ * Servo  channel:  Servo to hold the right rail:       "right_rail"
+ * Servo  channel:  Servo to push right beacon button:  "right_beacon_servo"
+ * Servo  channel:  Servo to push left beacon button:   "left_beacon_servo"
+ * I2C    channel:  IMU sensor for gyro:                "imu"
+ * analog channel:  Front sonar range sensor:           "front_range_sensor"
+ * analog channel:  Side sonar range sensor:            "side_range_sensor"
  */
 public class BetaLykosHardware
 {
@@ -51,7 +57,11 @@ public class BetaLykosHardware
     public DcMotor      particleLauncher   = null;
     public Servo        leftRail           = null;
     public Servo        rightRail          = null;
+    public Servo        rightBeaconServo   = null;
+    public Servo        leftBeaconServo    = null;
+    public CRServo      scoopServo         = null;
 
+    DeviceInterfaceModule cdim;
     public AnalogInput frontRangeSensor   = null;
     public AnalogInput sideRangeSensor    = null;
     public OpticalDistanceSensor odsSensor = null;
@@ -62,9 +72,18 @@ public class BetaLykosHardware
     public boolean onRedAlliance = false;
     public Position currentPosition = new Position();
 
+<<<<<<< Updated upstream
     public static final double OPEN_SERVO_POSITION  =  0;
     public static final double CLOSED_SERVO_POSITION = 0;
     public static final double rotationCorrectionPower = .1;
+=======
+    static final int LED_CHANNEL = 5;
+    public static final double OPEN_SERVO_POSITION  =  0.5 ;
+    public static final double CLOSED_SERVO_POSITION = 0;
+    public static final double SERVOPUSHEDPOSSITION = 1;
+    public static final double SERVOUNPUSHEDPOSSITION = 0;
+    public static final double rotationCorrectionPower = .5  ;
+>>>>>>> Stashed changes
     public static final double distanceFromFrontSensorToCenter = 0;
     public static final double distanceFromSideSensorToCenter = 0;
     public static final double distanceFromBackToCenter = 0;
@@ -128,12 +147,20 @@ public class BetaLykosHardware
         // Define and initialize ALL installed servos.
 //        leftRail = hwMap.servo.get("left_rail");
 //        rightRail = hwMap.servo.get("right_rail");
+        rightBeaconServo = hwMap.servo.get("right_beacon_servo");
+        leftBeaconServo = hwMap.servo.get("left_beacon_servo");
+        rightBeaconServo.setPosition(0);
+        scoopServo = hwMap.crservo.get("scoop_servo");
+        scoopServo.setPower(-0.05);
 
+        cdim = hwMap.deviceInterfaceModule.get("dim");
         frontRangeSensor = hwMap.get(AnalogInput.class, "front_range_sensor");
         sideRangeSensor = hwMap.get(AnalogInput.class, "side_range_sensor");
 //        odsSensor = hwMap.opticalDistanceSensor.get("ods");
-//        sensorRGB = hwMap.colorSensor.get("sensor_color");
+        sensorRGB = hwMap.colorSensor.get("sensor_color");
 
+        cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
+        cdim.setDigitalChannelState(LED_CHANNEL, false);
 
         // Set up the parameters with which we will use our IMU.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -332,6 +359,16 @@ public class BetaLykosHardware
                 rightRail.setPosition(CLOSED_SERVO_POSITION);
             }
         }
+    }
+
+    public void pressLeftServo (){
+        leftBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
+        leftBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
+    }
+
+    public void pressRightServo (){
+        rightBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
+        rightBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
     }
 
     public double getAnglefromADirection(double x, double y) {
@@ -596,5 +633,29 @@ public class BetaLykosHardware
         moveRobot(0,0,0,opMode.telemetry);
         return true;
     }
+
+    public void moveRobotCurrentNew(double currX, double currY, double newX, double newY, LinearOpMode opMode) throws InterruptedException {
+        double xDiff = newX - currX;
+        double yDiff = newY - currY;
+
+        if ( yDiff == 0) {
+            moveRobotForSeconds(0,0,0,opMode,0);
+        } else if (yDiff != 0) {
+            if (yDiff > 0) {
+                moveRobotForSeconds(0,.5f,0,opMode,(float)(yDiff*12/39.1527));
+            } else if (yDiff < 0) {
+                moveRobotForSeconds(0,-.5f,0,opMode,(float)(+yDiff*12/39.1527));
+            }
+        }
+        if (xDiff == 0) {
+            moveRobotForSeconds(0,0,0,opMode,0);
+        } else if (xDiff != 0) {
+            if (xDiff > 0) {
+                moveRobotForSeconds(0,.5f,0,opMode,(float)(xDiff*12/39.1527));
+            } else if (xDiff < 0) {
+                moveRobotForSeconds(0,-.5f,0,opMode,(float)(+xDiff*12/39.1527));
+            }
+        }
+     }
 }
 

@@ -54,19 +54,21 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
     static final double MINREDBLUEDIFF = 25;
     static final double distanceBetweenButtons = 1;
 
+    int alliance = 0;
+    int startPosition = 0;
+    int question3;
+    int question4;
+    int question5;
+    int question6;
+    int question7;
+    int question8 = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         robot.onRedAlliance = gamepad1.a;
         robot.useDistanceSensorForInitialPosition = true;
-        int alliance = 0;
-        int startPosition = 0;
-        int question3;
-        int question4;
-        int question5;
-        int question6;
-        int question7;
-        int question8 = 0;
+
         String[] options = {"beacon 1", "beacon 2", "push ball", "shoot", "cornerV", "centerV", "stay"};
 
 
@@ -129,7 +131,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             telemetry.addData("Move 3", options[question5 - 1]);
             telemetry.addData("Move 4", options[question6 - 1]);
             telemetry.addData("Move 5", options[question7 - 1]);
-            telemetry.addData("Is this corredt?", "a = yes b = no");
+            telemetry.addData("Is this correct?", "a = yes b = no");
 
             // Send telemetry message to signify robot waiting;
             telemetry.addData("Status", "Initialized");
@@ -137,16 +139,33 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
             question8 = getInput(2);
         }
-            // Wait for the game to start (driver presses PLAY)
-            waitForStart();
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
 
-            BetaLykosHardware.heading = robot.getHeading();
-
-            if (alliance == 1) {
-                runRedVersion();
-            } else if (alliance == 2) {
-                pressRedConorBeconButton();
+        while (opModeIsActive()) {
+            while (!gamepad1.a) {
+                idle();
             }
+            while (gamepad1.a){
+                idle();
+            }
+            pressBeaconButton();
+        }
+
+        if (alliance == 1) {
+            if (startPosition == 1){
+                //set start possition to _____
+            } else if (startPosition == 2){
+
+            }
+        } else if (alliance == 2) {
+
+        }
+//        if (alliance == 1) {
+//            runRedVersion();
+//        } else if (alliance == 2) {
+//            pressRedConorBeconButton();
+//        }
 
     }
     void pushBeaconButton() throws InterruptedException {
@@ -217,8 +236,55 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
     }
 
     void waitForNoButton() {
-        while (gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) {
+        while (gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y||gamepad2.a||gamepad2.b||gamepad2.x) {
             idle();
+        }
+    }
+
+    void pressBeaconButton() {
+        double diff = robot.sensorRGB.red() - robot.sensorRGB.blue();
+        if (alliance == 1) {
+            if (diff > MINREDBLUEDIFF) {
+               // robot.pressLeftServo();
+                telemetry.addData("Left servo","pressed");
+                telemetry.addData("Right servo","not pressed");
+                telemetry.update();
+            } else {
+               // robot.pressRightServo();
+                telemetry.addData("Left servo","not pressed");
+                telemetry.addData("Right servo","pressed");
+                telemetry.update();
+            }
+        } else if (alliance == 2) {
+            if (diff > MINREDBLUEDIFF) {
+              //  robot.pressRightServo();
+                telemetry.addData("Left servo","not pressed");
+                telemetry.addData("Right servo","pressed");
+                telemetry.update();
+            } else {
+               // robot.pressLeftServo();
+                telemetry.addData("Left servo","pressed");
+                telemetry.addData("Right servo","not pressed");
+                telemetry.update();
+            }
+        }
+    }
+
+    void moveOneBlue(){
+        if (question3 == 1) {
+            //beacon 1
+        } else if (question3 == 2) {
+            //beacon 2
+        } else if (question3 == 3) {
+            //push ball
+        } else if (question3 == 4) {
+            //shoot
+        } else if (question3 == 5) {
+            //corner vortex
+        } else if (question3 == 6) {
+            //center vortex
+        } else if (question3 == 7) {
+           // stay
         }
     }
 }

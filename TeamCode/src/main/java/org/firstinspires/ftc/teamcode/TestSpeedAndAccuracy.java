@@ -30,83 +30,87 @@ public class TestSpeedAndAccuracy extends LinearOpMode {
 
         while(opModeIsActive())
         {
-
-        robot.moveRobotToPosition(2, 2, .1, false, this);
-        robot.moveRobotForSeconds(0, 0, 0, this, 2);
-        elapsedTime.reset();
-        robot.moveRobotToPosition(2, 4, .2, true, this);
-        robot.moveRobotToPosition(4, 4, .2, true, this);
-        robot.moveRobotToPosition(4, 2, .2, true, this);
-        robot.moveRobotToPosition(2, 2, .2, true, this);
-        secs = elapsedTime.seconds();
-
-        telemetry.addData("Time", secs);
-        telemetry.update();
-
-            while (!gamepad1.a && opModeIsActive())
-            {idle();}
-
-
-        robot.moveRobotToPosition(2, 2, .1, false, this);
-        robot.moveRobotForSeconds(0, 0, 0, this, 2);
-        elapsedTime.reset();
-        robot.moveRobotToPosition(2, 4, .4, true, this);
-        robot.moveRobotToPosition(4, 4, .4, true, this);
-        robot.moveRobotToPosition(4, 2, .4, true, this);
-        robot.moveRobotToPosition(2, 2, .4, true, this);
-        secs = elapsedTime.seconds();
-
-        telemetry.addData("Time", secs);
-        telemetry.update();
-
-            while (!gamepad1.a && opModeIsActive())
-            {idle();}
-
-
-        robot.moveRobotToPosition(2, 2, .1, false, this);
-        robot.moveRobotForSeconds(0, 0, 0, this, 2);
-        elapsedTime.reset();
-        robot.moveRobotToPosition(2, 4, .6, true, this);
-        robot.moveRobotToPosition(4, 4, .6, true, this);
-        robot.moveRobotToPosition(4, 2, .6, true, this);
-        robot.moveRobotToPosition(2, 2, .6, true, this);
-        secs = elapsedTime.seconds();
-
-        telemetry.addData("Time", secs);
-        telemetry.update();
-
-            while (!gamepad1.a && opModeIsActive())
-            {idle();}
-
-        robot.moveRobotToPosition(2, 2, .1, false, this);
-        robot.moveRobotForSeconds(0, 0, 0, this, 2);
-        elapsedTime.reset();
-        robot.moveRobotToPosition(2, 4, .8, true, this);
-        robot.moveRobotToPosition(4, 4, .8, true, this);
-        robot.moveRobotToPosition(4, 2, .8, true, this);
-        robot.moveRobotToPosition(2, 2, .8, true, this);
-        secs = elapsedTime.seconds();
-
-        telemetry.addData("Time", secs);
-        telemetry.update();
-
-            while (!gamepad1.a && opModeIsActive())
-            {idle();}
-
-        robot.moveRobotToPosition(2, 2, .1, false, this);
-        robot.moveRobotForSeconds(0, 0, 0, this, 2);
-        elapsedTime.reset();
-        robot.moveRobotToPosition(2, 4, 1, true, this);
-        robot.moveRobotToPosition(4, 4, 1, true, this);
-        robot.moveRobotToPosition(4, 2, 1, true, this);
-        robot.moveRobotToPosition(2, 2, 1, true, this);
-        secs = elapsedTime.seconds();
-
-        telemetry.addData("Time", secs);
-        telemetry.update();
-
+            robot.moveRobotCurrentNew(0,0,0,1,this);
             while (!gamepad1.a && opModeIsActive())
             {idle();}
         }
+//
+//        robot.moveRobotToPosition(2, 2, .1, false, this);
+//        robot.moveRobotForSeconds(0, 0, 0, this, 2);
+//        elapsedTime.reset();
+//        robot.moveRobotToPosition(2, 4, .2, true, this);
+//        robot.moveRobotToPosition(4, 4, .2, true, this);
+//        robot.moveRobotToPosition(4, 2, .2, true, this);
+//        robot.moveRobotToPosition(2, 2, .2, true, this);
+//        secs = elapsedTime.seconds();
+//
+//        telemetry.addData("Time", secs);
+//        telemetry.update();
+//
+//            while (!gamepad1.a && opModeIsActive())
+//            {idle();}
+//
+//
+//        robot.moveRobotToPosition(2, 2, .1, false, this);
+//        robot.moveRobotForSeconds(0, 0, 0, this, 2);
+//        elapsedTime.reset();
+//        robot.moveRobotToPosition(2, 4, .4, true, this);
+//        robot.moveRobotToPosition(4, 4, .4, true, this);
+//        robot.moveRobotToPosition(4, 2, .4, true, this);
+//        robot.moveRobotToPosition(2, 2, .4, true, this);
+//        secs = elapsedTime.seconds();
+//
+//        telemetry.addData("Time", secs);
+//        telemetry.update();
+//
+//            while (!gamepad1.a && opModeIsActive())
+//            {idle();}
+//
+//
+//        robot.moveRobotToPosition(2, 2, .1, false, this);
+//        robot.moveRobotForSeconds(0, 0, 0, this, 2);
+//        elapsedTime.reset();
+//        robot.moveRobotToPosition(2, 4, .6, true, this);
+//        robot.moveRobotToPosition(4, 4, .6, true, this);
+//        robot.moveRobotToPosition(4, 2, .6, true, this);
+//        robot.moveRobotToPosition(2, 2, .6, true, this);
+//        secs = elapsedTime.seconds();
+//
+//        telemetry.addData("Time", secs);
+//        telemetry.update();
+//
+//            while (!gamepad1.a && opModeIsActive())
+//            {idle();}
+//
+//        robot.moveRobotToPosition(2, 2, .1, false, this);
+//        robot.moveRobotForSeconds(0, 0, 0, this, 2);
+//        elapsedTime.reset();
+//        robot.moveRobotToPosition(2, 4, .8, true, this);
+//        robot.moveRobotToPosition(4, 4, .8, true, this);
+//        robot.moveRobotToPosition(4, 2, .8, true, this);
+//        robot.moveRobotToPosition(2, 2, .8, true, this);
+//        secs = elapsedTime.seconds();
+//
+//        telemetry.addData("Time", secs);
+//        telemetry.update();
+//
+//            while (!gamepad1.a && opModeIsActive())
+//            {idle();}
+//
+//        robot.moveRobotToPosition(2, 2, .1, false, this);
+//        robot.moveRobotForSeconds(0, 0, 0, this, 2);
+//        elapsedTime.reset();
+//        robot.moveRobotToPosition(2, 4, 1, true, this);
+//        robot.moveRobotToPosition(4, 4, 1, true, this);
+//        robot.moveRobotToPosition(4, 2, 1, true, this);
+//        robot.moveRobotToPosition(2, 2, 1, true, this);
+//        secs = elapsedTime.seconds();
+//
+//        telemetry.addData("Time", secs);
+//        telemetry.update();
+//
+//            while (!gamepad1.a && opModeIsActive())
+//            {idle();}
+//        }
     }
 }
