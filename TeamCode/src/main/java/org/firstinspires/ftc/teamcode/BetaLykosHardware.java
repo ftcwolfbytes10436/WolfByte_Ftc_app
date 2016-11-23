@@ -517,9 +517,9 @@ public class BetaLykosHardware
 
         double distX = x - currentPosition.x;
         double distY = y - currentPosition.y;
-        double distance = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        double distance = Math.sqrt(Math.pow(distX,2) + Math.pow(distY,2));
 //        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
-        double time = (distance * 12 + 3.8368) / 38.194;
+        double time = (distance * 12 + 3.65) / 39.073;
 
         Position direction = getDirectionFromXAndYDistance(distX,distY);
         direction.x *= power;
@@ -529,6 +529,8 @@ public class BetaLykosHardware
         moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
 
         currentPosition = new Position(DistanceUnit.METER,x,y,0,System.currentTimeMillis());
+        opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
+        opMode.telemetry.addData("Distance", distance);
         opMode.telemetry.addData("target",time);
     }
 
