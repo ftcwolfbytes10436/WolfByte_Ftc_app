@@ -63,7 +63,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
 
         boolean lowGear = false;
         boolean runParticleMotor = false;
-        boolean particleMoterButtonHeld = false;
+        boolean particleMotorButtonHeld = false;
         boolean railsUnlocked = false;
         boolean unlockRailButtonHeld = false;
 
@@ -92,8 +92,9 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             }
 
             float gamepad1RightY = -gamepad1.right_stick_y;
-            float gamepad1RightX = -gamepad1.right_stick_x;
-            float gamepad1LeftX  = -gamepad1.left_stick_x;
+            // modified the lower 2 lines by removing the - from ...X = -gamepad1...;
+            float gamepad1RightX = gamepad1.right_stick_x;
+            float gamepad1LeftX  = gamepad1.left_stick_x;
             float extendRobot = gamepad1.right_trigger - gamepad1.left_trigger;
 
             if (lowGear) {
@@ -122,16 +123,16 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             telemetry.addData("Rails unlocked",railsUnlocked);
 
             // toggle the particle motor
-            if (gamepad2.a && !particleMoterButtonHeld) {
+            if (gamepad2.a && !particleMotorButtonHeld) {
                 runParticleMotor = !runParticleMotor;
                 if (runParticleMotor) {
                     robot.particleMotor.setPower(1);
                 } else {
                     robot.particleMotor.setPower(0);
                 }
-                particleMoterButtonHeld = true;
-            } else if (!gamepad2.a && particleMoterButtonHeld) {
-                particleMoterButtonHeld = false;
+                particleMotorButtonHeld = true;
+            } else if (!gamepad2.a && particleMotorButtonHeld) {
+                particleMotorButtonHeld = false;
             }
             telemetry.addData("Run Particle motor", runParticleMotor);
 

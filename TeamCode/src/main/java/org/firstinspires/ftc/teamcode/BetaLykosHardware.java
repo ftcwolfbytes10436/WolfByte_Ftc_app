@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -115,10 +116,10 @@ public class BetaLykosHardware
 //        particleMotor = hwMap.dcMotor.get("particle_motor");
 //        particleLauncher = hwMap.dcMotor.get("particle_launcher");
 
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
 //        particleMotor.setDirection(DcMotor.Direction.FORWARD);
 //        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
 
@@ -444,7 +445,7 @@ public class BetaLykosHardware
         double fRight;
         double bRight;
         double bLeft;
-
+        long waittime = 200;
         final double tolorance = 4;
         double currentHeading = getHeading();
         float dif = (float) (heading - currentHeading);
@@ -462,23 +463,40 @@ public class BetaLykosHardware
         bLeft = Range.clip(yAxis - xAxis + rotation - separate, -1, 1);
         bRight = Range.clip(yAxis + xAxis - rotation - separate, -1, 1);
 
-        frontLeftMotor.setPower (fLeft);
-        frontRightMotor.setPower(fRight);
-        backRightMotor.setPower (bRight);
-        backLeftMotor.setPower  (bLeft);
-
+        if(xAxis  == 0) { // robot is moving forwards or backwards, start front motors first
+            frontLeftMotor.setPower(fLeft);
+            frontRightMotor.setPower(fRight);
+            backRightMotor.setPower(bRight);
+            backLeftMotor.setPower(bLeft);
+        } else if (yAxis == 0 ) { // robot is moving sideways start the right side first
+            frontRightMotor.setPower(fRight);
+            backRightMotor.setPower(bRight*.8);  //the .8 is to compensate for the robot pulling forward
+            backLeftMotor.setPower(bLeft*.8);
+            frontLeftMotor.setPower(fLeft);
+        } else if (xAxis == yAxis ) {  // robot is moving diagonal so start diagonal motors first
+            frontLeftMotor.setPower(fLeft);
+            backRightMotor.setPower(bRight);
+            backLeftMotor.setPower(bLeft);
+            frontRightMotor.setPower(fRight);
+        } else {  // robot is moving the other diagonal so start its diagonal motors first
+            frontRightMotor.setPower(fRight);
+            backLeftMotor.setPower(bLeft);
+            frontLeftMotor.setPower(fLeft);
+            backRightMotor.setPower(bRight);
+        }
         if (!rotating) {
             rotation = 0;
         }
         // Send telemetry message to signify robot running;
-        telemetry.addData("MoveRobot input"  , "XPower: %.2f    YPower: %.2f    Rotation: %.2f", xAxis, yAxis, rotation);
+        //telemetry.addData("MoveRobot input"  , "XPower: %.2f    YPower: %.2f    Rotation: %.2f", xAxis, yAxis, rotation);
         telemetry.addData("Front Wheel Power", "Left:  %.2f     Right:  %.2f", fLeft, fRight);
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
-        telemetry.addData("Heading" , "%.2f" ,heading);
+       /* telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Current heading", "%.2f", getHeading());
         telemetry.addData("Position", "( %.2f, %.2f)", getPositionfromRangeSensor().x, getPositionfromRangeSensor().y);
         telemetry.addData("front Range", getFrontRangeDistance());
         telemetry.addData("side Range", getSideRangeDistance());
+        */
     }
 
     public void moveRobot(double xAxis, double yAxis, double rotation, Telemetry telementry) {
@@ -529,9 +547,9 @@ public class BetaLykosHardware
         moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
 
         currentPosition = new Position(DistanceUnit.METER,x,y,0,System.currentTimeMillis());
-        opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
+        /*opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
         opMode.telemetry.addData("Distance", distance);
-        opMode.telemetry.addData("target",time);
+        opMode.telemetry.addData("target",time);*/
     }
 
     /**
