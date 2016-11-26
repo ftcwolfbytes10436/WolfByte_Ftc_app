@@ -37,8 +37,9 @@ public class CalebTestProgram1 extends LinearOpMode {
         double seconds = .25;
         while (opModeIsActive()) {
             timer.reset();
+            robot.moveRobotForSeconds((float).5,0,0,this,seconds);
 //            robot.moveRobotForSeconds(0,(float)0.5,0,this,.571);
-            robot.moveRobotToPositionUsingTime(1,1,.5,false,this);
+//            robot.moveRobotToPositionUsingTime(1,1,.5,false,this);
             telemetry.addData("time",timer.seconds());
             telemetry.update();
             while (!gamepad1.a && opModeIsActive()) {idle();}

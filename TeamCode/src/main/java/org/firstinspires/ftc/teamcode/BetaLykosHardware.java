@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.configuration.ServoConfiguration;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -68,6 +69,7 @@ public class BetaLykosHardware
     public OpticalDistanceSensor odsSensor = null;
     public ColorSensor sensorRGB           = null;
     public BNO055IMU imu;
+    public TouchSensor touchSensor         = null;
 
     public boolean useDistanceSensorForInitialPosition = false;
     public boolean onRedAlliance = false;
@@ -152,8 +154,9 @@ public class BetaLykosHardware
         cdim = hwMap.deviceInterfaceModule.get("dim");
         frontRangeSensor = hwMap.get(AnalogInput.class, "front_range_sensor");
         sideRangeSensor = hwMap.get(AnalogInput.class, "side_range_sensor");
-//        odsSensor = hwMap.opticalDistanceSensor.get("ods");
+        odsSensor = hwMap.opticalDistanceSensor.get("ods");
         sensorRGB = hwMap.colorSensor.get("sensor_color");
+        touchSensor = hwMap.touchSensor.get("touch");
 
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         cdim.setDigitalChannelState(LED_CHANNEL, false);
@@ -389,13 +392,15 @@ public class BetaLykosHardware
 
     public Position getDirectionFromXAndYDistance(double x, double y) {
         Position output = new Position();
-        if (x >= y) {
+        if (Math.abs(x) >= Math.abs(y)) {
             output.x = 1;
             output.y = y / x;
         } else {
             output.x = x / y;
             output.y = 1;
         }
+        output.x = Math.copySign(output.x,x);
+        output.y = Math.copySign(output.y,y);
         return output;
     }
 
@@ -547,9 +552,9 @@ public class BetaLykosHardware
         moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
 
         currentPosition = new Position(DistanceUnit.METER,x,y,0,System.currentTimeMillis());
-        /*opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
+        opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
         opMode.telemetry.addData("Distance", distance);
-        opMode.telemetry.addData("target",time);*/
+        opMode.telemetry.addData("target",time);
     }
 
     /**
@@ -672,5 +677,31 @@ public class BetaLykosHardware
             }
         }
      }
+
+    public void moveTwoRobotToPositionUsingTime(double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
+
+        double time = 0;
+        double distX = x - currentPosition.x;
+        double distY = y - currentPosition.y;
+        double distance = Math.sqrt(Math.pow(distX,2) + Math.pow(distY,2));
+//        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
+        if (distY != 0){
+            time = (distance * 12 + 3.65) / 39.073;
+        } else if (distY == 0){
+            time = distance*12/32.008;
+        }
+
+        Position direction = getDirectionFromXAndYDistance(distX,distY);
+        direction.x *= power;
+        direction.y *= power;
+
+//        accelerateRobot(direction.x,direction.y,power,1,opMode);
+        moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
+
+        currentPosition = new Position(DistanceUnit.METER,x,y,0,System.currentTimeMillis());
+        /*opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
+        opMode.telemetry.addData("Distance", distance);
+        opMode.telemetry.addData("target",time);*/
+    }
 }
 
