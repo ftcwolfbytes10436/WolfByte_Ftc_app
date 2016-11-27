@@ -422,7 +422,7 @@ public class BetaLykosHardware
         }
         while (currentAngle > heading && opMode.opModeIsActive()) {
             currentAngle = getHeading();
-            moveRobot(0,0,power/4/4,opMode.telemetry);
+            moveRobot(0,0,power/4,opMode.telemetry);
         }
         moveRobot(0,0,0,opMode.telemetry);
 //        while (opMode.gamepad1.a && opMode.opModeIsActive()) {opMode.idle();}
