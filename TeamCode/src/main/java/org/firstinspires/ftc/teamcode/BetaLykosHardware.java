@@ -407,24 +407,31 @@ public class BetaLykosHardware
     public void turnRobotToHeading(double heading, double power, LinearOpMode opMode) {
         double currentAngle = getHeading();
 
-        while (currentAngle != heading && opMode.opModeIsActive()) {
-            moveRobot(0,0,0,opMode.telemetry);
-            while (!opMode.gamepad1.a) {
-                opMode.telemetry.addData("if",currentAngle < heading);
-                opMode.telemetry.addData("heading",heading);
-                opMode.telemetry.addData("current heading", currentHeading);
-                opMode.telemetry.addData("power",power);
-                opMode.telemetry.update();
-            }
-            if (currentAngle < heading) {
-                moveRobot(0,0,power,opMode.telemetry);
-                opMode.telemetry.addData("statment","if");
-            } else {
-                moveRobot(0,0,-power,opMode.telemetry);
-                opMode.telemetry.addData("statment","else");
-            }
+        while (currentAngle > heading && opMode.opModeIsActive()) {
+            currentAngle = getHeading();
+            moveRobot(0,0,power,opMode.telemetry);
+            opMode.telemetry.addData("heading",heading);
+            opMode.telemetry.addData("current heading", currentAngle);
+            opMode.telemetry.addData("power",power);
             opMode.telemetry.update();
             opMode.idle();
+        }
+        while (currentAngle < heading && opMode.opModeIsActive()) {
+            currentAngle = getHeading();
+            moveRobot(0,0,-power/4,opMode.telemetry);
+        }
+        while (currentAngle > heading && opMode.opModeIsActive()) {
+            currentAngle = getHeading();
+            moveRobot(0,0,power/4/4,opMode.telemetry);
+        }
+        moveRobot(0,0,0,opMode.telemetry);
+        while (opMode.gamepad1.a && opMode.opModeIsActive()) {opMode.idle();}
+        while (!opMode.gamepad1.a && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("if",currentAngle < heading);
+            opMode.telemetry.addData("heading",heading);
+            opMode.telemetry.addData("current heading", getHeading());
+            opMode.telemetry.addData("power",power);
+            opMode.telemetry.update();
         }
     }
 
