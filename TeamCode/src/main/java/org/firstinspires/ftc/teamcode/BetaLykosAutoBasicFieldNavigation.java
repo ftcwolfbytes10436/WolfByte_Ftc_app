@@ -35,6 +35,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
 /**
  * This Opmode is a basic autonomous mode that can navigate the field using the accelerometer and
  * distance sensors
@@ -53,14 +56,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     static final double MINREDBLUEDIFF = 25;
     static final double distanceBetweenButtons = 1;
+    static final Position[] redStartPositions = {new Position(DistanceUnit.METER,0,0,0,0),new Position(DistanceUnit.METER,0,0,0,0)};
+    static final Position[] blueStartPositions = {new Position(DistanceUnit.METER,0,0,0,0),new Position(DistanceUnit.METER,0,0,0,0)};
+
 
     int alliance = 0;
     int startPosition = 0;
-    int question3;
-    int question4;
-    int question5;
-    int question6;
-    int question7;
+    int[] questions = new int[5];
     int question8 = 0;
 
     @Override
@@ -99,23 +101,23 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
             telemetry.addData("Move 1", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
             telemetry.update();
-            question3 = getInput(7);
+            questions[0] = getInput(7);
 
             telemetry.addData("Move 2", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
             telemetry.update();
-            question4 = getInput(7);
+            questions[1] = getInput(7);
 
             telemetry.addData("Move 3", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
             telemetry.update();
-            question5 = getInput(7);
+            questions[2] = getInput(7);
 
             telemetry.addData("Move 4", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
             telemetry.update();
-            question6 = getInput(7);
+            questions[3] = getInput(7);
 
             telemetry.addData("Move 5", "g1.a = beacon 1   g1.b = beacon 2   g1.x = push ball g1.y = shoot g2.a = cornerV g2.b = centerV g2.x = stay");
             telemetry.update();
-            question7 = getInput(7);
+            questions[4] = getInput(7);
 
             switch (alliance) {
                 case 1:
@@ -126,11 +128,11 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                     break;
             }
             telemetry.addData("Start Position", startPosition);
-            telemetry.addData("Move 1", options[question3 - 1]);
-            telemetry.addData("Move 2", options[question4 - 1]);
-            telemetry.addData("Move 3", options[question5 - 1]);
-            telemetry.addData("Move 4", options[question6 - 1]);
-            telemetry.addData("Move 5", options[question7 - 1]);
+            telemetry.addData("Move 1", options[questions[0] - 1]);
+            telemetry.addData("Move 2", options[questions[1] - 1]);
+            telemetry.addData("Move 3", options[questions[2] - 1]);
+            telemetry.addData("Move 4", options[questions[3] - 1]);
+            telemetry.addData("Move 5", options[questions[4] - 1]);
             telemetry.addData("Is this correct?", "a = yes b = no");
 
             // Send telemetry message to signify robot waiting;
@@ -141,74 +143,59 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         }
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-
-        while (opModeIsActive()) {
-            while (!gamepad1.a) {
-                idle();
-            }
-            while (gamepad1.a){
-                idle();
-            }
-            pressBeaconButton();
-        }
-
+//
+//        while (opModeIsActive()) {
+//            while (!gamepad1.a) {
+//                idle();
+//            }
+//            while (gamepad1.a){
+//                idle();
+//            }
+//            pressBeaconButton();
+//        }
         if (alliance == 1) {
             if (startPosition == 1){
-                //set start possition to _____
+                robot.currentPosition = redStartPositions[0];
             } else if (startPosition == 2){
-
+                robot.currentPosition = redStartPositions[1];
             }
         } else if (alliance == 2) {
+            if (startPosition == 1){
+                robot.currentPosition = blueStartPositions[0];
+            } else if (startPosition == 2){
+                robot.currentPosition = blueStartPositions[1];
+            }
+            for (int i = 0; i < questions.length; i++) {
+                switch (questions[i]) {
 
+                    case 1:
+                        //becon 1
+                        break;
+                    case 2:
+                        //becon 2
+                        break;
+                    case 3:
+                        //push ball
+                        break;
+                    case 4:
+                        //shoot
+                        break;
+                    case 5:
+                        //cornerV
+                        break;
+                    case 6:
+                        //centerV
+                        break;
+                    case 7:
+                        //stay
+                        break;
+                }
+            }
         }
-//        if (alliance == 1) {
-//            runRedVersion();
-//        } else if (alliance == 2) {
-//            pressRedConorBeconButton();
-//        }
 
     }
     void pushBeaconButton() throws InterruptedException {
         robot.moveRobotFeetRelitive(1,0,1,this);
-    }
-
-
-    void runRedVersion() throws InterruptedException {
-        robot.moveRobotToPosition(robot.getPositionfromRangeSensor().x,10,1,false,this); // move away from the wall to be able to turn
-        robot.moveRobotToPosition(1.5,7,1,true,this); // move to the area that the line is in
-        robot.turnRobotToHeading(90,.5,this); // turn towards the beacon
-        robot.moveRobotToPosition(1.5,6,1,false,this); // go to the left of the beacon
-        robot.moveRobot(.5,0,0,telemetry); // start moving the robot to the right
-        while (robot.getODSLightLevel() == 0) {} // wait until the ods sensor sees white
-        robot.moveRobot(0,0,0,telemetry); // stop the robot
-        robot.turnRobotToHeading(90,0.5,this); // turn towards the beacon
-        robot.moveRobotToPosition( 1,7,0.5,false,this); // go forward and rely on the method to stop when it can not move
-        double diff = robot.sensorRGB.red() - robot.sensorRGB.blue(); // calculate the diffence between the red and the blue channels
-        if (diff > MINREDBLUEDIFF) { // if the red channel is greater than the blue channel by the minRedBlueDiffence variable
-            // push the button
-        } else { // if the red is not greater than blue
-            // push the other button
-        }
-        robot.moveRobotToPosition(5.25, 5, 1, true, this); // move to behind the ball
-        robot.moveRobotToPosition(5.25, 6.5, 0.5, true, this); // push the ball off the center and stop
-
-
-    }
-
-    void pressRedConorBeconButton() throws InterruptedException {
-        robot.turnRobotToHeading(90,0.5,this);//turns to face the becon
-        robot.moveRobotFeetRelitive(-1,0,1,this);//move left of the line
-        robot.moveRobot(.5,0,0,telemetry); // start moving the robot to the right
-        while (robot.getODSLightLevel() == 0) {} // wait until the ods sensor sees white
-        robot.moveRobot(0,0,0,telemetry); // stop the robot
-        robot.turnRobotToHeading(90,0.5,this); // turn towards the beacon
-        robot.moveRobotFeetRelitive(0,3,1,this); // go forward and rely on the method to stop when it can not move
-        double diff = robot.sensorRGB.red() - robot.sensorRGB.blue(); // calculate the diffence between the red and the blue channels
-        if (diff > MINREDBLUEDIFF) { // if the red channel is greater than the blue channel by the minRedBlueDiffence variable
-            // push the button
-        } else { // if the red is not greater than blue
-            // push the other button
-        }
     }
 
     int getInput(int numAnswers) {
@@ -267,24 +254,6 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                 telemetry.addData("Right servo","not pressed");
                 telemetry.update();
             }
-        }
-    }
-
-    void moveOneBlue(){
-        if (question3 == 1) {
-            //beacon 1
-        } else if (question3 == 2) {
-            //beacon 2
-        } else if (question3 == 3) {
-            //push ball
-        } else if (question3 == 4) {
-            //shoot
-        } else if (question3 == 5) {
-            //corner vortex
-        } else if (question3 == 6) {
-            //center vortex
-        } else if (question3 == 7) {
-           // stay
         }
     }
 }
