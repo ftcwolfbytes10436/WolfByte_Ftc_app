@@ -56,8 +56,8 @@ public class RossTestProgram1 extends LinearOpMode {
             }
             robot.moveRobot(0,0,0,telemetry);
             robot.currentPosition = new Position(DistanceUnit.METER,5.3,5.1,0,System.currentTimeMillis());
-            robot.moveRobotToPositionUsingTime(2.5,-2,.5,false,this);
-
+            robot.moveRobotToPositionUsingTime(1.5,2,.5,false,this);
+            robot.turnRobotToHeading(45,.5,this);
             /*while (i >= 0) {
                 i--;
                 idle();

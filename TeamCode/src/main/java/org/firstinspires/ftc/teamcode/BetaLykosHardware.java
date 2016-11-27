@@ -405,18 +405,25 @@ public class BetaLykosHardware
     }
 
     public void turnRobotToHeading(double heading, double power, LinearOpMode opMode) {
-        final double angleTolerance = 1;
         double currentAngle = getHeading();
-        double targetAngle = heading;
-        double diff = targetAngle - currentAngle;
-        double rotation;
 
-        while (Math.abs(diff) >= angleTolerance && opMode.opModeIsActive()) {
-            currentAngle = getHeading();
-            diff = targetAngle - currentAngle;
-            rotation = diff + power ;
-
-            moveRobot(0,0,rotation,opMode.telemetry);
+        while (currentAngle != heading && opMode.opModeIsActive()) {
+            moveRobot(0,0,0,opMode.telemetry);
+            while (!opMode.gamepad1.a) {
+                opMode.telemetry.addData("if",currentAngle < heading);
+                opMode.telemetry.addData("heading",heading);
+                opMode.telemetry.addData("current heading", currentHeading);
+                opMode.telemetry.addData("power",power);
+                opMode.telemetry.update();
+            }
+            if (currentAngle < heading) {
+                moveRobot(0,0,power,opMode.telemetry);
+                opMode.telemetry.addData("statment","if");
+            } else {
+                moveRobot(0,0,-power,opMode.telemetry);
+                opMode.telemetry.addData("statment","else");
+            }
+            opMode.telemetry.update();
             opMode.idle();
         }
     }
@@ -496,9 +503,9 @@ public class BetaLykosHardware
         //telemetry.addData("MoveRobot input"  , "XPower: %.2f    YPower: %.2f    Rotation: %.2f", xAxis, yAxis, rotation);
         telemetry.addData("Front Wheel Power", "Left:  %.2f     Right:  %.2f", fLeft, fRight);
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
-       /* telemetry.addData("Heading" , "%.2f" ,heading);
+//        telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Current heading", "%.2f", getHeading());
-        telemetry.addData("Position", "( %.2f, %.2f)", getPositionfromRangeSensor().x, getPositionfromRangeSensor().y);
+        /*telemetry.addData("Position", "( %.2f, %.2f)", getPositionfromRangeSensor().x, getPositionfromRangeSensor().y);
         telemetry.addData("front Range", getFrontRangeDistance());
         telemetry.addData("side Range", getSideRangeDistance());
         */
