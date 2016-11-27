@@ -425,14 +425,14 @@ public class BetaLykosHardware
             moveRobot(0,0,power/4/4,opMode.telemetry);
         }
         moveRobot(0,0,0,opMode.telemetry);
-        while (opMode.gamepad1.a && opMode.opModeIsActive()) {opMode.idle();}
-        while (!opMode.gamepad1.a && opMode.opModeIsActive()) {
-            opMode.telemetry.addData("if",currentAngle < heading);
-            opMode.telemetry.addData("heading",heading);
-            opMode.telemetry.addData("current heading", getHeading());
-            opMode.telemetry.addData("power",power);
-            opMode.telemetry.update();
-        }
+//        while (opMode.gamepad1.a && opMode.opModeIsActive()) {opMode.idle();}
+//        while (!opMode.gamepad1.a && opMode.opModeIsActive()) {
+//            opMode.telemetry.addData("if",currentAngle < heading);
+//            opMode.telemetry.addData("heading",heading);
+//            opMode.telemetry.addData("current heading", getHeading());
+//            opMode.telemetry.addData("power",power);
+//            opMode.telemetry.update();
+//        }
     }
 
     public void turnRobotTowardsPoint(double x, double y, double power, LinearOpMode opMode) {
