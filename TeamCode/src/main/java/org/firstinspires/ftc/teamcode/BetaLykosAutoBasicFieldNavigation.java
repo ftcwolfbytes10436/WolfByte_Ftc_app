@@ -230,26 +230,47 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     void pressBeaconButton() {
         double diff = robot.sensorRGB.red() - robot.sensorRGB.blue();
+        robot.moveRobot(.1,0,0,telemetry); // start moving the robot to the right
+        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+            idle();} // wait until the ods sensor sees white
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(.05,0,0,telemetry);
+        int i = 0;
+        while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {
+            i++;
+            idle();
+        }
+        i=i/2;
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(-.05,.1,0,telemetry);
+        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+            idle();} // wait until the ods sensor sees white
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(0,.1,0,telemetry);
+        while (!robot.touchSensor.isPressed()) {
+            idle();
+        }
+        robot.moveRobot(0,0,0,telemetry);
         if (alliance == 1) {
             if (diff > MINREDBLUEDIFF) {
-               // robot.pressLeftServo();
+                //robot.pressLeftServo();
                 telemetry.addData("Left servo","pressed");
                 telemetry.addData("Right servo","not pressed");
                 telemetry.update();
             } else {
-               // robot.pressRightServo();
+                //robot.pressRightServo();
                 telemetry.addData("Left servo","not pressed");
                 telemetry.addData("Right servo","pressed");
                 telemetry.update();
             }
         } else if (alliance == 2) {
             if (diff > MINREDBLUEDIFF) {
-              //  robot.pressRightServo();
+                //robot.pressRightServo();
                 telemetry.addData("Left servo","not pressed");
                 telemetry.addData("Right servo","pressed");
                 telemetry.update();
             } else {
-               // robot.pressLeftServo();
+                //robot.pressLeftServo();
                 telemetry.addData("Left servo","pressed");
                 telemetry.addData("Right servo","not pressed");
                 telemetry.update();

@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+
 /**
  * Created by rps on 10/27/16.
  */
@@ -30,7 +33,8 @@ public class TestSpeedAndAccuracy extends LinearOpMode {
 
         while(opModeIsActive())
         {
-            robot.moveRobotCurrentNew(0,0,0,1,this);
+            robot.currentPosition = new Position(DistanceUnit.METER,11,5,0,System.currentTimeMillis());
+            robot.moveRobotToPositionUsingTime(0,1,.5,false,this);
             while (!gamepad1.a && opModeIsActive())
             {idle();}
         }
