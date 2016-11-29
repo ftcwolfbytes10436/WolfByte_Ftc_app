@@ -291,6 +291,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
+        robot.turnRobotToHeading(0,.2,this);
         robot.moveRobot(.05,0,0,telemetry);
         int i = 0;
         while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {

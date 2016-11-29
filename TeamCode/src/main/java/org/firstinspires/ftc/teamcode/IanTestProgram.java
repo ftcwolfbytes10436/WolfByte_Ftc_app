@@ -63,7 +63,6 @@ public class IanTestProgram extends LinearOpMode {
     static final double MINREDBLUEDIFF = 25;
 
     void pressBeaconButton() {
-//        robot.turnRobotToHeading(0,.25,this);
         robot.moveRobot(.1, 0, 0, telemetry); // start moving the robot to the right
         while (robot.getODSLightLevel() < .01 && opModeIsActive()) {
             idle();
