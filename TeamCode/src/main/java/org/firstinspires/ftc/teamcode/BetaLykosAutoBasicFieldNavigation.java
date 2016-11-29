@@ -56,8 +56,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     static final double MINREDBLUEDIFF = 25;
     static final double distanceBetweenButtons = 1;
-    static final Position[] redStartPositions = {new Position(DistanceUnit.METER,0,0,0,0),new Position(DistanceUnit.METER,0,0,0,0)};
-    static final Position[] blueStartPositions = {new Position(DistanceUnit.METER,0,0,0,0),new Position(DistanceUnit.METER,0,0,0,0)};
+    static final Position[] redStartPositions = {new Position(DistanceUnit.METER,1,-5,0,0), new Position(DistanceUnit.METER,1,-7,0,0)};
+    static final Position[] redBeacon1 = {new Position(DistanceUnit.METER,4,-2,0,0), new Position(DistanceUnit.METER,5,-1,0,0)};
+    static final Position[] redBeacon2 = {new Position(DistanceUnit.METER,8,-2,0,0), new Position(DistanceUnit.METER,9,-1,0,0)};
+    static final Position[] blueStartPositions = {new Position(DistanceUnit.METER,11,7,0,0), new Position(DistanceUnit.METER,11,5,0,0)};
+    static final Position[] blueBeacon1 = {new Position(DistanceUnit.METER,6,10,0,0), new Position(DistanceUnit.METER,7,11,0,0)};
+    static final Position[] blueBeacon2 = {new Position(DistanceUnit.METER,2,10,0,0), new Position(DistanceUnit.METER,3,11,0,0)};
+
 
 
     int alliance = 0;
@@ -160,42 +165,94 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                 robot.currentPosition = redStartPositions[1];
             }
         } else if (alliance == 2) {
-            if (startPosition == 1){
+            if (startPosition == 1) {
                 robot.currentPosition = blueStartPositions[0];
-            } else if (startPosition == 2){
+            } else if (startPosition == 2) {
                 robot.currentPosition = blueStartPositions[1];
             }
-            for (int i = 0; i < questions.length; i++) {
-                switch (questions[i]) {
+        }
+        for (int i = 0; i < questions.length; i++) {
+            switch (questions[i]) {
 
-                    case 1:
-                        //becon 1
-                        break;
-                    case 2:
-                        //becon 2
-                        break;
-                    case 3:
-                        //push ball
-                        break;
-                    case 4:
-                        //shoot
-                        break;
-                    case 5:
-                        //cornerV
-                        break;
-                    case 6:
-                        //centerV
-                        break;
-                    case 7:
-                        //stay
-                        break;
-                }
+                case 1:
+                    beacon1();
+                    break;
+                case 2:
+                    beacon2();
+                    break;
+                case 3:
+                    //push ball
+                    break;
+                case 4:
+                    //shoot
+                    break;
+                case 5:
+                    //cornerV
+                    break;
+                case 6:
+                    //centerV
+                    break;
+                case 7:
+                    //stay
+                    break;
             }
         }
-
     }
-    void pushBeaconButton() throws InterruptedException {
-        robot.moveRobotFeetRelitive(1,0,1,this);
+
+    void beacon1() throws InterruptedException {
+        if (alliance == 1) {
+            robot.moveRobotToPositionUsingTime(redBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+            lineUpToBeacon();
+            robot.currentPosition = redBeacon1[1];
+            pressBeaconButton();
+            robot.moveTwoRobotToPositionUsingTime(redBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+        } else {
+            robot.moveRobotToPositionUsingTime(blueBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+            lineUpToBeacon();
+            robot.currentPosition = blueBeacon1[1];
+            pressBeaconButton();
+            robot.moveTwoRobotToPositionUsingTime(blueBeacon1[0].x,blueBeacon1[0].y,0.5,false,this);
+        }
+    }
+
+    void beacon2() throws InterruptedException {
+        if (alliance == 1) {
+            robot.moveRobotToPositionUsingTime(redBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+            lineUpToBeacon();
+            robot.currentPosition = redBeacon2[1];
+            pressBeaconButton();
+            robot.moveTwoRobotToPositionUsingTime(redBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+        } else {
+            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+            lineUpToBeacon();
+            robot.currentPosition = blueBeacon2[1];
+            pressBeaconButton();
+            robot.moveTwoRobotToPositionUsingTime(blueBeacon2[0].x,blueBeacon2[0].y,0.5,false,this);
+        }
+    }
+
+    void lineUpToBeacon() throws InterruptedException {
+        robot.moveRobot(.1,0,0,telemetry); // start moving the robot to the right
+        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+            idle();} // wait until the ods sensor sees white
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(.05,0,0,telemetry);
+        int i = 0;
+        while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {
+            i++;
+            idle();
+        }
+        i=i/2;
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(-.05,.1,0,telemetry);
+        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+            idle();} // wait until the ods sensor sees white
+        robot.moveRobot(0,0,0,telemetry);
+        robot.moveRobot(0,.1,0,telemetry);
+        while (!robot.touchSensor.isPressed()) {
+            idle();
+        }
+        robot.moveRobot(0,0,0,telemetry);
     }
 
     int getInput(int numAnswers) {

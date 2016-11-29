@@ -74,6 +74,7 @@ public class BetaLykosHardware
     public boolean useDistanceSensorForInitialPosition = false;
     public boolean onRedAlliance = false;
     public Position currentPosition = new Position();
+    public double headingOffset = 0;
 
 
     static final int LED_CHANNEL = 5;
@@ -209,7 +210,11 @@ public class BetaLykosHardware
         if (currentHeading == null || currentHeading.acquisitionTime != System.nanoTime()) {
             currentHeading = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         }
-        return AngleUnit.DEGREES.fromUnit(currentHeading.angleUnit, currentHeading.firstAngle);
+        double angle = AngleUnit.DEGREES.fromUnit(currentHeading.angleUnit, currentHeading.firstAngle) + headingOffset;
+        if (angle > 180) {
+            angle = - 180 + angle % 180;
+        }
+        return angle;
     }
 
     /**
@@ -392,15 +397,9 @@ public class BetaLykosHardware
 
     public Position getDirectionFromXAndYDistance(double x, double y) {
         Position output = new Position();
-        if (Math.abs(x) >= Math.abs(y)) {
-            output.x = 1;
-            output.y = y / x;
-        } else {
-            output.x = x / y;
-            output.y = 1;
-        }
-        output.x = Math.copySign(output.x,x);
-        output.y = Math.copySign(output.y,y);
+        double magnitude = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        output.x = x / magnitude;
+        output.y = y / magnitude;
         return output;
     }
 
@@ -559,8 +558,12 @@ public class BetaLykosHardware
         double time = (distance * 12 + 3.65) / 39.073;
 
         Position direction = getDirectionFromXAndYDistance(distX,distY);
-        direction.x *= power;
-        direction.y *= power;
+        double ca = Math.cos(Math.toRadians(-getHeading()));
+        double sa = Math.sin(Math.toRadians(-getHeading()));
+        double finalX = ca * direction.x - sa * direction.y;
+        double finalY = sa * direction.x + ca * direction.y;
+        direction.x = finalX * power;
+        direction.y = finalY * power;
 
 //        accelerateRobot(direction.x,direction.y,power,1,opMode);
         moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
