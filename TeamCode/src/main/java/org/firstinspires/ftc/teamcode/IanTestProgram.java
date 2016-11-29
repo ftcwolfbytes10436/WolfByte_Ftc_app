@@ -22,6 +22,7 @@ public class IanTestProgram extends LinearOpMode {
         robot.init(hardwareMap);
         ElapsedTime timer = new ElapsedTime();
         double sum = 0;
+        double time = 0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -34,10 +35,16 @@ public class IanTestProgram extends LinearOpMode {
         while (opModeIsActive()) {
             robot.moveRobotToPositionUsingTime(4,3.5,.5,false,this);
             pressBeaconButton();
-            robot.currentPosition = new Position(DistanceUnit.METER,0,2.4,0,System.currentTimeMillis());
-            robot.moveRobotToPositionUsingTime(0,2,.5,false,this);
-//            robot.turnRobotToHeading(0,.25,this);
-//            robot.moveRobotToPositionUsingTime(3,0,.5,false,this);
+            while(opModeIsActive() && time < 50) {
+                idle();
+                time  = time + .01;
+            }
+            robot.currentPosition = new Position(DistanceUnit.METER,1,5,0,System.currentTimeMillis());
+            robot.moveRobotToPositionUsingTime(1,4,.5,false,this);
+            robot.moveRobotToPositionUsingTime(1,4.5,.5,false,this);
+            robot.turnRobotToHeading(0,.2,this);
+            robot.currentPosition = new Position(DistanceUnit.METER,1,5,0,System.currentTimeMillis());
+            robot.moveRobotToPositionUsingTime(1.5,5,.5,false,this);
 //            pressBeaconButton();
 //            robot.currentPosition = new Position(DistanceUnit.METER,8,4.5,0,System.currentTimeMillis());
 //            robot.moveRobotToPositionUsingTime(8,4,.5,false,this);
@@ -46,6 +53,9 @@ public class IanTestProgram extends LinearOpMode {
 //            robot.moveRobotToPositionUsingTime(3,2,.5,false,this);
 //            robot.moveRobotToPositionUsingTime(0,0,.5,false,this);
             robot.moveRobot(0,0,0,telemetry);
+            while(opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
         }
     }
 
@@ -59,6 +69,7 @@ public class IanTestProgram extends LinearOpMode {
             idle();
         } // wait until the ods sensor sees white
         robot.moveRobot(0, 0, 0, telemetry);
+        robot.turnRobotToHeading(0,.2,this);
         robot.moveRobot(.05, 0, 0, telemetry);
         int i = 0;
         while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {
