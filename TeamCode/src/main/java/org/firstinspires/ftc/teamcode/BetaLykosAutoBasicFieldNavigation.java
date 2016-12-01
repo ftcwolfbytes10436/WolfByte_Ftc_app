@@ -56,12 +56,14 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     static final double MINREDBLUEDIFF = 25;
     static final double distanceBetweenButtons = 1;
-    static final Position[] redStartPositions = {new Position(DistanceUnit.METER,1,-5,0,0), new Position(DistanceUnit.METER,1,-7,0,0)};
-    static final Position[] redBeacon1 = {new Position(DistanceUnit.METER,4,-2,0,0), new Position(DistanceUnit.METER,5,-1,0,0)};
-    static final Position[] redBeacon2 = {new Position(DistanceUnit.METER,8,-2,0,0), new Position(DistanceUnit.METER,9,-1,0,0)};
+    static final Position[] redStartPositions = {new Position(DistanceUnit.METER,5,1,0,0), new Position(DistanceUnit.METER,7,1,0,0)};
+    static final Position[] redBeacon1 = {new Position(DistanceUnit.METER,2,4,0,0), new Position(DistanceUnit.METER,1,5,0,0), new Position(DistanceUnit.METER,2,5,0,0)};
+    static final Position[] redBeacon2 = {new Position(DistanceUnit.METER,2,8,0,0), new Position(DistanceUnit.METER,1,9,0,0), new Position(DistanceUnit.METER,2,9,0,0)};
+    static final Position[] redShootingPositions = {new Position(DistanceUnit.METER,3,7,0,0)};
     static final Position[] blueStartPositions = {new Position(DistanceUnit.METER,11,7,0,0), new Position(DistanceUnit.METER,11,5,0,0)};
     static final Position[] blueBeacon1 = {new Position(DistanceUnit.METER,6,10,0,0), new Position(DistanceUnit.METER,7,11,0,0)};
     static final Position[] blueBeacon2 = {new Position(DistanceUnit.METER,2,10,0,0), new Position(DistanceUnit.METER,3,11,0,0)};
+    static final int[] startHeading = {90,0};
 
 
 
@@ -146,6 +148,10 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
             question8 = getInput(2);
         }
+
+        if (alliance == 1) {
+            robot.headingOffset = 90;
+        }
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 //
@@ -178,13 +184,14 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                     beacon1();
                     break;
                 case 2:
-                    beacon2();
+                    robot.moveRobotToPositionUsingTime(5,2,0.5,false,this);
+//                    beacon2();
                     break;
                 case 3:
                     //push ball
                     break;
                 case 4:
-                    //shoot
+                    shoot();
                     break;
                 case 5:
                     //cornerV
@@ -205,7 +212,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             lineUpToBeacon();
             robot.currentPosition = redBeacon1[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(redBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+            robot.moveTwoRobotToPositionUsingTime(redBeacon1[2].x,redBeacon1[2].y,0.5,false,this);
         } else {
             robot.moveRobotToPositionUsingTime(blueBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
             lineUpToBeacon();
@@ -221,7 +228,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             lineUpToBeacon();
             robot.currentPosition = redBeacon2[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(redBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+            robot.moveTwoRobotToPositionUsingTime(redBeacon2[2].x,redBeacon2[2].y,0.5,false,this);
         } else {
             robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
             lineUpToBeacon();
@@ -233,19 +240,17 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     void lineUpToBeacon() throws InterruptedException {
         robot.moveRobot(.1,0,0,telemetry); // start moving the robot to the right
-        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+        while (robot.getODSLightLevel() < .005 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
+        robot.turnRobotToHeading(startHeading[alliance - 1],.15,this);
         robot.moveRobot(.05,0,0,telemetry);
-        int i = 0;
-        while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {
-            i++;
+        while (robot.getODSLightLevel() >= .005 && opModeIsActive()) {
             idle();
         }
-        i=i/2;
         robot.moveRobot(0,0,0,telemetry);
         robot.moveRobot(-.05,.1,0,telemetry);
-        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
+        while (robot.getODSLightLevel() < .005 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
         robot.moveRobot(0,.1,0,telemetry);
@@ -253,6 +258,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             idle();
         }
         robot.moveRobot(0,0,0,telemetry);
+    }
+
+    void shoot() throws InterruptedException {
+        if(alliance == 1) {
+            robot.moveRobotToPositionUsingTime(redShootingPositions[0].x, redShootingPositions[0].y,0.5,false,this);
+            robot.turnRobotTowardsPoint(redShootingPositions[0].x, redShootingPositions[0].y,.25,this);
+        }
     }
 
     int getInput(int numAnswers) {
@@ -287,28 +299,6 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     void pressBeaconButton() {
         double diff = robot.sensorRGB.red() - robot.sensorRGB.blue();
-        robot.moveRobot(.1,0,0,telemetry); // start moving the robot to the right
-        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
-            idle();} // wait until the ods sensor sees white
-        robot.moveRobot(0,0,0,telemetry);
-        robot.turnRobotToHeading(0,.2,this);
-        robot.moveRobot(.05,0,0,telemetry);
-        int i = 0;
-        while (robot.getODSLightLevel() >= .01 && opModeIsActive()) {
-            i++;
-            idle();
-        }
-        i=i/2;
-        robot.moveRobot(0,0,0,telemetry);
-        robot.moveRobot(-.05,.1,0,telemetry);
-        while (robot.getODSLightLevel() < .01 && opModeIsActive())  {
-            idle();} // wait until the ods sensor sees white
-        robot.moveRobot(0,0,0,telemetry);
-        robot.moveRobot(0,.1,0,telemetry);
-        while (!robot.touchSensor.isPressed()) {
-            idle();
-        }
-        robot.moveRobot(0,0,0,telemetry);
         if (alliance == 1) {
             if (diff > MINREDBLUEDIFF) {
                 //robot.pressLeftServo();

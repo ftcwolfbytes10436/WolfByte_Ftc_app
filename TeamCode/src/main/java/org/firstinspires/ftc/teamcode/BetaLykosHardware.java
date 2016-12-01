@@ -511,8 +511,8 @@ public class BetaLykosHardware
         telemetry.addData("Back  Wheel Power", "Left:  %.2f     Right:  %.2f", bLeft, bRight);
 //        telemetry.addData("Heading" , "%.2f" ,heading);
         telemetry.addData("Current heading", "%.2f", getHeading());
-        /*telemetry.addData("Position", "( %.2f, %.2f)", getPositionfromRangeSensor().x, getPositionfromRangeSensor().y);
-        telemetry.addData("front Range", getFrontRangeDistance());
+        telemetry.addData("Position", "( %.2f, %.2f)", currentPosition.x, currentPosition.y);
+        /*telemetry.addData("front Range", getFrontRangeDistance());
         telemetry.addData("side Range", getSideRangeDistance());
         */
     }
