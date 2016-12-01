@@ -720,5 +720,28 @@ public class BetaLykosHardware
         opMode.telemetry.addData("Distance", distance);
         opMode.telemetry.addData("target",time);*/
     }
+    public void moveThreeRobotToPositionUsingTime(double oldx,double oldy, double x, double y, double power, boolean turnToDestination, LinearOpMode opMode) throws InterruptedException {
+
+        double distX = x - oldx;
+        double distY = y - oldy;
+        double distance = Math.sqrt(Math.pow(distX,2) + Math.pow(distY,2));
+//        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
+        double time = (distance * 12 + 3.65) / 39.073;
+
+        Position direction = getDirectionFromXAndYDistance(distX,distY);
+        double ca = Math.cos(Math.toRadians(-getHeading()));
+        double sa = Math.sin(Math.toRadians(-getHeading()));
+        double finalX = ca * direction.x - sa * direction.y;
+        double finalY = sa * direction.x + ca * direction.y;
+        direction.x = finalX * power;
+        direction.y = finalY * power;
+
+//        accelerateRobot(direction.x,direction.y,power,1,opMode);
+        moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
+
+        opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
+        opMode.telemetry.addData("Distance", distance);
+        opMode.telemetry.addData("target",time);
+    }
 }
 

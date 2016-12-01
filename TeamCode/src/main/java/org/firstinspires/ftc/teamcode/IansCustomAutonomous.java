@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 
-@Autonomous(name="Ian test program", group="BetaLykos")
-public class IanTestProgram extends LinearOpMode {
+@Autonomous(name="Ian's Custom Autonomous Mode", group="BetaLykos")
+public class IansCustomAutonomous extends LinearOpMode {
 
     BetaLykosHardware robot = new BetaLykosHardware();
 
@@ -35,106 +35,107 @@ public class IanTestProgram extends LinearOpMode {
         while (opModeIsActive()) {
             robot.moveRobotToPositionUsingTime(4, 3.5, .5, false, this);
             robot.moveRobot(0,0,0,telemetry);
-            telemetry.addData("Position","(4,3.5)");
-            telemetry.update();
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
+//            telemetry.addData("Position","(4,3.5)");
+//            telemetry.update();
+//            while (opModeIsActive() && !gamepad1.a) {
+//                idle();
+//            }
 
             pressBeaconButton();
-            telemetry.addData("Position","(beacon button pressed)");
-            telemetry.update();
             robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
+//            telemetry.addData("Position","(beacon button pressed)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
-
+*/
             while(opModeIsActive() && time < 50) {
-            idle();
-            time  = time + .01;
-            }
-            telemetry.addData("Position","(wait)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.currentPosition = new Position(DistanceUnit.METER,1,5,0,System.currentTimeMillis());
-            telemetry.addData("Position","(1,5)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.moveRobotToPositionUsingTime(1,4,.5,false,this);//back up
-            telemetry.addData("Position","(1,4.5)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.moveRobotToPositionUsingTime(1,4.3,.5,false,this);//go forward
-            telemetry.addData("Position","(1,4.3)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.turnRobotToHeading(0,.2,this);//recheck headding
-            telemetry.addData("Position","(check heading)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.currentPosition = new Position(DistanceUnit.METER,0,5,0,System.currentTimeMillis());//say you are at beacon 1
-            telemetry.addData("Position","(0,5)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.moveRobotToPositionUsingTime(1,5,.5,false,this);
-            //this is the real code -  robot.moveRobotToPositionUsingTime(3,5,.5,false,this);//move to beacon 2 left of the tape
-            telemetry.addData("Position","(3,5)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            robot.moveRobot(0,0,0,telemetry);
-            telemetry.addData("Position","(stop)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
-                idle();
-            }
-
-            while(opModeIsActive() && time < 100) {
                 idle();
                 time  = time + .01;
             }
-            telemetry.addData("Position","(wait)");
-            telemetry.update();
             robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
+//            telemetry.addData("Position","(wait)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
+*/
+            robot.currentPosition = new Position(DistanceUnit.METER,1,5,0,System.currentTimeMillis());
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(1,5)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+            robot.moveRobotToPositionUsingTime(1,4,.5,false,this);//back up
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(1,4.5)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+            robot.moveRobotToPositionUsingTime(1,4.4,.5,false,this);//go forward
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(1,4.3)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+            robot.turnRobotToHeading(0,.2,this);//recheck headding
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(check heading)");
+//            telemetry.update();
+            /*while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+            robot.currentPosition = new Position(DistanceUnit.METER,0,5,0,System.currentTimeMillis());//say you are at beacon 1
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(0,5)");
+//            telemetry.update();
+            /*while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+            robot.moveRobotToPositionUsingTime(3.5,5,.5,false,this);
+            //this is the real code -  robot.moveRobotToPositionUsingTime(3,5,.5,false,this);//move to beacon 2 left of the tape
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(3,5)");
+//            telemetry.update();
+            /*while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+//            robot.moveRobot(0,0,0,telemetry);
+//            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(stop)");
+//            telemetry.update();
+    /*        while (opModeIsActive() && !gamepad1.a) {
+                idle();
+            }
+*/
+//            while(opModeIsActive() && time < 100) {
+//                idle();
+//                time  = time + .01;
+//            }
 
-            pressBeaconButton();
-            telemetry.addData("Position","(press beacon 2)");
-            telemetry.update();
-            robot.moveRobot(0,0,0,telemetry);
-            while (opModeIsActive() && !gamepad1.a) {
+//            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(wait)");
+//            telemetry.update();
+  /*          while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
+*/
+            pressBeaconButton();
+            robot.moveRobot(0,0,0,telemetry);
+//            telemetry.addData("Position","(press beacon 2)");
+//            telemetry.update();
+//            while (opModeIsActive() && !gamepad1.a) {
+//                idle();
+//            }
 
 
 //            robot.currentPosition = new Position(DistanceUnit.METER,8,4.5,0,System.currentTimeMillis());
