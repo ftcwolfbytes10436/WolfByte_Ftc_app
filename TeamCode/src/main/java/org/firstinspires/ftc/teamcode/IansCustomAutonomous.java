@@ -76,8 +76,8 @@ public class IansCustomAutonomous extends LinearOpMode {
                 idle();
             }
 */
-            robot.moveRobotToPositionUsingTime(1,4.4,.5,false,this);//go forward
-            robot.moveRobot(0,0,0,telemetry);
+//            robot.moveRobotToPositionUsingTime(1,4.4,.5,false,this);//go forward
+//            robot.moveRobot(0,0,0,telemetry);
 //            telemetry.addData("Position","(1,4.3)");
 //            telemetry.update();
   /*          while (opModeIsActive() && !gamepad1.a) {
@@ -86,37 +86,37 @@ public class IansCustomAutonomous extends LinearOpMode {
 */
             robot.turnRobotToHeading(0,.2,this);//recheck headding
             robot.moveRobot(0,0,0,telemetry);
-//            telemetry.addData("Position","(check heading)");
-//            telemetry.update();
+            telemetry.addData("Position","(check heading)");
+            telemetry.update();
             /*while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
 */
             robot.currentPosition = new Position(DistanceUnit.METER,0,5,0,System.currentTimeMillis());//say you are at beacon 1
             robot.moveRobot(0,0,0,telemetry);
-//            telemetry.addData("Position","(0,5)");
-//            telemetry.update();
+            telemetry.addData("Position","(0,5)");
+            telemetry.update();
             /*while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
 */
-            robot.moveRobotToPositionUsingTime(3.5,5,.5,false,this);
+            robot.moveRobotToPositionUsingTime(4,5,.5,false,this);
             //this is the real code -  robot.moveRobotToPositionUsingTime(3,5,.5,false,this);//move to beacon 2 left of the tape
             robot.moveRobot(0,0,0,telemetry);
-//            telemetry.addData("Position","(3,5)");
-//            telemetry.update();
+            telemetry.addData("Position","(3,5)");
+            telemetry.update();
             /*while (opModeIsActive() && !gamepad1.a) {
                 idle();
             }
-*/
+//*/
 //            robot.moveRobot(0,0,0,telemetry);
 //            robot.moveRobot(0,0,0,telemetry);
 //            telemetry.addData("Position","(stop)");
 //            telemetry.update();
     /*        while (opModeIsActive() && !gamepad1.a) {
                 idle();
-            }
-*/
+//            }
+//*/
 //            while(opModeIsActive() && time < 100) {
 //                idle();
 //                time  = time + .01;
@@ -160,7 +160,7 @@ public class IansCustomAutonomous extends LinearOpMode {
             idle();
         } // wait until the ods sensor sees white
         robot.moveRobot(0, 0, 0, telemetry);
-        robot.turnRobotToHeading(0,.2,this);
+//        robot.turnRobotToHeading(0,.2,this);
         robot.moveRobot(.05, 0, 0, telemetry);
         int i = 0;
         while (robot.getODSLightLevel() >= .005 && opModeIsActive()) {
@@ -178,6 +178,7 @@ public class IansCustomAutonomous extends LinearOpMode {
         while (!robot.touchSensor.isPressed()) {
             idle();
         }
+        robot.turnRobotToHeading(0,.2,this);
         robot.moveRobot(0, 0, 0, telemetry);
         double diff = robot.sensorRGB.red() - robot.sensorRGB.blue();
         if (alliance == 1) {

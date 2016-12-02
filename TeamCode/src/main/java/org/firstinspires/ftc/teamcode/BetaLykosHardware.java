@@ -740,7 +740,6 @@ public class BetaLykosHardware
 
 //        accelerateRobot(direction.x,direction.y,power,1,opMode);
         moveRobotForSeconds((float)direction.x,(float)direction.y,0,opMode,time);
-
         opMode.telemetry.addData("Distance x and y", "( %.2f, %.2f)",distX,distY);
         opMode.telemetry.addData("Distance", distance);
         opMode.telemetry.addData("target",time);
