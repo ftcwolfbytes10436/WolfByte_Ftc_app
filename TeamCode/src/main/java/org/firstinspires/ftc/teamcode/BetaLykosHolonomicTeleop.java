@@ -62,8 +62,8 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
 
 
         boolean lowGear = false;
-        boolean runParticleMotor = false;
-        boolean particleMotorButtonHeld = false;
+        boolean runParticleLauncher = false;
+        boolean particleLauncherButtonHeld = false;
         boolean railsUnlocked = false;
         boolean unlockRailButtonHeld = false;
 
@@ -122,23 +122,27 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             }
             telemetry.addData("Rails unlocked",railsUnlocked);
 
-            // toggle the particle motor
-            if (gamepad2.a && !particleMotorButtonHeld) {
-                runParticleMotor = !runParticleMotor;
-                if (runParticleMotor) {
-                    robot.particleMotor.setPower(1);
-                } else {
-                    robot.particleMotor.setPower(0);
-                }
-                particleMotorButtonHeld = true;
-            } else if (!gamepad2.a && particleMotorButtonHeld) {
-                particleMotorButtonHeld = false;
+            if (gamepad2.left_bumper) {
+                robot.particleLauncher.setPower(1);
+            } else {
+                robot.particleLauncher.setPower(0);
             }
-            telemetry.addData("Run Particle motor", runParticleMotor);
 
-            // run the particle launcher motor
-//            robot.particleLauncher.setPower(gamepad2.right_trigger);
-            telemetry.addData("particle lancher power", gamepad2.right_trigger);
+            if (!robot.launcherLimitSwitch.getState()) {
+                robot.particleLauncher.setPower(1);
+            } else {
+                robot.particleLauncher.setPower(0);
+            }
+
+            double scoopServo = Range.clip(gamepad2.right_stick_y-.05,-1,1);
+
+            if (!(robot.scoopTouchSensor.getState() && scoopServo > 0)) {
+                robot.scoopServo.setPower(scoopServo);
+            } else {
+                robot.scoopServo.setPower(-0.05);
+            }
+
+            telemetry.addData("Run Particle Launcher", runParticleLauncher);
 
             telemetry.update();
 

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
@@ -55,7 +56,6 @@ public class BetaLykosHardware
     public DcMotor      frontRightMotor    = null;
     public DcMotor      backLeftMotor      = null;
     public DcMotor      backRightMotor     = null;
-    public DcMotor      particleMotor      = null;
     public DcMotor      particleLauncher   = null;
     public Servo        leftRail           = null;
     public Servo        rightRail          = null;
@@ -70,6 +70,8 @@ public class BetaLykosHardware
     public ColorSensor sensorRGB           = null;
     public BNO055IMU imu;
     public TouchSensor touchSensor         = null;
+    public DigitalChannel scoopTouchSensor    = null;
+    public DigitalChannel launcherLimitSwitch = null;
 
     public boolean useDistanceSensorForInitialPosition = false;
     public boolean onRedAlliance = false;
@@ -116,23 +118,20 @@ public class BetaLykosHardware
         frontRightMotor = hwMap.dcMotor.get("front_right_drive");
         backLeftMotor = hwMap.dcMotor.get("back_left_drive");
         backRightMotor = hwMap.dcMotor.get("back_right_drive");
-//        particleMotor = hwMap.dcMotor.get("particle_motor");
-//        particleLauncher = hwMap.dcMotor.get("particle_launcher");
+        particleLauncher = hwMap.dcMotor.get("particle_launcher");
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.FORWARD);
-//        particleMotor.setDirection(DcMotor.Direction.FORWARD);
-//        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
+        particleLauncher.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         frontLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-//        particleMotor.setPower(0);
-//        particleLauncher.setPower(0);
+        particleLauncher.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -140,8 +139,7 @@ public class BetaLykosHardware
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        particleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        particleLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        particleLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
 //        leftRail = hwMap.servo.get("left_rail");
@@ -158,7 +156,11 @@ public class BetaLykosHardware
         odsSensor = hwMap.opticalDistanceSensor.get("ods");
         sensorRGB = hwMap.colorSensor.get("sensor_color");
         touchSensor = hwMap.touchSensor.get("touch");
+        scoopTouchSensor = hwMap.digitalChannel.get("scoopTouch");
+        launcherLimitSwitch = hwMap.digitalChannel.get("launcher_limit_switch");
 
+        scoopTouchSensor.setMode(DigitalChannelController.Mode.OUTPUT);
+        launcherLimitSwitch.setMode(DigitalChannelController.Mode.OUTPUT);
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         cdim.setDigitalChannelState(LED_CHANNEL, false);
 

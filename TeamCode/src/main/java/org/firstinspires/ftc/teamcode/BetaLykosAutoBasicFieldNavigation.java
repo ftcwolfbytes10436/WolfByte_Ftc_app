@@ -57,12 +57,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
     static final double MINREDBLUEDIFF = 25;
     static final double distanceBetweenButtons = 1;
     static final Position[] redStartPositions = {new Position(DistanceUnit.METER,5,1,0,0), new Position(DistanceUnit.METER,7,1,0,0)};
-    static final Position[] redBeacon1 = {new Position(DistanceUnit.METER,2,4,0,0), new Position(DistanceUnit.METER,1,5,0,0), new Position(DistanceUnit.METER,2,5,0,0)};
+    static final Position[] redBeacon1 = {new Position(DistanceUnit.METER,2,4.5,0,0), new Position(DistanceUnit.METER,1,5.5,0,0), new Position(DistanceUnit.METER,2,5.5,0,0)};
     static final Position[] redBeacon2 = {new Position(DistanceUnit.METER,2,8,0,0), new Position(DistanceUnit.METER,1,9,0,0), new Position(DistanceUnit.METER,2,9,0,0)};
     static final Position[] redShootingPositions = {new Position(DistanceUnit.METER,3,7,0,0)};
     static final Position[] blueStartPositions = {new Position(DistanceUnit.METER,11,7,0,0), new Position(DistanceUnit.METER,11,5,0,0)};
     static final Position[] blueBeacon1 = {new Position(DistanceUnit.METER,6,10,0,0), new Position(DistanceUnit.METER,7,11,0,0)};
     static final Position[] blueBeacon2 = {new Position(DistanceUnit.METER,2,10,0,0), new Position(DistanceUnit.METER,3,11,0,0)};
+    static final Position[] blueShootingPositions = {new Position(DistanceUnit.METER,9,5,0,0)};
     static final int[] startHeading = {90,0};
 
 
@@ -184,8 +185,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                     beacon1();
                     break;
                 case 2:
-                    robot.moveRobotToPositionUsingTime(5,2,0.5,false,this);
-//                    beacon2();
+                    beacon2();
                     break;
                 case 3:
                     //push ball
@@ -212,13 +212,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             lineUpToBeacon();
             robot.currentPosition = redBeacon1[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(redBeacon1[2].x,redBeacon1[2].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon1[2].x,redBeacon1[2].y,0.5,false,this);
         } else {
             robot.moveRobotToPositionUsingTime(blueBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
             lineUpToBeacon();
             robot.currentPosition = blueBeacon1[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(blueBeacon1[0].x,blueBeacon1[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon1[2].x,blueBeacon1[2].y,0.5,false,this);
         }
     }
 
@@ -228,13 +228,13 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             lineUpToBeacon();
             robot.currentPosition = redBeacon2[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(redBeacon2[2].x,redBeacon2[2].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon2[2].x,redBeacon2[2].y,0.5,false,this);
         } else {
             robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
             lineUpToBeacon();
             robot.currentPosition = blueBeacon2[1];
             pressBeaconButton();
-            robot.moveTwoRobotToPositionUsingTime(blueBeacon2[0].x,blueBeacon2[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,blueBeacon2[0].y,0.5,false,this);
         }
     }
 
@@ -243,7 +243,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         while (robot.getODSLightLevel() < .005 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
-        robot.turnRobotToHeading(startHeading[alliance - 1],.15,this);
+        robot.turnRobotToHeading(startHeading[alliance - 1],.2,this);
         robot.moveRobot(.05,0,0,telemetry);
         while (robot.getODSLightLevel() >= .005 && opModeIsActive()) {
             idle();
@@ -264,7 +264,25 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         if(alliance == 1) {
             robot.moveRobotToPositionUsingTime(redShootingPositions[0].x, redShootingPositions[0].y,0.5,false,this);
             robot.turnRobotTowardsPoint(redShootingPositions[0].x, redShootingPositions[0].y,.25,this);
+        } else {
+            robot.moveRobotToPositionUsingTime(blueShootingPositions[0].x, blueShootingPositions[0].y,0.5,false,this);
+            robot.turnRobotTowardsPoint(blueShootingPositions[0].x, blueShootingPositions[0].y,.25,this);
         }
+        if (!robot.launcherLimitSwitch.getState()) {
+            while (!robot.launcherLimitSwitch.getState()) {
+                robot.particleLauncher.setPower(1);
+            }
+            robot.particleLauncher.setPower(0);
+        } else {
+            while (robot.launcherLimitSwitch.getState()) {
+                robot.particleLauncher.setPower(1);
+            }
+            while (!robot.launcherLimitSwitch.getState()) {
+                robot.particleLauncher.setPower(1);
+            }
+            robot.particleLauncher.setPower(0);
+        }
+
     }
 
     int getInput(int numAnswers) {
@@ -301,24 +319,24 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         double diff = robot.sensorRGB.red() - robot.sensorRGB.blue();
         if (alliance == 1) {
             if (diff > MINREDBLUEDIFF) {
-                //robot.pressLeftServo();
+                robot.pressLeftServo();
                 telemetry.addData("Left servo","pressed");
                 telemetry.addData("Right servo","not pressed");
                 telemetry.update();
             } else {
-                //robot.pressRightServo();
+                robot.pressRightServo();
                 telemetry.addData("Left servo","not pressed");
                 telemetry.addData("Right servo","pressed");
                 telemetry.update();
             }
         } else if (alliance == 2) {
             if (diff > MINREDBLUEDIFF) {
-                //robot.pressRightServo();
+                robot.pressRightServo();
                 telemetry.addData("Left servo","not pressed");
                 telemetry.addData("Right servo","pressed");
                 telemetry.update();
             } else {
-                //robot.pressLeftServo();
+                robot.pressLeftServo();
                 telemetry.addData("Left servo","pressed");
                 telemetry.addData("Right servo","not pressed");
                 telemetry.update();
