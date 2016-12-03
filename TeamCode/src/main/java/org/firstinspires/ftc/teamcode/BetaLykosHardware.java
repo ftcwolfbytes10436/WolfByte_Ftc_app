@@ -102,6 +102,7 @@ public class BetaLykosHardware
     private ElapsedTime period  = new ElapsedTime();
     Orientation currentHeading;
     Position lastPostion;
+    public static double scoopServerCalibration = -0.065;
 
     /* Constructor */
     public BetaLykosHardware(){
@@ -148,7 +149,7 @@ public class BetaLykosHardware
         leftBeaconServo = hwMap.servo.get("left_beacon_servo");
         rightBeaconServo.setPosition(0);
         scoopServo = hwMap.crservo.get("scoop_servo");
-        scoopServo.setPower(-0.05);
+        scoopServo.setPower(scoopServerCalibration);
 
         cdim = hwMap.deviceInterfaceModule.get("dim");
         frontRangeSensor = hwMap.get(AnalogInput.class, "front_range_sensor");
@@ -159,8 +160,8 @@ public class BetaLykosHardware
         scoopTouchSensor = hwMap.digitalChannel.get("scoopTouch");
         launcherLimitSwitch = hwMap.digitalChannel.get("launcher_limit_switch");
 
-        scoopTouchSensor.setMode(DigitalChannelController.Mode.OUTPUT);
-        launcherLimitSwitch.setMode(DigitalChannelController.Mode.OUTPUT);
+        scoopTouchSensor.setMode(DigitalChannelController.Mode.INPUT);
+        launcherLimitSwitch.setMode(DigitalChannelController.Mode.INPUT);
         cdim.setDigitalChannelMode(LED_CHANNEL, DigitalChannelController.Mode.OUTPUT);
         cdim.setDigitalChannelState(LED_CHANNEL, false);
 
@@ -369,11 +370,13 @@ public class BetaLykosHardware
 
     public void pressLeftServo (){
         leftBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
-        leftBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
+
+                leftBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
     }
 
     public void pressRightServo (){
         rightBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
+
         rightBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
     }
 

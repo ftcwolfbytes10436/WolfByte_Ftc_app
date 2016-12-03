@@ -66,6 +66,9 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
         boolean particleLauncherButtonHeld = false;
         boolean railsUnlocked = false;
         boolean unlockRailButtonHeld = false;
+        boolean launching = false;
+        boolean resettingLauncher = false;
+        double resetLoopCounter = 0;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -122,24 +125,82 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             }
             telemetry.addData("Rails unlocked",railsUnlocked);
 
-            if (gamepad2.left_bumper) {
+            if (gamepad2.left_bumper && !launching && !resettingLauncher) {
+                telemetry.addData("Launching","Launching");
                 robot.particleLauncher.setPower(1);
-            } else {
-                robot.particleLauncher.setPower(0);
+                launching = true;
             }
 
-            if (!robot.launcherLimitSwitch.getState()) {
-                robot.particleLauncher.setPower(1);
-            } else {
-                robot.particleLauncher.setPower(0);
+
+            if (launching && robot.launcherLimitSwitch.getState()) {
+                telemetry.addData("Waiting for switch", "Reloading");
+                resettingLauncher = true;
+                launching = false;
+
             }
 
-            double scoopServo = Range.clip(gamepad2.right_stick_y-.05,-1,1);
+            if (resettingLauncher) {
+                telemetry.addData("ResetLooper Inc", "Inc resetLoopCounter");
+                resetLoopCounter ++;
+            }
 
-            if (!(robot.scoopTouchSensor.getState() && scoopServo > 0)) {
+            if (resetLoopCounter >= 15) {
+                telemetry.addData("Reseting", "Stopping Moter");
+                robot.particleLauncher.setPower(0);
+                resettingLauncher=false;
+                resetLoopCounter = 0;
+            }
+
+            if (gamepad2.right_bumper)
+            {
+                robot.particleLauncher.setPower(-1);
+                resetLoopCounter = 0;
+                resettingLauncher = false;
+                launching = false;
+            }
+
+           /* if (gamepad2.x)
+            {
+                robot.pressLeftServo();
+            }
+
+            if (gamepad2.b)
+            {
+                robot.pressRightServo();
+            }*/
+
+
+
+            telemetry.addData("Launcher Switch", robot.launcherLimitSwitch.getState());
+            telemetry.addData("Launching", launching);
+            telemetry.addData("ResettingLauncher", resettingLauncher);
+            telemetry.addData("Reseting Loop Counter", resetLoopCounter);
+
+
+            //telemetry.update();
+//            if (gamepad2.left_bumper) {
+//                robot.particleLauncher.setPower(1);
+//            } else {
+//                robot.particleLauncher.setPower(0);
+//            }
+//
+//            if (robot.launcherLimitSwitch.getState()) {
+//                robot.particleLauncher.setPower(0);
+//            } else {
+//                robot.particleLauncher.setPower(1);
+//            }
+
+            double scoopServo = gamepad2.right_stick_y;
+
+            telemetry.addData("ScoopStick", scoopServo);
+            telemetry.addData("ScoopSwitch", robot.scoopTouchSensor.getState());
+            if (((scoopServo > 0.05) && !robot.scoopTouchSensor.getState()) || scoopServo < -0.05)
+            {
                 robot.scoopServo.setPower(scoopServo);
-            } else {
-                robot.scoopServo.setPower(-0.05);
+            }
+            else
+            {
+                robot.scoopServo.setPower(robot.scoopServerCalibration);
             }
 
             telemetry.addData("Run Particle Launcher", runParticleLauncher);

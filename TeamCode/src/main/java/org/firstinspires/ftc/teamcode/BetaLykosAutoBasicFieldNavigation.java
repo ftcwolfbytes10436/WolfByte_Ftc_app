@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -75,6 +76,8 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        robot.scoopServo.setPower(-.05);
 
         robot.onRedAlliance = gamepad1.a;
         robot.useDistanceSensorForInitialPosition = true;
@@ -268,20 +271,62 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             robot.moveRobotToPositionUsingTime(blueShootingPositions[0].x, blueShootingPositions[0].y,0.5,false,this);
             robot.turnRobotTowardsPoint(blueShootingPositions[0].x, blueShootingPositions[0].y,.25,this);
         }
-        if (!robot.launcherLimitSwitch.getState()) {
-            while (!robot.launcherLimitSwitch.getState()) {
-                robot.particleLauncher.setPower(1);
-            }
-            robot.particleLauncher.setPower(0);
-        } else {
-            while (robot.launcherLimitSwitch.getState()) {
-                robot.particleLauncher.setPower(1);
-            }
-            while (!robot.launcherLimitSwitch.getState()) {
-                robot.particleLauncher.setPower(1);
-            }
-            robot.particleLauncher.setPower(0);
+
+
+        //Start the launcher motor (shoots the 1st ball)
+        robot.particleLauncher.setPower(1);
+
+        //keep the motor running until the switch turns on
+        while( !robot.launcherLimitSwitch.getState()) {
+            robot.waitForTick(10);
+            idle();
         }
+
+        //now run the motor .6s to get it ready to fire again
+        robot.waitForTick(600);
+
+        //stop the motor
+        robot.particleLauncher.setPower(0);
+
+
+
+        robot.scoopServo.setPower(1);
+        if (!(robot.scoopTouchSensor.getState())) {
+            robot.scoopServo.setPower(1);
+        } else {
+            robot.scoopServo.setPower(-0.05);
+        }
+
+        robot.waitForTick(500);
+        robot.particleLauncher.setPower(1);
+
+        //keep the motor running until the switch turns on
+        while( !robot.launcherLimitSwitch.getState()) {
+            robot.waitForTick(10);
+            idle();
+        }
+
+        //now run the motor .6s to get it ready to fire again
+        robot.waitForTick(600);
+
+        //stop the motor
+        robot.particleLauncher.setPower(0);
+
+
+//        if (!robot.launcherLimitSwitch.getState()) {
+//            while (!robot.launcherLimitSwitch.getState()) {
+//                robot.particleLauncher.setPower(1);
+//            }
+//            robot.particleLauncher.setPower(0);
+//        } else {
+//            while (robot.launcherLimitSwitch.getState()) {
+//                robot.particleLauncher.setPower(1);
+//            }
+//            while (!robot.launcherLimitSwitch.getState()) {
+//                robot.particleLauncher.setPower(1);
+//            }
+//            robot.particleLauncher.setPower(0);
+//        }
 
     }
 

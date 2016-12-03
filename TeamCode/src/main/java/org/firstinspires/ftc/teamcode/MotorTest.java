@@ -62,6 +62,8 @@ public class MotorTest extends LinearOpMode {
          */
         robot.init(hardwareMap);
 
+        //robot.scoopServo.setPower(-.05);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -78,6 +80,8 @@ public class MotorTest extends LinearOpMode {
             robot.frontRightMotor.setPower(getPowerFromBoolean(gamepad1.b));
             robot.backLeftMotor.setPower(getPowerFromBoolean(gamepad1.x));
             robot.backRightMotor.setPower(getPowerFromBoolean(gamepad1.y));
+            robot.particleLauncher.setPower(getPowerFromBoolean(gamepad1.left_bumper));
+
 
             telemetry.update();
 
