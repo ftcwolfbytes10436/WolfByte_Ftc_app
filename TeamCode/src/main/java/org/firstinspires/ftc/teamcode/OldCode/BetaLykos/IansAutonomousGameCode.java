@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OldCode.BetaLykos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.BetaLykosHardware;
 
 
 @Autonomous(name="Ian's Autonomous Game Code", group="BetaLykos")
+@Disabled
 public class IansAutonomousGameCode extends LinearOpMode {
 
     /* Declare OpMode members. */

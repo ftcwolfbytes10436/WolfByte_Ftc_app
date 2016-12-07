@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="BetaLykos Auto ODS Drive", group="BetaLykos")  // @Autonomous(...) is the other common choice
-//@Disabled
+@Disabled
 public class BetaLykosAutoODSDrive extends LinearOpMode {
 
     /* Declare OpMode members. */

@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="3 second square", group="BetaLykos")
-//@Disabled
+@Disabled
 public class BetaLykosAuto3SecSquare extends LinearOpMode {
 
     /* Declare OpMode members. */

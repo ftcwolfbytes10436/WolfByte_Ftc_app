@@ -50,6 +50,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  */
 
 @Autonomous(name="2 Meter Square", group="BetaLykos")
+@Disabled
 public class BetaLykosAuto1FootSquare extends LinearOpMode {
 
     /* Declare OpMode members. */

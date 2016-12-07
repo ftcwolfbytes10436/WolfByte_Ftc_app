@@ -54,6 +54,7 @@ import java.util.ArrayList;
  */
 
 @Autonomous(name="Go to position", group="BetaLykos")
+@Disabled
 public class BetaLykosAutoGoToPosition extends LinearOpMode {
 
     /* Declare OpMode members. */

@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
  * Created by RossL on 11/23/2016.
  */
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 
 @Autonomous(name="Ross test program", group="BetaLykos")
+@Disabled
 public class RossTestProgram1 extends LinearOpMode {
 
     BetaLykosHardware robot = new BetaLykosHardware();

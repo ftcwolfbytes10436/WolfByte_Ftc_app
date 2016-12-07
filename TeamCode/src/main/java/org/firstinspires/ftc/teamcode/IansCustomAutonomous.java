@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
  * Created by IanL on 11/26/2016.
  */
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 
 @Autonomous(name="Ian's Custom Autonomous Mode", group="BetaLykos")
+@Disabled
 public class IansCustomAutonomous extends LinearOpMode {
 
     BetaLykosHardware robot = new BetaLykosHardware();
