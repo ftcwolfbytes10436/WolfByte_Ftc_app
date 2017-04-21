@@ -32,12 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This OpMode uses the common BetaLykos hardware class to define the devices on the robot.
@@ -106,14 +103,19 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
                 gamepad1LeftX /= 4;
             }
 
-            gamepad1RightX *= gamepad1RightX * gamepad1RightX;
-            gamepad1RightY *= gamepad1RightY * gamepad1RightY;
+            double ca = Math.cos(Math.toRadians(-robot.getHeading()));
+            double sa = Math.sin(Math.toRadians(-robot.getHeading()));
+            double finalX = ca * gamepad1RightX - sa * gamepad1RightY;
+            double finalY = sa * gamepad1RightX + ca * gamepad1RightY;
+
+            finalX *= finalX * finalX;
+            finalY *= finalY * finalY;
 
 //            if (robot.getFrontRangeDistance() <= 6 && gamepad1RightY > 0) {
 //                gamepad1RightY = 0;
 //            }
-            robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,extendRobot,telemetry);
-
+            robot.moveRobot(finalX,finalY,gamepad1LeftX,extendRobot,telemetry);
+            telemetry.addData("White Sensor" , robot.getODSLightLevel());
             // unlock or lock rails
             if (gamepad1.left_bumper && !unlockRailButtonHeld) {
                 railsUnlocked = !railsUnlocked;
@@ -144,7 +146,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
                 resetLoopCounter ++;
             }
 
-            if (resetLoopCounter >= 15) {
+            if (resetLoopCounter >= 12) {
                 telemetry.addData("Reseting", "Stopping Moter");
                 robot.particleLauncher.setPower(0);
                 resettingLauncher=false;
@@ -159,7 +161,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
                 launching = false;
             }
 
-           /* if (gamepad2.x)
+            if (gamepad2.x)
             {
                 robot.pressLeftServo();
             }
@@ -167,7 +169,11 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             if (gamepad2.b)
             {
                 robot.pressRightServo();
-            }*/
+            }
+
+            if (gamepad2.y) {
+                robot.pushServosDown();
+            }
 
 
 
@@ -194,14 +200,16 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
 
             telemetry.addData("ScoopStick", scoopServo);
             telemetry.addData("ScoopSwitch", robot.scoopTouchSensor.getState());
-            if (((scoopServo > 0.05) && !robot.scoopTouchSensor.getState()) || scoopServo < -0.05)
-            {
-                robot.scoopServo.setPower(scoopServo);
-            }
-            else
-            {
-                robot.scoopServo.setPower(robot.scoopServerCalibration);
-            }
+            robot.scoopServo.setPower(Range.clip(scoopServo+robot.scoopServoCalibration,-1,1));
+//            if (((scoopServo > 0.05) && !robot.scoopTouchSensor.getState()) || scoopServo < -0.05)
+//            {
+//                robot.scoopServo.setPower(scoopServo);
+//            }
+//            else
+//            {
+//                robot.waitForTick(11);
+//                robot.scoopServo.setPower(robot.scoopServoCalibration);
+//            }
 
             telemetry.addData("Run Particle Launcher", runParticleLauncher);
 

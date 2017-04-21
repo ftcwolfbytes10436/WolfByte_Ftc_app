@@ -52,6 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
  */
 
 @Autonomous(name="one foot forward", group="BetaLykos")  // @Autonomous(...) is the other common choice
+@Disabled
 public class BetaLykosOneFootForward extends LinearOpMode {
 
     /* Declare OpMode members. */

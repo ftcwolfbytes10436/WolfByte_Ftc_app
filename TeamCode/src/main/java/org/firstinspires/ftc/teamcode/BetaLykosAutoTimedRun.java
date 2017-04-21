@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="TimedRun", group="BetaLykos")
-//@Disabled
+@Disabled
 public class BetaLykosAutoTimedRun extends LinearOpMode {
 
     /* Declare OpMode members. */

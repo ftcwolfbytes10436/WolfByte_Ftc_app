@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
@@ -14,7 +13,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.configuration.ServoConfiguration;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -77,6 +75,7 @@ public class BetaLykosHardware
     public boolean onRedAlliance = false;
     public Position currentPosition = new Position();
     public double headingOffset = 0;
+    ElapsedTime timer = new ElapsedTime();
 
 
     static final int LED_CHANNEL = 5;
@@ -102,7 +101,7 @@ public class BetaLykosHardware
     private ElapsedTime period  = new ElapsedTime();
     Orientation currentHeading;
     Position lastPostion;
-    public static double scoopServerCalibration = -0.065;
+    public static double scoopServoCalibration = -0.065;
 
     /* Constructor */
     public BetaLykosHardware(){
@@ -148,8 +147,9 @@ public class BetaLykosHardware
         rightBeaconServo = hwMap.servo.get("right_beacon_servo");
         leftBeaconServo = hwMap.servo.get("left_beacon_servo");
         rightBeaconServo.setPosition(0);
+        leftBeaconServo.setPosition(0);
         scoopServo = hwMap.crservo.get("scoop_servo");
-        scoopServo.setPower(scoopServerCalibration);
+        scoopServo.setPower(scoopServoCalibration);
 
         cdim = hwMap.deviceInterfaceModule.get("dim");
         frontRangeSensor = hwMap.get(AnalogInput.class, "front_range_sensor");
@@ -370,13 +370,22 @@ public class BetaLykosHardware
 
     public void pressLeftServo (){
         leftBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
-
-                leftBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
+        timer.reset();
+        while (timer.seconds() < 0.25){}
+        leftBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
     }
 
     public void pressRightServo (){
         rightBeaconServo.setPosition(SERVOPUSHEDPOSSITION);
+        timer.reset();
+        while (timer.seconds() < 0.25){}
+        rightBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
+    }
 
+    public void pushServosDown() {
+        rightBeaconServo.setPosition(1);
+        timer.reset();
+        while (timer.seconds() < 0.25){}
         rightBeaconServo.setPosition(SERVOUNPUSHEDPOSSITION);
     }
 
@@ -560,7 +569,9 @@ public class BetaLykosHardware
         double distY = y - currentPosition.y;
         double distance = Math.sqrt(Math.pow(distX,2) + Math.pow(distY,2));
 //        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
-        double time = (distance * 12 + 3.65) / 39.073;
+//        double time = (distance * 12 + 3.65) / 39.073;
+        double time = (distance * 12 + 3.78)/29.476;
+
 
         Position direction = getDirectionFromXAndYDistance(distX,distY);
         double ca = Math.cos(Math.toRadians(-getHeading()));
@@ -731,7 +742,8 @@ public class BetaLykosHardware
         double distY = y - oldy;
         double distance = Math.sqrt(Math.pow(distX,2) + Math.pow(distY,2));
 //        double time = Math.log10((distance * 12 + 189.5)/186.27)/Math.log10(1.1499);
-        double time = (distance * 12 + 3.65) / 39.073;
+//        double time = (distance * 12 + 3.65) / 39.073;
+        double time = (distance * 12 + 3.78)/32.476;
 
         Position direction = getDirectionFromXAndYDistance(distX,distY);
         double ca = Math.cos(Math.toRadians(-getHeading()));

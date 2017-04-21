@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;  //original
  *
  */
 @Autonomous(name="Andrew Test Program", group="BetaLykos") //orig // @TeleOp(...) is the other common choice
-
+@Disabled
 public class AndrewTestProgram1 extends LinearOpMode {  //orig
 
 

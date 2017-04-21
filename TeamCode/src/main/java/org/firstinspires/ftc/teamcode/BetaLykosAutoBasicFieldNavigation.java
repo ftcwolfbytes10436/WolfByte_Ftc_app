@@ -34,7 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -74,10 +74,11 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
     int[] questions = new int[5];
     int question8 = 0;
 
+    ElapsedTime timer = new ElapsedTime();
+
+
     @Override
     public void runOpMode() throws InterruptedException {
-
-        robot.scoopServo.setPower(-.05);
 
         robot.onRedAlliance = gamepad1.a;
         robot.useDistanceSensorForInitialPosition = true;
@@ -185,10 +186,10 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
             switch (questions[i]) {
 
                 case 1:
-                    beacon1();
+//                    beacon1();
                     break;
                 case 2:
-                    beacon2();
+//                    beacon2();
                     break;
                 case 3:
                     //push ball
@@ -200,7 +201,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
                     //cornerV
                     break;
                 case 6:
-                    //centerV
+                    robot.moveRobotForSeconds(1,0,0,this,3);
                     break;
                 case 7:
                     //stay
@@ -211,52 +212,52 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
     void beacon1() throws InterruptedException {
         if (alliance == 1) {
-            robot.moveRobotToPositionUsingTime(redBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon1[0].x,redBeacon1[0].y,1,false,this);
             lineUpToBeacon();
             robot.currentPosition = redBeacon1[1];
             pressBeaconButton();
-            robot.moveRobotToPositionUsingTime(redBeacon1[2].x,redBeacon1[2].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon1[2].x,redBeacon1[2].y,1,false,this);
         } else {
-            robot.moveRobotToPositionUsingTime(blueBeacon1[0].x,redBeacon1[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon1[0].x,redBeacon1[0].y,1,false,this);
             lineUpToBeacon();
             robot.currentPosition = blueBeacon1[1];
             pressBeaconButton();
-            robot.moveRobotToPositionUsingTime(blueBeacon1[2].x,blueBeacon1[2].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon1[2].x,blueBeacon1[2].y,1,false,this);
         }
     }
 
     void beacon2() throws InterruptedException {
         if (alliance == 1) {
-            robot.moveRobotToPositionUsingTime(redBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon2[0].x,redBeacon2[0].y,1,false,this);
             lineUpToBeacon();
             robot.currentPosition = redBeacon2[1];
             pressBeaconButton();
-            robot.moveRobotToPositionUsingTime(redBeacon2[2].x,redBeacon2[2].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(redBeacon2[2].x,redBeacon2[2].y,1,false,this);
         } else {
-            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,redBeacon2[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,redBeacon2[0].y,1,false,this);
             lineUpToBeacon();
             robot.currentPosition = blueBeacon2[1];
             pressBeaconButton();
-            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,blueBeacon2[0].y,0.5,false,this);
+            robot.moveRobotToPositionUsingTime(blueBeacon2[0].x,blueBeacon2[0].y,1,false,this);
         }
     }
 
     void lineUpToBeacon() throws InterruptedException {
-        robot.moveRobot(.1,0,0,telemetry); // start moving the robot to the right
+        robot.moveRobot(.3,0,0,telemetry); // start moving the robot to the right
         while (robot.getODSLightLevel() < .005 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
         robot.turnRobotToHeading(startHeading[alliance - 1],.2,this);
-        robot.moveRobot(.05,0,0,telemetry);
+        robot.moveRobot(.2,0,0,telemetry);
         while (robot.getODSLightLevel() >= .005 && opModeIsActive()) {
             idle();
         }
         robot.moveRobot(0,0,0,telemetry);
-        robot.moveRobot(-.05,.1,0,telemetry);
+        robot.moveRobot(-.2,.3,0,telemetry);
         while (robot.getODSLightLevel() < .005 && opModeIsActive())  {
             idle();} // wait until the ods sensor sees white
         robot.moveRobot(0,0,0,telemetry);
-        robot.moveRobot(0,.1,0,telemetry);
+        robot.moveRobot(0,.2,0,telemetry);
         while (!robot.touchSensor.isPressed()) {
             idle();
         }
@@ -264,15 +265,15 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
     }
 
     void shoot() throws InterruptedException {
-        if(alliance == 1) {
-            robot.moveRobotToPositionUsingTime(redShootingPositions[0].x, redShootingPositions[0].y,0.5,false,this);
-            robot.turnRobotTowardsPoint(redShootingPositions[0].x, redShootingPositions[0].y,.25,this);
-        } else {
-            robot.moveRobotToPositionUsingTime(blueShootingPositions[0].x, blueShootingPositions[0].y,0.5,false,this);
-            robot.turnRobotTowardsPoint(blueShootingPositions[0].x, blueShootingPositions[0].y,.25,this);
-        }
+//        if(alliance == 1) {
+//            robot.moveRobotToPositionUsingTime(redShootingPositions[0].x, redShootingPositions[0].y,1,false,this);
+//            robot.turnRobotTowardsPoint(redShootingPositions[0].x, redShootingPositions[0].y,.5,this);
+//        } else {
+//            robot.moveRobotToPositionUsingTime(blueShootingPositions[0].x, blueShootingPositions[0].y,1,false,this);
+//            robot.turnRobotTowardsPoint(blueShootingPositions[0].x, blueShootingPositions[0].y,.5,this);
+//        }
 
-
+//        robot.moveRobotForSeconds(1,0,0,this,);
         //Start the launcher motor (shoots the 1st ball)
         robot.particleLauncher.setPower(1);
 
@@ -283,7 +284,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         }
 
         //now run the motor .6s to get it ready to fire again
-        robot.waitForTick(600);
+        robot.waitForTick(400);
 
         //stop the motor
         robot.particleLauncher.setPower(0);
@@ -291,13 +292,15 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 
 
         robot.scoopServo.setPower(1);
-        if (!(robot.scoopTouchSensor.getState())) {
-            robot.scoopServo.setPower(1);
-        } else {
-            robot.scoopServo.setPower(-0.05);
+        while (opModeIsActive() && !robot.scoopTouchSensor.getState()) {
+            robot.waitForTick(10);
+            idle();
         }
+        timer.reset();
+        while (timer.seconds() < 0.75){}
+        robot.scoopServo.setPower(robot.scoopServoCalibration);
 
-        robot.waitForTick(500);
+        robot.waitForTick(2000);
         robot.particleLauncher.setPower(1);
 
         //keep the motor running until the switch turns on

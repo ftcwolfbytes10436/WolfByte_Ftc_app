@@ -78,13 +78,14 @@ public class BetaLykosServoTest extends LinearOpMode {
             telemetry.addData("Status", "Running");
 
             float gamepad1RightX = -gamepad1.right_stick_x;
-            double servoPosition = Range.clip(robot.rightBeaconServo.getPosition()+gamepad1RightX*servoSpeed,0,1);
-            float gamepad1Leftx = -gamepad1.left_stick_x;
-            double servoPower = gamepad1Leftx*servoSpeed;
+            double rightservoPosition = Range.clip(robot.rightBeaconServo.getPosition()+gamepad1RightX*servoSpeed,0,1);
+            float gamepad1LeftX = -gamepad1.left_stick_x;
+            double leftservoPosition = Range.clip(robot.leftBeaconServo.getPosition()+gamepad1LeftX*servoSpeed,0,1);
 
-            robot.rightBeaconServo.setPosition(servoPosition);
-            robot.scoopServo.setPower(Range.clip(gamepad1Leftx-.05,-1,1));
-            telemetry.addData("servo",robot.scoopServo.getPower());
+            robot.rightBeaconServo.setPosition(rightservoPosition);
+            robot.leftBeaconServo.setPosition(leftservoPosition);
+            telemetry.addData("right servo",robot.rightBeaconServo.getPosition());
+            telemetry.addData("left servo",robot.leftBeaconServo.getPosition());
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
