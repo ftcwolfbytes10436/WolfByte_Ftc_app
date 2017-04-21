@@ -132,7 +132,7 @@ public class BetaLykosHolonomicTeleop extends LinearOpMode {
             }
 
 
-            if (launching && robot.launcherLimitSwitch.getState()) {
+            if (launching && gamepad2.y) {
                 telemetry.addData("Waiting for switch", "Reloading");
                 resettingLauncher = true;
                 launching = false;

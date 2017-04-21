@@ -89,6 +89,7 @@ public class AndrewDriveProgram extends LinearOpMode {  //original
             float gamepad1RightY = -gamepad1.right_stick_y; //original
             float gamepad1RightX = -gamepad1.right_stick_x; //original
             float gamepad1LeftX  = -gamepad1.left_stick_x;  //original
+            float gamepad1LeftY  = -gamepad1.left_stick_y;  //original
 
             robot.moveRobot(gamepad1RightX,gamepad1RightY,gamepad1LeftX,telemetry); //original
 

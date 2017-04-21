@@ -313,10 +313,10 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
         robot.particleLauncher.setPower(0);
 
 
-//        if (!robot.launcherLimitSwitch.getState()) {
-//            while (!robot.launcherLimitSwitch.getState()) {
-//                robot.particleLauncher.setPower(1);
-//            }
+//       if (!robot.launcherLimitSwitch.getState()) {
+//          while (!robot.launcherLimitSwitch.getState()) {
+//          robot.particleLauncher.setPower(1);
+//          }
 //            robot.particleLauncher.setPower(0);
 //        } else {
 //            while (robot.launcherLimitSwitch.getState()) {
@@ -326,7 +326,7 @@ public class BetaLykosAutoBasicFieldNavigation extends LinearOpMode {
 //                robot.particleLauncher.setPower(1);
 //            }
 //            robot.particleLauncher.setPower(0);
-//        }
+//       }
 
     }
 

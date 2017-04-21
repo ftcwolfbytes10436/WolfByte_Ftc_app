@@ -32,9 +32,9 @@ public class AndrewTestProgram1 extends LinearOpMode {  //orig
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
-
+            ;
             robot.moveRobot(.2,0, 0, telemetry);
-
+//            robot.
 //            robot.moveRobotForSeconds(0, 0.4f, 0, this, (float)myTime);
             while (!gamepad1.a && opModeIsActive() && robot.getODSLightLevel() == 0)
             {
