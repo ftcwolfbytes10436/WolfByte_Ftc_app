@@ -490,6 +490,10 @@ public class BetaLykosHardware
 //            rotation = Math.copySign(rotationCorrectionPower,dif);
         }
 
+//        Position direction = getDirectionFromXAndYDistance(xAxis,yAxis);
+//        xAxis = direction.x;
+//        yAxis = direction.y;
+
         fLeft = Range.clip(yAxis + xAxis + rotation + separate, -1, 1);
         fRight = Range.clip(yAxis - xAxis - rotation + separate, -1, 1);
         bLeft = Range.clip(yAxis - xAxis + rotation - separate, -1, 1);
