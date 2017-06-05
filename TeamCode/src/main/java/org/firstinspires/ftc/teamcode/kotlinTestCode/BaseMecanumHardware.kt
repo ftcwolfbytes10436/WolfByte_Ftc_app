@@ -42,7 +42,7 @@ open class BaseMecanumHardware {
         // Save reference to Hardware map
         hwMap = ahwMap
 
-        // Save reference to Telementry instance
+        // Save reference to Telemetry instance
         this.telemetry = telemetry
 
         // assign motors to temp variables
@@ -77,14 +77,14 @@ open class BaseMecanumHardware {
         backRightMotor?.mode  = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    open fun moveRobot(xAxis: Double = 0.0, yAxis: Double = 0.0, rotation: Double = 0.0) {
+    fun moveRobot(xAxis: Double = 0.0, yAxis: Double = 0.0, rotation: Double = 0.0) {
         frontLeftMotor?.power  = Range.clip(yAxis + xAxis + rotation, -1.0, 1.0)
         frontRightMotor?.power = Range.clip(yAxis - xAxis - rotation, -1.0, 1.0)
         backLeftMotor?.power   = Range.clip(yAxis - xAxis + rotation, -1.0, 1.0)
         backRightMotor?.power  = Range.clip(yAxis + xAxis - rotation, -1.0, 1.0)
     }
 
-    open fun moveRobot(direction: Direction, rotation: Double = 0.0) {
+    fun moveRobot(direction: Direction, rotation: Double = 0.0) {
         moveRobot(direction.xAxis, direction.yAxis, rotation)
     }
 }
