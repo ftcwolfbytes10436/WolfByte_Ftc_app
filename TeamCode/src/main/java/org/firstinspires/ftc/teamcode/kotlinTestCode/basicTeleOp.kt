@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 /**
  * Created by caleb on 5/30/2017.
- * This is an OpMode to test making a OpMode in kotlin. It is based off of the linear pushbot teleop.
+ * This is a basic teleop OpMode coded in kotlin.
  */
 @TeleOp(name = "kotlin mecanum teleop", group = "kotlin")
-class basicTeleOp : OpMode() {
+class BasicTeleOp : OpMode() {
 
     /* Declare OpMode members. */
     var robot = BaseMecanumHardware()
