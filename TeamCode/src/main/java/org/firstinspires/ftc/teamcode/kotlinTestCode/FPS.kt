@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Position
+import org.intellij.lang.annotations.JdkConstants
 
 /**
  * Created by caleb on 6/4/2017.
@@ -28,10 +29,11 @@ class FPS {
         return angle as Double
     }
 
-    val fLEncoder: Int get() = hardware?.frontLeftMotor?.currentPosition ?: 0
-    val fREncoder: Int get() = hardware?.frontRightMotor?.currentPosition ?: 0
-    val bLEncoder: Int get() = hardware?.backLeftMotor?.currentPosition ?: 0
-    val bREncoder: Int get() = hardware?.backRightMotor?.currentPosition ?: 0
+    // encoder Values
+    var fLEncoder: Encoder? = null; private set
+    var fREncoder: Encoder? = null; private set
+    var bLEncoder: Encoder? = null; private set
+    var bREncoder: Encoder? = null; private set
 
     var position: Position = Position(); private set
 
@@ -53,6 +55,12 @@ class FPS {
         hardware.frontRightMotor?.mode = DcMotor.RunMode.RUN_USING_ENCODER
         hardware.backLeftMotor?.mode   = DcMotor.RunMode.RUN_USING_ENCODER
         hardware.backRightMotor?.mode  = DcMotor.RunMode.RUN_USING_ENCODER
+
+        // initialize the Encoder objects
+        fLEncoder = Encoder(hardware.frontLeftMotor, 1)
+        fREncoder = Encoder(hardware.frontRightMotor, 1)
+        bLEncoder = Encoder(hardware.backLeftMotor, 1)
+        bREncoder = Encoder(hardware.backRightMotor, 1)
 
         // Set up the parameters with which we will use our IMU.
         val parameters = BNO055IMU.Parameters()
@@ -79,4 +87,26 @@ class FPS {
     fun updateFPS() {
 
     }
+
+    fun moveRobotRelative(xAxis: Double, yAxis: Double, rotation: Double) {
+        val ca = Math.cos(Math.toRadians(-currentHeading))
+        val sa = Math.sin(Math.toRadians(-currentHeading))
+        var finalX = ca * xAxis - sa * yAxis
+        var finalY = sa * xAxis + ca * yAxis
+
+        finalX *= finalX * finalX
+        finalY *= finalY * finalY
+
+        hardware?.moveRobot(finalX,finalX,rotation)
+    }
+
+    fun moveRobotRelative(direction: Direction, rotation: Double) =
+            moveRobotRelative(direction.xAxis, direction.yAxis,rotation)
+}
+
+data class Encoder(val motor: DcMotor?, val countsPerInch: Int) {
+    var count: Int = 0; get() {lastCount = field; countTime = System.currentTimeMillis(); field = motor?.currentPosition ?: 0; return field} private set
+    var countTime: Long = 0; private set(value) {lastCountTime = field; field = value}
+    var lastCount: Int = 0; private set
+    var lastCountTime: Long = 0; private set
 }

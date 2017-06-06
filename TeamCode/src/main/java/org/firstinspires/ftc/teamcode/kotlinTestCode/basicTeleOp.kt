@@ -12,9 +12,14 @@ class BasicTeleOp : OpMode() {
 
     /* Declare OpMode members. */
     var robot = BaseMecanumHardware()
+    var fPS = FPS()
+
+    var relativeMove = false
+    var buttonPressed = false
 
     override fun init() {
         robot.init(hardwareMap, telemetry)
+        fPS.init(hardwareMap, telemetry, robot)
 
         telemetry.addData("Status", "waiting to start")
         telemetry.update()
@@ -26,7 +31,14 @@ class BasicTeleOp : OpMode() {
         var direction = Direction(gamepad1.left_stick_x as Double, -gamepad1.left_stick_y as Double)
         var rotation = gamepad1.right_stick_x as Double
 
-        // send the values to the hardware class
-        robot.moveRobot(direction, rotation)
+        if (gamepad1.y && !buttonPressed) {
+            buttonPressed = true
+            relativeMove = !relativeMove
+        }
+
+        if (relativeMove)
+            fPS.moveRobotRelative(direction, rotation)
+        else
+            robot.moveRobot(direction, rotation)
     }
 }
