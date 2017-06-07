@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.kotlinTestCode
 
+import com.cout970.vector.impl.Vector2d
 import com.qualcomm.hardware.adafruit.BNO055IMU
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -8,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Position
-import org.intellij.lang.annotations.JdkConstants
 
 /**
  * Created by caleb on 6/4/2017.
@@ -23,10 +23,10 @@ class FPS {
     var imu: BNO055IMU? = null; private set
     var headingOffset = 0
     val currentHeading: Double get() {
-        val currentHeading = imu?.getAngularOrientation()?.toAxesReference(AxesReference.INTRINSIC)?.toAxesOrder(AxesOrder.ZYX)
+        val currentHeading = imu?.angularOrientation?.toAxesReference(AxesReference.INTRINSIC)?.toAxesOrder(AxesOrder.ZYX)
         var angle = AngleUnit.DEGREES.fromUnit(currentHeading?.angleUnit, currentHeading?.firstAngle ?: 0.0f) + headingOffset
         if (angle > 180) angle = -180 + angle % 180
-        return angle as Double
+        return angle.toDouble()
     }
 
     // encoder Values
@@ -73,7 +73,7 @@ class FPS {
         // Retrieve the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
-        var imuTemp: BNO055IMU? = hwMap.get(BNO055IMU::class.java, "imu")
+        val imuTemp: BNO055IMU? = hwMap.get(BNO055IMU::class.java, "imu")
 
         // Check to make sure the IMU variable is not null and assign the IMU to a class variable
         // else if it is null send a message to telemetry
@@ -100,8 +100,8 @@ class FPS {
         hardware?.moveRobot(finalX,finalX,rotation)
     }
 
-    fun moveRobotRelative(direction: Direction, rotation: Double) =
-            moveRobotRelative(direction.xAxis, direction.yAxis,rotation)
+    fun moveRobotRelative(direction: Vector2d, rotation: Double) =
+            moveRobotRelative(direction.x, direction.y,rotation)
 }
 
 data class Encoder(val motor: DcMotor?, val countsPerInch: Int) {

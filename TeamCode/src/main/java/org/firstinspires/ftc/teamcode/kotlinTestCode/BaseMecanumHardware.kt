@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.kotlinTestCode
 
+import com.cout970.vector.impl.Vector2d
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
@@ -45,36 +46,20 @@ open class BaseMecanumHardware {
         // Save reference to Telemetry instance
         this.telemetry = telemetry
 
-        // assign motors to temp variables
-        var frontLeftMotorTemp: DcMotor?  = hwMap.dcMotor.get("f_left_drive")
-        var frontRightMotorTemp: DcMotor? = hwMap.dcMotor.get("f_right_drive")
-        var backLeftMotorTemp: DcMotor?   = hwMap.dcMotor.get("b_left_drive")
-        var backRightMotorTemp: DcMotor?  = hwMap.dcMotor.get("b_right_drive")
+        // Get and initialize the motors
+        frontLeftMotor = initMotor("f_left_drive", DcMotorSimple.Direction.FORWARD)
+        frontRightMotor = initMotor("f_right_drive", DcMotorSimple.Direction.REVERSE)
+        backLeftMotor = initMotor("b_left_drive", DcMotorSimple.Direction.FORWARD)
+        backRightMotor = initMotor("b_right_drive", DcMotorSimple.Direction.REVERSE)
+    }
 
-        // check to make sure the motor variables are not null and assign the motors to class variables
-        // else if they are null send a message to telemetry
-        if (frontLeftMotorTemp  != null) frontLeftMotor  = frontLeftMotorTemp  else telemetry.addData("error", "f_left_drive not found")
-        if (frontRightMotorTemp != null) frontRightMotor = frontRightMotorTemp else telemetry.addData("error", "f_right_drive not found")
-        if (backLeftMotorTemp   != null) backLeftMotor   = backLeftMotorTemp   else telemetry.addData("error", "b_left_drive not found")
-        if (backRightMotorTemp  != null) backRightMotor  = backRightMotorTemp  else telemetry.addData("error", "b_right_drive not found")
-
-        // set the motor direction
-        frontLeftMotor?.direction = DcMotorSimple.Direction.FORWARD
-        frontRightMotor?.direction = DcMotorSimple.Direction.REVERSE
-        backLeftMotor?.direction   = DcMotorSimple.Direction.FORWARD
-        backRightMotor?.direction  = DcMotorSimple.Direction.REVERSE
-
-        // set all motors to zero power
-        frontLeftMotor?.power  = 0.0
-        frontRightMotor?.power = 0.0
-        backLeftMotor?.power   = 0.0
-        backRightMotor?.power  = 0.0
-
-        // Set all motors to run without encoders.
-        frontLeftMotor?.mode  = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        frontRightMotor?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        backLeftMotor?.mode   = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        backRightMotor?.mode  = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+    fun initMotor(hardwareName: String, direction: DcMotorSimple.Direction) : DcMotor? {
+        val motor: DcMotor? = hwMap.dcMotor.get(hardwareName)
+        if (motor == null) telemetry.addData("error", "$hardwareName not found")
+        motor?.direction = direction
+        motor?.power = 0.0
+        motor?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        return motor
     }
 
     fun moveRobot(xAxis: Double = 0.0, yAxis: Double = 0.0, rotation: Double = 0.0) {
@@ -84,9 +69,7 @@ open class BaseMecanumHardware {
         backRightMotor?.power  = Range.clip(yAxis + xAxis - rotation, -1.0, 1.0)
     }
 
-    fun moveRobot(direction: Direction, rotation: Double = 0.0) {
-        moveRobot(direction.xAxis, direction.yAxis, rotation)
+    fun moveRobot(direction: Vector2d, rotation: Double = 0.0) {
+        moveRobot(direction.x, direction.y, rotation)
     }
 }
-
-data class Direction (var xAxis: Double, var yAxis: Double)

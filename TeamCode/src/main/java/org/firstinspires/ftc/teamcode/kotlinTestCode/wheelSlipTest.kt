@@ -23,9 +23,9 @@ class wheelSlipTest: OpMode() {
     }
 
     override fun loop() {
-        robot.frontLeftMotor?.power  = gamepad1.left_stick_y   as Double
-        robot.frontRightMotor?.power = gamepad1.right_stick_y  as Double
-        robot.backLeftMotor?.power   = gamepad2.left_stick_y   as Double
-        robot.backRightMotor?.power  = gamepad2.right_stick_y  as Double
+        robot.frontLeftMotor?.power  = gamepad1.left_stick_y.toDouble()
+        robot.frontRightMotor?.power = gamepad1.right_stick_y.toDouble()
+        robot.backLeftMotor?.power   = gamepad2.left_stick_y.toDouble()
+        robot.backRightMotor?.power  = gamepad2.right_stick_y.toDouble()
     }
 }
