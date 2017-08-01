@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.kotlinTestCode
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.robotcore.external.Telemetry
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
  * an opmode to write a file to calibrate the wheels
  */
 @TeleOp(name = "wheel slip test", group = "kotlin")
+@Disabled
 class WheelPowerOffsetCalibration: LinearOpMode(){
 
     var robot = BaseMecanumHardware()
@@ -22,10 +24,10 @@ class WheelPowerOffsetCalibration: LinearOpMode(){
 
         waitForStart()
 
-        val fl = MotorOffset(0.0)
-        val fr = MotorOffset(0.0)
-        val bl = MotorOffset(0.0)
-        val br = MotorOffset(0.0)
+        val fl = MotorSpeed(0.0)
+        val fr = MotorSpeed(0.0)
+        val bl = MotorSpeed(0.0)
+        val br = MotorSpeed(0.0)
 
         robot.moveRobot(0.0, 0.1)
 
@@ -59,15 +61,15 @@ class WheelPowerOffsetCalibration: LinearOpMode(){
         }
     }
 
-    private fun addValuesToTelementry (telemetry: Telemetry, motorName: String, motorOffset: MotorOffset) {
+    private fun addValuesToTelementry (telemetry: Telemetry, motorName: String, motorOffset: MotorSpeed) {
         telemetry.addData("$motorName encoder speed", "" + motorOffset.encoderSpeed + " counts per second")
         telemetry.addData("$motorName average encoder speed", "" + motorOffset.averageEncoderSpeed + " counts per second")
     }
 }
 
-private data class MotorOffset(val currentPower: Double) {
+private data class MotorSpeed(val currentPower: Double) {
     var encoderSpeed = 0; set(value) {numberOfCounts++; totalEncoderCounts+= value; field = value}
-    val averageEncoderSpeed get() = totalEncoderCounts / numberOfCounts
+    val averageEncoderSpeed get() = totalEncoderCounts / if (numberOfCounts != 0)numberOfCounts else 1
     var numberOfCounts = 0
     var totalEncoderCounts = 0
 }

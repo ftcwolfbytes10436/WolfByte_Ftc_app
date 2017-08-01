@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.kotlinTestCode
 
 import com.cout970.vector.impl.Vector2d
 import com.qualcomm.robotcore.hardware.*
-import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
@@ -36,7 +35,6 @@ open class BaseMecanumHardware {
     /* local OpMode members. */
     internal lateinit var hwMap: HardwareMap private set
     internal lateinit var telemetry: Telemetry private set
-    private var period = ElapsedTime()
 
     /* Initialize standard Hardware interfaces */
     open fun init(ahwMap: HardwareMap, telemetry: Telemetry) {

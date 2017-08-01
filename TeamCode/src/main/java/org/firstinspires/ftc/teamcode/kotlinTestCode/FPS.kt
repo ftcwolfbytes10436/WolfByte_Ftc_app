@@ -50,12 +50,6 @@ class FPS {
         this.telemetry = telemetry
         this.hardware = hardware
 
-        // set the motors to all use encoders
-        hardware.frontLeftMotor?.mode  = DcMotor.RunMode.RUN_USING_ENCODER
-        hardware.frontRightMotor?.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        hardware.backLeftMotor?.mode   = DcMotor.RunMode.RUN_USING_ENCODER
-        hardware.backRightMotor?.mode  = DcMotor.RunMode.RUN_USING_ENCODER
-
         // initialize the Encoder objects
         fLEncoder = Encoder(hardware.frontLeftMotor, 1)
         fREncoder = Encoder(hardware.frontRightMotor, 1)
