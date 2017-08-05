@@ -47,28 +47,47 @@ class AutonomousRoutesOp:  LinearOpMode(){
 
         robot.loopFunction = {autoLoop()}
 
-        when (selectedOption) {
-            1 -> route1()
-            2 -> route2()
-            3 -> route3()
-        }
+        try {
+            when (selectedOption) {
+                1 -> route1()
+                2 -> route2()
+                3 -> route3()
+            }
+        } catch (exeption: Exception) {}
     }
 
     fun autoLoop() {
         telemetry.update()
+        if (!opModeIsActive()) {
+            throw Exception();
+        }
     }
 
     fun route1() {
-            for (i in 1..4) {
-                pathTelementry?.setValue("drive forward $i")
-                targetTelementry?.setValue("(0, 0.5)")
-                robot.driveForSecs(Vector2d(0.0, 0.5), 1.0)
+        for (i in 1..2) {
+            pathTelementry?.setValue("drive forward $i")
+            targetTelementry?.setValue("(0, 0.5)")
+            robot.driveForSecs(Vector2d(0.0, 0.5), 1.0)
 
-                pathTelementry?.setValue("turn $i")
-                targetTelementry?.setValue(robot.currentHeading + 90)
-                robot.turnToHeading(robot.currentHeading.toDouble() + 90)
-            }
             robot.moveRobot()
+
+            pathTelementry?.setValue("turn $i")
+            targetTelementry?.setValue(90*i)
+            robot.turnToHeading(90.0*i, 0.1)
+        }
+
+        for (i in 1..2) {
+            pathTelementry?.setValue("drive forward $i")
+            targetTelementry?.setValue("(0, 0.5)")
+            robot.driveForSecs(Vector2d(0.0, 0.5), 1.0)
+
+            robot.moveRobot()
+
+            pathTelementry?.setValue("turn $i")
+            targetTelementry?.setValue(-180 + 90*i)
+            robot.turnToHeading(-180.0 + 90*i, 0.1)
+        }
+        robot.moveRobot()
     }
 
     fun route2() {

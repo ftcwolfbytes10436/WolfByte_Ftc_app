@@ -63,14 +63,17 @@ class AutonomousHardware: BaseMecanumHardware()  {
     }
 
     fun turnToHeading(target: Double, power: Double = 0.5, direction: Vector2d = Vector2d(0.0, 0.0)) {
-        val nTarget = target % 360
-        var distance = nTarget - currentHeading
-        val hDirection = if (distance > 0) 1 else -1
+        var distance = target - currentHeading
+        var hDirection = if (distance > 0) 1 else -1
+        if (Math.abs(distance) > 180) hDirection *= -1
+        var numTargetPassed = 1
 
-        moveRobot(direction, power * hDirection)
-        while (Math.abs(distance) > 10) {
+        while (Math.abs(distance) > 0.5) {
             loopFunction()
-            distance = nTarget - currentHeading
+            distance = target - currentHeading
+            hDirection = if (distance > 0) 1 else -1
+            if (Math.abs(distance) > 180) {hDirection *= -1; if(power/numTargetPassed > 0.1) numTargetPassed++}
+            moveRobot(direction, power * hDirection /numTargetPassed)
         }
     }
 }
