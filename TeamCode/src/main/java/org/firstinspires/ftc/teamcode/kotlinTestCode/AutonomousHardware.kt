@@ -54,7 +54,7 @@ class AutonomousHardware: BaseMecanumHardware()  {
     fun driveForSecs(direction: Vector2d, time: Double, rotation: Double = 0.0) {
         val startTime: Double = timer.seconds()
 
-        moveRobot(direction, rotation)
+        moveRobot(direction,rotation)
         var currentTime: Double = timer.seconds()
         while (currentTime - startTime < time) {
             loopFunction()

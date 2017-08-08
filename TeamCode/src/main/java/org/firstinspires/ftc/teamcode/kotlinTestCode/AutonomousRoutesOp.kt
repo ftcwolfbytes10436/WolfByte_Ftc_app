@@ -73,7 +73,7 @@ class AutonomousRoutesOp:  LinearOpMode(){
 
             pathTelementry?.setValue("turn $i")
             targetTelementry?.setValue(90*i)
-            robot.turnToHeading(90.0*i, 0.1)
+            robot.turnToHeading(90.0*i, 0.2, Vector2d(0.0, 0.1))
         }
 
         for (i in 1..2) {
@@ -85,14 +85,14 @@ class AutonomousRoutesOp:  LinearOpMode(){
 
             pathTelementry?.setValue("turn $i")
             targetTelementry?.setValue(-180 + 90*i)
-            robot.turnToHeading(-180.0 + 90*i, 0.1)
+            robot.turnToHeading(-180.0 + 90*i, 0.2, Vector2d(0.0, 0.1))
         }
         robot.moveRobot()
     }
 
     fun route2() {
         for (i in 1..4) {
-            val target = Vector2d(0.5*(((i%2) xor 1 ) * -(i/4)), 0.5*((i%2) * -(i/3)))
+            val target = Vector2d(0.5*(((i%2) xor 1 ) * (-(i/4) or 1)), 0.5*((i%2) * (-(i/3) or 1)))
             pathTelementry?.setValue("drive")
             targetTelementry?.setValue("("+target.x+", "+target.y+")")
             robot.driveForSecs(target, 1.0)
@@ -103,10 +103,12 @@ class AutonomousRoutesOp:  LinearOpMode(){
     fun route3() {
         pathTelementry?.setValue("turn")
         targetTelementry?.setValue("180 (0.0, 0.5)")
-        robot.turnToHeading(180.0, 0.1, Vector2d(0.0, 0.5))
+        robot.turnToHeading(180.0, 0.75, Vector2d(0.0, 1.0))
 
-        targetTelementry?.setValue("360 (0.0, 0.5)")
-        robot.turnToHeading(360.0, 0.1, Vector2d(0.0, 0.5))
+        robot.turnToHeading(-170.0, 0.75, Vector2d(0.0, 1.0))
+
+        targetTelementry?.setValue("0.0 (0.0, 0.5)")
+        robot.turnToHeading(0.0, 0.75, Vector2d(0.0, 1.0))
 
         robot.moveRobot()
     }

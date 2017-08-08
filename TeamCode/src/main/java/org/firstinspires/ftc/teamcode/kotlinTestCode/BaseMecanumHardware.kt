@@ -61,10 +61,11 @@ open class BaseMecanumHardware {
     }
 
     fun moveRobot(xAxis: Double = 0.0, yAxis: Double = 0.0, rotation: Double = 0.0) {
-        frontLeftMotor?.power  = Range.clip(yAxis + xAxis + rotation, -1.0, 1.0)
-        frontRightMotor?.power = Range.clip(yAxis - xAxis - rotation, -1.0, 1.0)
-        backLeftMotor?.power   = Range.clip(yAxis - xAxis + rotation, -1.0, 1.0)
-        backRightMotor?.power  = Range.clip(yAxis + xAxis - rotation, -1.0, 1.0)
+        val rotationPos: Int = if (rotation > 0) 1 else 0
+        frontLeftMotor?.power  = Range.clip(yAxis + xAxis + rotation * (rotationPos xor 1), -1.0, 1.0)
+        frontRightMotor?.power = Range.clip(yAxis - xAxis - rotation * rotationPos, -1.0, 1.0)
+        backLeftMotor?.power   = Range.clip(yAxis - xAxis + rotation * (rotationPos xor 1), -1.0, 1.0)
+        backRightMotor?.power  = Range.clip(yAxis + xAxis - rotation  * rotationPos, -1.0, 1.0)
     }
 
     fun moveRobot(direction: Vector2d, rotation: Double = 0.0) {
