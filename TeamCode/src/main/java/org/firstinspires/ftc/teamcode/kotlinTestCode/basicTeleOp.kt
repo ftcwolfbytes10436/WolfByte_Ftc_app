@@ -25,7 +25,8 @@ class BasicTeleOp : OpMode() {
         // Run the wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
         // In this mode the Left stick moves the robot and the Right stick rotates it left and right
         var direction = Vector2d(gamepad1.left_stick_x.toDouble(), -gamepad1.left_stick_y.toDouble())
-        val rotation = gamepad1.right_stick_x.toDouble()
+        val rotation = gamepad1.right_stick_x.toDouble() *
+                (if (Math.abs(direction.y) > Math.abs(direction.x)) Math.abs(direction.y) else Math.abs(direction.x)) * 2
 
         robot.moveRobot(direction, rotation)
     }

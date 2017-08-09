@@ -45,9 +45,6 @@ class AutonomousHardware: BaseMecanumHardware()  {
             currentOrientation = imu?.getAngularOrientation()?.toAxesReference(AxesReference.INTRINSIC)?.toAxesOrder(AxesOrder.ZYX)
         }
         var angle = AngleUnit.DEGREES.fromUnit(currentOrientation?.angleUnit, currentOrientation?.firstAngle ?: 0.0f)
-//        if (angle > 180) {
-//            angle = -180 + angle % 180
-//        }
         return angle
     }
 
@@ -62,18 +59,29 @@ class AutonomousHardware: BaseMecanumHardware()  {
         }
     }
 
-    fun turnToHeading(target: Double, power: Double = 0.5, direction: Vector2d = Vector2d(0.0, 0.0)) {
+    fun turnToHeading(target: Double, power: Double = 0.5, direction: Vector2d = Vector2d(0.0, 0.0), rotDirection: Int = 0) {
         var distance = target - currentHeading
-        var hDirection = if (distance > 0) 1 else -1
-        if (Math.abs(distance) > 180) hDirection *= -1
+        var hDirection = rotDirection
+        var lastHDirection: Int
         var numTargetPassed = 1
+        if (rotDirection == 0) {
+            hDirection = if (distance > 0) 1 else -1
+            if (Math.abs(distance) > 180) hDirection *= -1
+        }
 
+        moveRobot(direction, power * hDirection)
         while (Math.abs(distance) > 0.5) {
             loopFunction()
             distance = target - currentHeading
-            hDirection = if (distance > 0) 1 else -1
-            if (Math.abs(distance) > 180) {hDirection *= -1; if(power/numTargetPassed > 0.1) numTargetPassed++}
-            moveRobot(direction, power * hDirection /numTargetPassed)
+            if (Math.abs(distance) < 5) {
+                lastHDirection = hDirection
+                hDirection = if (distance > 0) 1 else -1
+                if (Math.abs(distance) > 180) {
+                    hDirection *= -1;
+                }
+                if (lastHDirection != hDirection && power / numTargetPassed > 0.2) numTargetPassed++
+                moveRobot(direction, power * hDirection /numTargetPassed)
+            }
         }
     }
 }
