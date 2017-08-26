@@ -5,12 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.ThreadPool;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.relicRecovery2017.Test_Scripts.PID_Test_Andrew;
 
 public class AutonomousHardware extends BaseMecanumHardware {
 
@@ -29,6 +31,11 @@ public class AutonomousHardware extends BaseMecanumHardware {
 
     private ElapsedTime timer = new ElapsedTime();
 
+    private PID_Test_Andrew frontLeftPos = new PID_Test_Andrew();
+    private PID_Test_Andrew frontRightPos = new PID_Test_Andrew();
+    private PID_Test_Andrew backLeftPos = new PID_Test_Andrew();
+    private PID_Test_Andrew backRightPos = new PID_Test_Andrew();
+
     @Override
     public void init(HardwareMap ahwMap, Telemetry telemetry) {
         super.init(ahwMap, telemetry);
@@ -46,6 +53,7 @@ public class AutonomousHardware extends BaseMecanumHardware {
         // and named "imu".
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize();
+
     }
 
     public void setOpMode(LinearOpMode opMode) {this.opMode = opMode;}
@@ -65,6 +73,25 @@ public class AutonomousHardware extends BaseMecanumHardware {
             checkIfRunning();
             currentTime = timer.seconds();
         }
+    }
+
+    public void driveForInches(double inches, double power, boolean brake) //throws Exception {driveForInches(inches, power, brake);}
+    {
+        double frontLeftPos = frontLeftMotor.getCurrentPosition();
+        double frontRightPos = frontRightMotor.getCurrentPosition();
+        double backLeftPos = backLeftMotor.getCurrentPosition();
+        double backRightPos = backRightMotor.getCurrentPosition();
+
+        Thread FL = new Thread() {
+
+        }
+
+        double frontLeftRotation = 1;
+        double frontRightRotation = 1;
+        double backLeftRotation = 1;
+        double backRightRotation = 1;
+
+        frontLeftMotor.setTargetPosition(frontLeftPos + inches * frontLeftRotation/);
     }
 
     public void turnToHeading(double target) throws Exception {turnToHeading(target,0.5,0,0,0);}
