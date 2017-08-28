@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.relicRecovery2017;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ThreadPool;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -75,23 +77,49 @@ public class AutonomousHardware extends BaseMecanumHardware {
         }
     }
 
-    public void driveForInches(double inches, double power, boolean brake) //throws Exception {driveForInches(inches, power, brake);}
+    public void driveForInches(double inches, double power) //throws Exception {driveForInches(inches, power, brake);}
     {
-        double frontLeftPos = frontLeftMotor.getCurrentPosition();
-        double frontRightPos = frontRightMotor.getCurrentPosition();
-        double backLeftPos = backLeftMotor.getCurrentPosition();
-        double backRightPos = backRightMotor.getCurrentPosition();
+        power = Range.clip(power, 0, 1);
 
-        Thread FL = new Thread() {
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        }
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        double frontLeftRotation = 1;
-        double frontRightRotation = 1;
-        double backLeftRotation = 1;
-        double backRightRotation = 1;
+        int frontLeftPos = frontLeftMotor.getCurrentPosition();
+        int frontRightPos = frontRightMotor.getCurrentPosition();
+        int backLeftPos = backLeftMotor.getCurrentPosition();
+        int backRightPos = backRightMotor.getCurrentPosition();
 
-        frontLeftMotor.setTargetPosition(frontLeftPos + inches * frontLeftRotation/);
+        int frontLeftOneRotation = 1;
+        int frontRightOneRotation = 1;
+        int backLeftOneRotation = 1;
+        int backRightOneRotation = 1;
+
+        int frontLeftTarget = (inches * (frontLeftOneRotation / (4 * 3.1415));
+        int frontRightTarget = (inches * (frontRightOneRotation / (4 * 3.1415));
+        int backLeftTarget = (inches * (backLeftOneRotation / (4 * 3.1415));
+        int backRightTarget = (inches * (backRightOneRotation / (4 * 3.1415));
+
+        frontLeftMotor.setTargetPosition(frontLeftPos + frontLeftTarget);
+        frontRightMotor.setTargetPosition(frontRightPos + frontRightTarget);
+        backLeftMotor.setTargetPosition(backLeftPos + backLeftTarget);
+        backRightMotor.setTargetPosition(backRightPos + backRightTarget);
+
+        frontLeftMotor.setPower(power);
+        backRightMotor.setPower(power);
+        frontRightMotor.setPower(power);
+        backLeftMotor.setPower(power);
+
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void turnToHeading(double target) throws Exception {turnToHeading(target,0.5,0,0,0);}
