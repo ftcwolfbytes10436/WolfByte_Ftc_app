@@ -63,9 +63,9 @@ public class BaseMecanumHardware {
     public void moveRobot(double xAxis, double yAxis) {moveRobot(xAxis, yAxis, 0);}
     public void moveRobot(double xAxis, double yAxis, double rotation) {
         int rotationPos = (rotation > 0)?1:0;
-        frontLeftMotor.setPower(Range.clip(yAxis + xAxis + rotation * rotationPos, -1, 1));
-        frontRightMotor.setPower(Range.clip(yAxis - xAxis - rotation * (rotationPos ^ 1), -1, 1));
-        frontLeftMotor.setPower(Range.clip(yAxis - xAxis + rotation * rotationPos, -1, 1));
-        frontLeftMotor.setPower(Range.clip(yAxis + xAxis - rotation * (rotationPos ^ 1), -1, 1));
+        frontLeftMotor.setPower(Range.clip(yAxis + xAxis + rotation/* * rotationPos*/, -1, 1));
+        frontRightMotor.setPower(Range.clip(yAxis - xAxis - rotation/* * (rotationPos ^ 1)*/, -1, 1));
+        frontLeftMotor.setPower(Range.clip(yAxis - xAxis + rotation/* * rotationPos*/, -1, 1));
+        frontLeftMotor.setPower(Range.clip(yAxis + xAxis - rotation/* * (rotationPos ^ 1)*/, -1, 1));
     }
 }
