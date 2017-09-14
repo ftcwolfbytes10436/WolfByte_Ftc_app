@@ -4,10 +4,13 @@ import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -77,8 +80,9 @@ public class AutonomousHardware extends BaseMecanumHardware {
         }
     }
 
-    public void driveForInches(double inches, double power) //throws Exception {driveForInches(inches, power, brake);}
+    public void moveForInches(double inches, double power) //throws Exception {driveForInches(inches, power, brake);}
     {
+
         power = Range.clip(power, 0, 1);
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -96,15 +100,15 @@ public class AutonomousHardware extends BaseMecanumHardware {
         int backLeftPos = backLeftMotor.getCurrentPosition();
         int backRightPos = backRightMotor.getCurrentPosition();
 
-        int frontLeftOneRotation = 1;
-        int frontRightOneRotation = 1;
-        int backLeftOneRotation = 1;
-        int backRightOneRotation = 1;
+        int frontLeftOneRotation = 1440;
+        int frontRightOneRotation = 1440;
+        int backLeftOneRotation = 1440;
+        int backRightOneRotation = 1440;
 
-        int frontLeftTarget = (inches * (frontLeftOneRotation / (4 * 3.1415));
-        int frontRightTarget = (inches * (frontRightOneRotation / (4 * 3.1415));
-        int backLeftTarget = (inches * (backLeftOneRotation / (4 * 3.1415));
-        int backRightTarget = (inches * (backRightOneRotation / (4 * 3.1415));
+        int frontLeftTarget = (int)(-1 * (inches * (frontLeftOneRotation / (4 * 3.1415))));
+        int frontRightTarget = (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
+        int backLeftTarget = (int)(-1 * (inches * (backLeftOneRotation / (4 * 3.1415))));
+        int backRightTarget = (int)(inches * (backRightOneRotation / (4 * 3.1415)));
 
         frontLeftMotor.setTargetPosition(frontLeftPos + frontLeftTarget);
         frontRightMotor.setTargetPosition(frontRightPos + frontRightTarget);
@@ -116,10 +120,11 @@ public class AutonomousHardware extends BaseMecanumHardware {
         frontRightMotor.setPower(power);
         backLeftMotor.setPower(power);
 
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
 
     public void turnToHeading(double target) throws Exception {turnToHeading(target,0.5,0,0,0);}

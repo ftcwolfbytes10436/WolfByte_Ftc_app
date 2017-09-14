@@ -43,13 +43,13 @@ public class BaseMecanumHardware {
         this.telemetry = telemetry;
 
         // Get and initalize the motors
-        frontLeftMotor = initMotor("f_left_drive", DcMotorSimple.Direction.FORWARD);
-        frontRightMotor = initMotor("f_right_drive", DcMotorSimple.Direction.REVERSE);
-        backLeftMotor = initMotor("b_left_drive", DcMotorSimple.Direction.FORWARD);
+        frontLeftMotor = initMotor("f_left_drive", DcMotorSimple.Direction.REVERSE);
+        frontRightMotor = initMotor("f_right_drive", DcMotorSimple.Direction.FORWARD);
+        backLeftMotor = initMotor("b_left_drive", DcMotorSimple.Direction.REVERSE);
         backRightMotor = initMotor("b_right_drive", DcMotorSimple.Direction.FORWARD);
     }
 
-    private DcMotor initMotor(String hardwareName, DcMotorSimple.Direction direction) {
+    public DcMotor initMotor(String hardwareName, DcMotorSimple.Direction direction) {
         DcMotor motor = hwMap.dcMotor.get(hardwareName);
         if (motor == null) {telemetry.addData("error", hardwareName + "not found"); return null;}
         motor.setDirection(direction);
@@ -62,10 +62,9 @@ public class BaseMecanumHardware {
     public void moveRobot(double xAxis) {moveRobot(xAxis, 0, 0);}
     public void moveRobot(double xAxis, double yAxis) {moveRobot(xAxis, yAxis, 0);}
     public void moveRobot(double xAxis, double yAxis, double rotation) {
-        int rotationPos = (rotation > 0)?1:0;
-        frontLeftMotor.setPower(Range.clip(yAxis + xAxis + rotation * rotationPos, -1, 1));
-        frontRightMotor.setPower(Range.clip(yAxis - xAxis - rotation * (rotationPos ^ 1), -1, 1));
-        frontLeftMotor.setPower(Range.clip(yAxis - xAxis + rotation * rotationPos, -1, 1));
-        frontLeftMotor.setPower(Range.clip(yAxis + xAxis - rotation * (rotationPos ^ 1), -1, 1));
+        frontLeftMotor.setPower(Range.clip(yAxis + xAxis + rotation, -1, 1));
+        frontRightMotor.setPower(Range.clip(yAxis - xAxis - rotation, -1, 1));
+        backLeftMotor.setPower(Range.clip(yAxis - xAxis + rotation, -1, 1));
+        backRightMotor.setPower(Range.clip(yAxis + xAxis - rotation, -1, 1));
     }
 }

@@ -23,7 +23,7 @@ public class PID_Test_Andrew {
     }
 
 
-    public double PIDloop(double pVal, double iVal, double dVal, double CurrentValue, double TargetValue, double MaxCorr, double MinCorr,){
+    public double PIDloop(double pVal, double iVal, double dVal, double CurrentValue, double TargetValue, double MaxCorr, double MinCorr){
         mError = TargetValue - CurrentValue;
         pCorrection = pVal * mError;
 

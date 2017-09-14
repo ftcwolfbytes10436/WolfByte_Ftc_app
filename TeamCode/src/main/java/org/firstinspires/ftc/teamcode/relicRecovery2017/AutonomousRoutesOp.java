@@ -93,11 +93,6 @@ public class AutonomousRoutesOp extends LinearOpMode {
     }
 
     void route3() throws Exception {
-        pathTelemetry.setValue("turn");
-        targetTelemetry.setValue("0 (0.0, 1) 0.9");
-        robot.moveRobot(0, 1, 0.9);
-        robot.turnToHeading(0, 0.9, 0, 1, 1);
-
-        robot.moveRobot();
+        robot.moveForInches(12, 1);
     }
 }
