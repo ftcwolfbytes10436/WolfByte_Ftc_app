@@ -72,20 +72,22 @@ public class BaseTankAuto extends BaseTankHardware{
         }
     }
 
-    public void moveForInches(double inches, double power) //throws Exception {driveForInches(inches, power, brake);}
-    {
-        if (power == 0)
-        {
-            power = 1;
-        }
 
+    public void moveForInches(double inches) throws InterruptedException
+    {
+        moveForInches(inches, 1);
+    }
+
+
+    public void moveForInches(double inches, double power) throws InterruptedException //throws Exception {driveForInches(inches, power, brake);}
+    {
         power = Range.clip(power, 0, 1);
 
         LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        int frontLeftPos = LeftMotor.getCurrentPosition();
-        int frontRightPos = RightMotor.getCurrentPosition();
+        int startingLeftPos = LeftMotor.getCurrentPosition();
+        int startingRightPos = RightMotor.getCurrentPosition();
 
         int frontLeftOneRotation = 1440;
         int frontRightOneRotation = 1440;
@@ -93,14 +95,36 @@ public class BaseTankAuto extends BaseTankHardware{
         LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        int frontLeftTarget = (int)(inches * (frontLeftOneRotation / (4 * 3.1415)));
-        int frontRightTarget = (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
+        //(inches to move) * (number of clicks per rotation) / (2 * r * pi )
+        int leftTargetPos = startingLeftPos + (int)(inches * (frontLeftOneRotation / (4 * 3.1415)));
+        int rightTargetPos = startingRightPos + (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
 
-        LeftMotor.setTargetPosition(frontLeftPos + frontLeftTarget);
-        RightMotor.setTargetPosition(frontRightPos + frontRightTarget);
+        LeftMotor.setTargetPosition(leftTargetPos);
+        RightMotor.setTargetPosition(rightTargetPos);
 
         LeftMotor.setPower(power);
         RightMotor.setPower(power);
+
+        int currentLeftPos = LeftMotor.getCurrentPosition();;
+        int currentRightPos = RightMotor.getCurrentPosition();
+
+        while (( currentLeftPos < leftTargetPos) && ( currentRightPos < rightTargetPos))
+        {
+            if (currentLeftPos >= leftTargetPos)
+            {
+                LeftMotor.setPower(0);
+            }
+            if ( currentRightPos >= rightTargetPos)
+            {
+                RightMotor.setPower(0);
+            }
+
+            Thread.sleep(50);
+
+            currentLeftPos = LeftMotor.getCurrentPosition();;
+            currentRightPos = RightMotor.getCurrentPosition();
+
+        }
 
         LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

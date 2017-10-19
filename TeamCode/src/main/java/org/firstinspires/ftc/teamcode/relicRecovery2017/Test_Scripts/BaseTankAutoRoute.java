@@ -20,7 +20,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
         robot.init(hardwareMap, telemetry);
         robot.setOpMode(this);
 
-        robot.moveForInches(10, 1);
+        robot.moveForInches(10);
 
     }
 
