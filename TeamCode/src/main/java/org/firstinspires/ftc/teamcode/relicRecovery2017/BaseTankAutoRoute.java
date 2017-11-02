@@ -61,6 +61,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
         {
             telemetry.addData("error", e.toString());
             telemetry.update();
+            while (opModeIsActive())sleep(1);
         }
 
     }
