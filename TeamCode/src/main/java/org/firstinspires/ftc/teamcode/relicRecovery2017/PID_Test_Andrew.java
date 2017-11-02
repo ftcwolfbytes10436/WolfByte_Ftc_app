@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.relicRecovery2017.Test_Scripts;
+package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
 /**
  * Created by Andrew Brown on 8/18/17.

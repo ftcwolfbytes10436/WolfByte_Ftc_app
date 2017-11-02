@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.relicRecovery2017.Test_Scripts;
+package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -32,14 +32,30 @@ public class BaseTankTeleop extends OpMode{
         robot.LeftMotor.setPower(Range.clip(gamepad1.left_stick_y, -1, 1));
         robot.RightMotor.setPower(Range.clip(gamepad1.right_stick_y, -1, 1));
 
-        float gamepad2RightX = -gamepad2.right_stick_x;
-        double GripperPosition = Range.clip(robot.Gripper.getPosition() + gamepad2RightX * 0.05, -1, 1);
+        robot.LifterMotor.setPower(0.3 * (Range.clip(gamepad2.right_stick_y, -1, 1)));
 
-        robot.Gripper.setPosition(GripperPosition);
-        telemetry.addData("Gripper Value: ", robot.Gripper.getPosition());
+        telemetry.addData("Left Servo: ", robot.leftGripper.getPosition());
+        telemetry.addData("Right Servo: ", robot.rightGripper.getPosition());
+        telemetry.update();
 
-        telemetry.addData("count",robot.LeftMotor.getCurrentPosition());
-        telemetry.addData("count",robot.RightMotor.getCurrentPosition());
+        if (gamepad2.left_stick_y > .8)
+        {
+            robot.setGriperPos(.9);
+        }
+        else if (gamepad2.left_stick_y < -.8)
+        {
+            robot.setGriperPos(.75);
+        }
+        else
+        {
+            robot.setGriperPos(1);
+        }
+
+        if (gamepad1.a)
+        {
+            robot.jewelHit.setPosition(1);
+            robot.jewelRaise.setPosition(.65);
+        }
     }
 }
 

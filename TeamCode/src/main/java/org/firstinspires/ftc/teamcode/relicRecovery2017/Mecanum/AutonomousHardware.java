@@ -1,23 +1,21 @@
-package org.firstinspires.ftc.teamcode.relicRecovery2017.Test_Scripts;
+package org.firstinspires.ftc.teamcode.relicRecovery2017.Mecanum;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ThreadPool;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.relicRecovery2017.PID_Test_Andrew;
 
-public class BaseTankAuto extends BaseTankHardware{
+public class AutonomousHardware extends BaseMecanumHardware {
+
     public BNO055IMU imu = null;
 
     private Orientation currentOrientation = null;
@@ -32,6 +30,11 @@ public class BaseTankAuto extends BaseTankHardware{
     }
 
     private ElapsedTime timer = new ElapsedTime();
+
+    private PID_Test_Andrew frontLeftPos = new PID_Test_Andrew();
+    private PID_Test_Andrew frontRightPos = new PID_Test_Andrew();
+    private PID_Test_Andrew backLeftPos = new PID_Test_Andrew();
+    private PID_Test_Andrew backRightPos = new PID_Test_Andrew();
 
     @Override
     public void init(HardwareMap ahwMap, Telemetry telemetry) {
@@ -72,62 +75,50 @@ public class BaseTankAuto extends BaseTankHardware{
         }
     }
 
-
-    public void moveForInches(double inches) throws InterruptedException
+    public void moveForInches(double inches, double power) //throws Exception {driveForInches(inches, power, brake);}
     {
-        moveForInches(inches, 1);
-    }
 
-
-    public void moveForInches(double inches, double power) throws InterruptedException //throws Exception {driveForInches(inches, power, brake);}
-    {
         power = Range.clip(power, 0, 1);
 
-        LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        int startingLeftPos = LeftMotor.getCurrentPosition();
-        int startingRightPos = RightMotor.getCurrentPosition();
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        int frontLeftPos = frontLeftMotor.getCurrentPosition();
+        int frontRightPos = frontRightMotor.getCurrentPosition();
+        int backLeftPos = backLeftMotor.getCurrentPosition();
+        int backRightPos = backRightMotor.getCurrentPosition();
 
         int frontLeftOneRotation = 1440;
         int frontRightOneRotation = 1440;
+        int backLeftOneRotation = 1440;
+        int backRightOneRotation = 1440;
 
-        LeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        int frontLeftTarget = (int)(-1 * (inches * (frontLeftOneRotation / (4 * 3.1415))));
+        int frontRightTarget = (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
+        int backLeftTarget = (int)(-1 * (inches * (backLeftOneRotation / (4 * 3.1415))));
+        int backRightTarget = (int)(inches * (backRightOneRotation / (4 * 3.1415)));
 
-        //(inches to move) * (number of clicks per rotation) / (2 * r * pi )
-        int leftTargetPos = startingLeftPos + (int)(inches * (frontLeftOneRotation / (4 * 3.1415)));
-        int rightTargetPos = startingRightPos + (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
+        frontLeftMotor.setTargetPosition(frontLeftPos + frontLeftTarget);
+        frontRightMotor.setTargetPosition(frontRightPos + frontRightTarget);
+        backLeftMotor.setTargetPosition(backLeftPos + backLeftTarget);
+        backRightMotor.setTargetPosition(backRightPos + backRightTarget);
 
-        LeftMotor.setTargetPosition(leftTargetPos);
-        RightMotor.setTargetPosition(rightTargetPos);
+        frontLeftMotor.setPower(power);
+        backRightMotor.setPower(power);
+        frontRightMotor.setPower(power);
+        backLeftMotor.setPower(power);
 
-        LeftMotor.setPower(power);
-        RightMotor.setPower(power);
-
-        int currentLeftPos = LeftMotor.getCurrentPosition();;
-        int currentRightPos = RightMotor.getCurrentPosition();
-
-        while (( currentLeftPos < leftTargetPos) && ( currentRightPos < rightTargetPos))
-        {
-            if (currentLeftPos >= leftTargetPos)
-            {
-                LeftMotor.setPower(0);
-            }
-            if ( currentRightPos >= rightTargetPos)
-            {
-                RightMotor.setPower(0);
-            }
-
-            Thread.sleep(50);
-
-            currentLeftPos = LeftMotor.getCurrentPosition();;
-            currentRightPos = RightMotor.getCurrentPosition();
-
-        }
-
-        LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
@@ -159,4 +150,3 @@ public class BaseTankAuto extends BaseTankHardware{
         }
     }
 }
-
