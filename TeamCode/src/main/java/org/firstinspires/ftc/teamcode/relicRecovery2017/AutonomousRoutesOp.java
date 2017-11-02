@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+@Disabled
 @Autonomous(name="autonomous routes")
 public class AutonomousRoutesOp extends LinearOpMode {
 
