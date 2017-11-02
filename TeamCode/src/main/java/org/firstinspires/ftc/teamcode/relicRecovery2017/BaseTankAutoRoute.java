@@ -59,7 +59,8 @@ public class BaseTankAutoRoute extends LinearOpMode {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            telemetry.addData("error", e.toString());
+            telemetry.update();
         }
 
     }
