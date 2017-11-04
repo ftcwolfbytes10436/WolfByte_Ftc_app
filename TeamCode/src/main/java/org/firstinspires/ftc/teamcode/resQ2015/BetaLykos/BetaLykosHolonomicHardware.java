@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.resQ2015.BetaLykos;
 
-import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -83,7 +82,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("left_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_front_left_drive = null;
         }
@@ -96,7 +94,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("right_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_front_right_drive = null;
         }
@@ -108,7 +105,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("back_left_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_back_left_drive = null;
         }
@@ -121,7 +117,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("back_right_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_back_right_drive = null;
         }
@@ -136,7 +131,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("left_arm");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_left_arm = null;
         }
@@ -157,7 +151,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("left_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_servo_left_hand = null;
         }
@@ -170,7 +163,6 @@ public class BetaLykosHolonomicHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("right_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_servo_right_hand = null;
         }

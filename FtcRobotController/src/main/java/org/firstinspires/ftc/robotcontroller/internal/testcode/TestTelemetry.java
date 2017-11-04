@@ -29,7 +29,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+*//*/
 package org.firstinspires.ftc.robotcontroller.internal.testcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -38,13 +38,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.TelemetryInternal;
 
 import java.util.Locale;
-
+*/
 /**
  * {@link TestTelemetry} is a simple test of telemetry.
- */
+ *//*
 @Autonomous(name = "Test Telemetry", group = "Tests")
 @Disabled
 public class TestTelemetry extends LinearOpMode
@@ -137,3 +136,4 @@ public class TestTelemetry extends LinearOpMode
         }
 
     }
+*/

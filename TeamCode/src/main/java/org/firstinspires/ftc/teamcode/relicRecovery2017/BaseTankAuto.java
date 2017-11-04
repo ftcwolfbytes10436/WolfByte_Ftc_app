@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
-import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,8 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class BaseTankAuto extends BaseTankHardware{
 
-    public BNO055IMU imu = null;
+    public AdafruitBNO055IMU imu = null;
     ColorSensor sensorRGB;
+
 
     private Orientation currentOrientation = null;
 
@@ -44,9 +45,9 @@ public class BaseTankAuto extends BaseTankHardware{
         sensorRGB = ahwMap.colorSensor.get("sensor_color");
 
         // Set up the parameters with which we will use our IMU.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        AdafruitBNO055IMU.Parameters parameters = new AdafruitBNO055IMU.Parameters();
+        parameters.angleUnit = AdafruitBNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = AdafruitBNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
@@ -54,7 +55,7 @@ public class BaseTankAuto extends BaseTankHardware{
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2c port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
-        //imu = hwMap.get(BNO055IMU.class, "imu");
+        //imu = hwMap.get(AdafruitBNO055IMU.class, "imu");
         //imu.initialize();
 
     }
@@ -143,6 +144,9 @@ public class BaseTankAuto extends BaseTankHardware{
             }
             telemetry.addData("MoveInch", currentLeftPos + " " + leftTargetPos);
         }
+
+        LeftMotor.setPower(0);
+        RightMotor.setPower(0);
 
         LeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

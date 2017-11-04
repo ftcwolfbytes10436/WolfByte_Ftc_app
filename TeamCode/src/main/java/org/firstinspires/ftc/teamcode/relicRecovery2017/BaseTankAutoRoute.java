@@ -54,7 +54,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
             robot.LifterMotor.setPower(-0.3);
             sleep(1000);
             robot.LifterMotor.setPower(-0.1);
-            robot.moveForInches(35, .25);
+            robot.moveForInches(30, .25);
             while (opModeIsActive())sleep(1);
         }
         catch (Exception e)

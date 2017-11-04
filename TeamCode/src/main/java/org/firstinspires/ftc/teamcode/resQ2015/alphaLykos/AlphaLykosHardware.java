@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.resQ2015.alphaLykos;
 
-import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -88,7 +87,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("left_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_left_drive = null;
         }
@@ -101,7 +99,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("right_drive");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_right_drive = null;
         }
@@ -116,7 +113,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("left_arm");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_motor_left_arm = null;
         }
@@ -131,7 +127,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("extendable_arm");
-            DbgLog.msg (p_exeception.getLocalizedMessage());
 
             v_motor_extendible_arm = null;
         }
@@ -152,7 +147,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("upper_left_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_hand_upper_left_servo = null;
         }
@@ -165,7 +159,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("lower_left_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_hand_lower_left_servo = null;
         }
@@ -178,7 +171,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("upper_right_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_hand_upper_right_servo = null;
         }
@@ -191,7 +183,6 @@ public class AlphaLykosHardware extends OpMode
         catch (Exception p_exeception)
         {
             m_warning_message ("lower_right_hand");
-            DbgLog.msg (p_exeception.getLocalizedMessage ());
 
             v_hand_lower_right_servo = null;
         }
