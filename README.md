@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # WolfByte_Ftc_app
 
 A Ftc app for team WolfByte
