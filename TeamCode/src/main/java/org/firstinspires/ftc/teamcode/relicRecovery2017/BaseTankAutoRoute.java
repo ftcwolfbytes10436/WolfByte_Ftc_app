@@ -24,38 +24,71 @@ public class BaseTankAutoRoute extends LinearOpMode {
         waitForStart();
         try
         {
+            //blue = 0
+            //red  = 1
+            int teamColor = 0;
+
+            //blue = 0
+            //red  = 1
+            int rightColor = 0;
+
             robot.setGriperPos(1);
-            /*
-            robot.jewelHit.setPosition(.3);
+
+
+            //raise hit
+            //lower arm
+            robot.jewelHit.setPosition(.33);
             sleep(250);
-            for(int i = 0; i < .25; i += .002)
-            {
-                robot.jewelRaise.setPosition(i);
-                sleep(1);
-            }
-            robot.jewelRaise.setPosition(0.255);
-            //robot.jewelRaise.setPosition(.25);
+            robot.jewelRaise.setPosition(.2);
+
+            sleep(2000);
+
             //find color
+            int red = robot.sensorRGB.red();
+            int blue = robot.sensorRGB.blue();
 
-            sleep(5000);
-            robot.displayColorTelementy();
+            //use color
+            if(red > blue)
+            {
+                rightColor = 1;
+            }
+            else
+            {
+                rightColor = 0;
+            }
 
-            //robot.hitLeft();
-            //sleep(500);
-            //robot.hitRight();
-            //hit it
+            if(rightColor == teamColor)
+            {
+                robot.hitLeft();
+            }
+            else
+            {
+                robot.hitRight();
+            }
+
+
             sleep(500);
-            robot.jewelRaise.setPosition(1);
+            robot.jewelRaise.setPosition(.85);
             sleep(500);
             robot.jewelHit.setPosition(1);
-            sleep(10000);
-            */
             sleep(500);
-            robot.LifterMotor.setPower(-0.3);
+
+            robot.LifterMotor.setPower(0.5);
             sleep(1000);
-            robot.LifterMotor.setPower(-0.1);
+            robot.LifterMotor.setPower(robot.backFeedPower);
             robot.moveForInches(30, .25);
+
+            telemetry.addData("start heading", robot.getHeading());
+
+            robot.turnToHeading(90, 0.25);
+            telemetry.addData("end heading", robot.getHeading());
+
+
+            telemetry.update();
+            robot.moveForInches(2, .25);
+            robot.setGriperPos(.85);
             while (opModeIsActive())sleep(1);
+
         }
         catch (Exception e)
         {

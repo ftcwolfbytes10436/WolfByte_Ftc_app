@@ -12,6 +12,7 @@ public class BaseTankTeleop extends OpMode{
 
     /* Declare OpMode members. */
     BaseTankHardware robot = new BaseTankHardware();
+    boolean triggerHit = false;
 
     @Override
     public void init() {
@@ -32,8 +33,19 @@ public class BaseTankTeleop extends OpMode{
         robot.LeftMotor.setPower(Range.clip(gamepad1.left_stick_y, -1, 1));
         robot.RightMotor.setPower(Range.clip(gamepad1.right_stick_y, -1, 1));
 
-        robot.LifterMotor.setPower(0.3 * (Range.clip(gamepad2.right_stick_y, -1, 1)));
+        /*
+        if (gamepad2.right_trigger > 0.5 && !triggerHit) {
+            backFeedPower += 0.1;
+        }
+        if (gamepad2.left_trigger > 0.5 && !triggerHit) {
+            backFeedPower -= 0.1;
+        }
+        triggerHit = gamepad2.right_trigger > 0.5 || gamepad2.left_trigger > 0.5;
+        */
 
+        robot.LifterMotor.setPower(robot.backFeedPower+0.4 * (Range.clip(-gamepad2.right_stick_y, -1, 1)));
+
+        //telemetry.addData("backdrive", robot.backFeedPower);
         telemetry.addData("Left Servo: ", robot.leftGripper.getPosition());
         telemetry.addData("Right Servo: ", robot.rightGripper.getPosition());
         telemetry.update();
@@ -49,12 +61,6 @@ public class BaseTankTeleop extends OpMode{
         else
         {
             robot.setGriperPos(1);
-        }
-
-        if (gamepad1.a)
-        {
-            robot.jewelHit.setPosition(1);
-            robot.jewelRaise.setPosition(.65);
         }
     }
 }
