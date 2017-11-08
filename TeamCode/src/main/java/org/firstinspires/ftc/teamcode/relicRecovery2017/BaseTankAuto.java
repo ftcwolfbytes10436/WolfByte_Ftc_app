@@ -39,9 +39,6 @@ public class BaseTankAuto extends BaseTankHardware{
 
         this.opMode = opMode;
 
-        LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
         sensorRGB = ahwMap.colorSensor.get("sensor_color");
 
         // Set up the parameters with which we will use our IMU.
@@ -81,12 +78,30 @@ public class BaseTankAuto extends BaseTankHardware{
 
     public void moveForInches(double inches) throws Exception
     {
-        moveForInches(inches, 1);
+        moveForInches(inches, 1, 1);
+    }
+
+    public void moveForInches(double inches, double power) throws Exception
+    {
+        double i = inches;
+        double p = power;
+        moveForInches(i, p, 1);
     }
 
 
-    public void moveForInches(double inches, double power) throws Exception //throws Exception {driveForInches(inches, power, brake);}
+    public void moveForInches(double inches, double power, int direction) throws Exception //throws Exception {driveForInches(inches, power, brake);}
     {
+        if (direction == 1)
+        {
+            LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        if (direction == 0)
+        {
+            LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+
         power = Range.clip(power, 0, 1);
 
         LeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -165,6 +180,10 @@ public class BaseTankAuto extends BaseTankHardware{
     {
         jewelHit.setPosition(1);
     }
+
+    public void dropGlyph() { setGriperPos(0);}
+
+
 
     public void displayColorTelementy() {
         telemetry.addData("Red  ", sensorRGB.red());
