@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.velocityVortex2016;
 
-import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -66,7 +66,7 @@ public class BetaLykosHardware
     public AnalogInput sideRangeSensor    = null;
     public OpticalDistanceSensor odsSensor = null;
     public ColorSensor sensorRGB           = null;
-    public BNO055IMU imu;
+    public AdafruitBNO055IMU imu;
     public TouchSensor touchSensor         = null;
     public DigitalChannel scoopTouchSensor    = null;
     public DigitalChannel launcherLimitSwitch = null;
@@ -166,9 +166,9 @@ public class BetaLykosHardware
         cdim.setDigitalChannelState(LED_CHANNEL, false);
 
         // Set up the parameters with which we will use our IMU.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        AdafruitBNO055IMU.Parameters parameters = new AdafruitBNO055IMU.Parameters();
+        parameters.angleUnit = AdafruitBNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = AdafruitBNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
@@ -176,7 +176,7 @@ public class BetaLykosHardware
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
-        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu = hwMap.get(AdafruitBNO055IMU.class, "imu");
         imu.initialize(parameters);
         Position initalPosition = new Position(DistanceUnit.METER, 0, 0, 0, 0);
 

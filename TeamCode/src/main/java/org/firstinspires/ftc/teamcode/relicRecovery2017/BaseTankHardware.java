@@ -27,6 +27,7 @@ public class BaseTankHardware {
     HardwareMap hwMap = null;
     Telemetry telemetry = null;
     double gripperPos = 0;
+    public double backFeedPower = 0.1;
 
     public void init(HardwareMap ahwMap, Telemetry telemetry) {
         // Save a reference to Hardware map
@@ -44,7 +45,7 @@ public class BaseTankHardware {
         leftGripper = initServo("LeftGripper", 0 /*gripperPos*/, Direction.FORWARD);
         rightGripper = initServo("RightGripper", 0 /*gripperPos*/, Direction.REVERSE);
 
-        jewelRaise = initServo("jewelRaise", 1, Direction.FORWARD);
+        jewelRaise = initServo("jewelRaise", .85, Direction.FORWARD);
         jewelHit = initServo("jewelHit", 1, Direction.FORWARD);
 
     }
@@ -80,10 +81,10 @@ public class BaseTankHardware {
 
     public void moveRobot() {moveRobot(0,0,0);}
     public void moveRobot(double xAxis) {moveRobot(xAxis, 0, 0);}
-    public void moveRobot(double xAxis, double yAxis) {moveRobot(xAxis, yAxis, 0);}
-    public void moveRobot(double xAxis, double yAxis, double rotation) {
-        LeftMotor.setPower(Range.clip(yAxis, -1, 1));
-        RightMotor.setPower(Range.clip(yAxis, -1, 1));
+    public void moveRobot(double leftMotor, double rightMotor) {moveRobot(leftMotor, rightMotor, 0);}
+    public void moveRobot(double leftMotor, double rightMotor, double rotation) {
+        LeftMotor.setPower(Range.clip(leftMotor, -1, 1));
+        RightMotor.setPower(Range.clip(rightMotor, -1, 1));
         //StrafeMotor.setPower(Range.clip(xAxis, -1, 1));
     }
 }
