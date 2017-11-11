@@ -53,21 +53,21 @@ public class BaseTankAutoRoute extends LinearOpMode {
                 {
                     if (placement == 0)
                     {
-                        robot.moveForInches(17.8, .25); //drive forward
+                        robot.moveForInches(26.5, .25); //drive forward
                         leftNinety();
-                        robot.moveForInches(3, .25);
+                        placeGlyph();
                     }
                     if (placement == 1)
                     {
-                        robot.moveForInches(27, .25); //drive forward
+                        robot.moveForInches(35 , .25); //drive forward
                         leftNinety();
-                        robot.moveForInches(3, .25);
+                        placeGlyph();
                     }
                     if (placement == 2)
                     {
-                        robot.moveForInches(32, .25); //drive forward
+                        robot.moveForInches(43.5, .25); //drive forward
                         leftNinety();
-                        robot.moveForInches(3, .25);
+                        placeGlyph();
                     }
                 }
             }
@@ -75,12 +75,44 @@ public class BaseTankAutoRoute extends LinearOpMode {
             {
                 if (position == 0) //straight on
                 {
-
+                    if (placement == 0)
+                    {
+                        robot.moveForInches(23, .25, 0);
+                        leftNinety();
+                        robot.moveForInches(3, .25);
+                    }
+                    if (placement == 1)
+                    {
+                        robot.moveForInches(27, .25, 0);
+                        leftNinety();
+                        robot.moveForInches(3, .25);
+                    }
+                    if (placement == 2)
+                    {
+                        robot.moveForInches(32, .25, 0);
+                        leftNinety();
+                        robot.moveForInches(3, .25);
+                    }
                 }
 
                 if (position == 1) //turning
                 {
-                    rightNinety(); //turn right 90 degrees
+                    if (placement == 0)
+                    {
+
+                    }
+                    if (placement == 1)
+                    {
+
+                    }
+                    if (placement == 2)
+                    {
+//
+                    }
+                    if (placement == 3)
+                    {
+                        
+                    }
                 }
             }
             while (opModeIsActive())sleep(1);
@@ -148,7 +180,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
     public void leftNinety()
     {
         if (opModeIsActive()) {
-            while (robot.getHeading() < 92 && robot.getHeading() < 88) {
+            while (robot.getHeading() < 91 && robot.getHeading() < 89) {
                 robot.LeftMotor.setPower(-.3);
                 robot.RightMotor.setPower(.2);
                 telemetry.addData("Heading: ", robot.getHeading());
@@ -156,6 +188,26 @@ public class BaseTankAutoRoute extends LinearOpMode {
             }
             robot.LeftMotor.setPower(0);
             robot.RightMotor.setPower(0);
+            int loopCount = 0;
+            while ((robot.getHeading() > 91 || robot.getHeading() < 89) && loopCount < 3) {
+
+                if (robot.getHeading() > 91) {
+                    robot.LeftMotor.setPower(.15);
+                    robot.RightMotor.setPower(-.1);
+                    sleep(300);
+                    robot.LeftMotor.setPower(0);
+                    robot.RightMotor.setPower(0);
+                } else if (robot.getHeading() < 89) {
+                    robot.RightMotor.setPower(.1);
+                    robot.LeftMotor.setPower(-.15);
+                    sleep(300);
+                    robot.LeftMotor.setPower(0);
+                    robot.RightMotor.setPower(0);
+                }
+                loopCount++;
+                telemetry.addData("Heading: ", robot.getHeading());
+                telemetry.update();
+            }
         }
     }
 
@@ -198,6 +250,19 @@ public class BaseTankAutoRoute extends LinearOpMode {
                 robot.RightMotor.setPower(0);
             }
         }
+    }
+
+    public void placeGlyph() throws Exception {
+        robot.moveForInches(4, .25);
+        robot.LifterMotor.setPower(-.3);
+        //sleep(100);
+        robot.LifterMotor.setPower(0);
+        sleep(3000);
+        robot.dropGlyph();
+        robot.moveForInches(2);
+        robot.moveForInches(2, .5, 0);
+        raiseArm();
+        robot.moveForInches(1, .5);
     }
 
 }

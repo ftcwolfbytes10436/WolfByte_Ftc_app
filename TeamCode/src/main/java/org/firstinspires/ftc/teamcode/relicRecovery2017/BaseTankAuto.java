@@ -91,12 +91,12 @@ public class BaseTankAuto extends BaseTankHardware{
 
     public void moveForInches(double inches, double power, int direction) throws Exception //throws Exception {driveForInches(inches, power, brake);}
     {
-        if (direction == 1)
+        if (direction == 1) //forward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        if (direction == 0)
+        if (direction == 0) //backward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
