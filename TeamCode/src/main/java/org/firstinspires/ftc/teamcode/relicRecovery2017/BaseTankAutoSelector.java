@@ -15,12 +15,13 @@ public class BaseTankAutoSelector extends LinearOpMode {
 
         boolean buttonPushed = false;
 
-        Integer[] optionsList = VariableMenu.loadSelectedOptions(fileName);
-        boolean isFull = optionsList.length == 2;
+        Integer[] optionsList = VariableMenu.loadSelectedOptions(fileName, hardwareMap.appContext.getFilesDir());
+        boolean isFull = optionsList.length > 3;
         VariableMenu menu = new VariableMenu();
         ArrayList<VariableMenu.MenuOption> menuOptions = new ArrayList<>();
-        menuOptions.add(menu.new MenuOption("team color", new String[]{"red","blue"}, isFull? optionsList[0]: 0));
+        menuOptions.add(menu.new MenuOption("Team color", new String[]{"Red","blue"}, isFull? optionsList[0]: 0));
         menuOptions.add(menu.new MenuOption("Start Position", new String[]{"Straight", "Turn"}, isFull? optionsList[1]: 0));
+        menuOptions.add(menu.new MenuOption("Placement", new String[]{"Left", "Center", "Right"}, isFull? optionsList[2]: 0));
 
         waitForStart();
 
@@ -43,6 +44,6 @@ public class BaseTankAutoSelector extends LinearOpMode {
             }
             buttonPushed = gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right;
         }
-        menu.saveSelectedOptions(fileName);
+        menu.saveSelectedOptions(fileName, hardwareMap.appContext.getFilesDir());
     }
 }

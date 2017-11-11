@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -54,28 +57,34 @@ public class VariableMenu {
         }
     }
 
-    public void saveSelectedOptions(String fileName) {
-        String Options = "";
+    public void saveSelectedOptions(String fileName, File filesDir) {
+        String options = "";
         for (MenuOption option: menuOptions) {
-            Options += Character.toChars(option.getSelectedValue());
+            options += (char)(option.getSelectedValue()+(int)'a');
         }
+        System.out.println(options);
         try {
-            FileWriter writer = new FileWriter(fileName);
-            writer.write(Options);
+            File file = new File(filesDir,fileName);
+            FileWriter writer = new FileWriter(file);
+            writer.write(options);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static Integer[] loadSelectedOptions(String fileName) {
+    public static Integer[] loadSelectedOptions(String fileName, File filesDir) {
         ArrayList<Integer> options = new ArrayList<>();
         try {
-            FileReader reader = new FileReader(fileName);
+            File file = new File(filesDir, fileName);
+            FileReader reader = new FileReader(file);
             int option = 0;
             while (option != -1) {
                 option = reader.read();
-                options.add(option);
+                options.add(option-'a');
             }
+            System.out.println(options);
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
