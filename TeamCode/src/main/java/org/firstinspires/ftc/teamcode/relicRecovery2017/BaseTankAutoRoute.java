@@ -20,22 +20,23 @@ public class BaseTankAutoRoute extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap, telemetry, this);
-
+        Integer[] options = VariableMenu.loadSelectedOptions("AutoSelection", hardwareMap.appContext.getFilesDir());
+        boolean optionsLoaded = options.length > 3;
         waitForStart();
         try
         {
             //blue = 0
             //red  = 1
-            int teamColor = 0;
+            int teamColor = optionsLoaded? options[0]: 0;
 
             //straight on = 0
             //turning     = 1
-            int position = 1;
+            int position = optionsLoaded? options[1]: 0;
 
             //left   cryptobox = 0
             //center cryptobox = 1
             //right  cryptobox = 2
-            int placement = 1;
+            int placement = optionsLoaded? options[2]: 0;
 
             robot.setGriperPos(1);
 
