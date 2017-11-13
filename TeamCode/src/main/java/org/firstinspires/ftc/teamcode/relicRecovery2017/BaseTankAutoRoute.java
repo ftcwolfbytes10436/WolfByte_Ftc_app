@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 /**
  * Created by RPS on 10/6/17.
@@ -16,6 +17,8 @@ public class BaseTankAutoRoute extends LinearOpMode {
     Telemetry.Item pathTelemetry = null;
     Telemetry.Item targetTelemetry = null;
 
+    VuforiaLocalizer vuforia;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -25,50 +28,70 @@ public class BaseTankAutoRoute extends LinearOpMode {
         waitForStart();
         try
         {
+            double offset = -2;
             //blue = 0
             //red  = 1
-            int teamColor = optionsLoaded? options[0]: 0;
+            //secret = 2
+            int teamColor = 0;
 
             //straight on = 0
             //turning     = 1
-            int position = optionsLoaded? options[1]: 0;
+            int position = 1;
 
             //left   cryptobox = 0
             //center cryptobox = 1
             //right  cryptobox = 2
-            int placement = optionsLoaded? options[2]: 0;
+            int placement = 0;
+
+            telemetry.addData("team Color", teamColor);
+            telemetry.addData("position", position);
+            telemetry.addData("placement", placement);
+            telemetry.update();
 
             robot.setGriperPos(1);
+            sleep(2000);
 
-            hitJewel(teamColor);
+            //hitJewel(teamColor);
             raiseArm();
 
             if (teamColor == 0) //blue
             {
                 if (position == 0) //straight on
                 {
-                    robot.moveForInches(28, .25); //drive forward
+                    if (true) {
+                        robot.moveForInches(28 + offset, .25); //drive forward
+                    }
+                    /*
+                    robot.moveForInches(28 + offset, .25); //drive forward
+                    leftNinety();
+                    leftNinety();
+                    leftNinety();
+                    */
                 }
 
                 if (position == 1) //turning
                 {
                     if (placement == 0)
                     {
-                        robot.moveForInches(26.5, .25); //drive forward
+                        robot.moveForInches(26.5 + offset, .25); //drive forward
                         leftNinety();
+                        robot.moveForInches(3, .5, 0);
                         placeGlyph();
                     }
                     if (placement == 1)
                     {
-                        robot.moveForInches(35 , .25); //drive forward
+                        robot.moveForInches(35 + offset, .25); //drive forward
                         leftNinety();
                         placeGlyph();
                     }
                     if (placement == 2)
                     {
-                        robot.moveForInches(43.5, .25); //drive forward
+                        robot.moveForInches(43.5 + offset, .25); //drive forward
                         leftNinety();
                         placeGlyph();
+                    }
+                    if (placement == 3) {
+                        robot.moveForInches(35 + offset, .25); //drive forward
                     }
                 }
             }
@@ -76,48 +99,41 @@ public class BaseTankAutoRoute extends LinearOpMode {
             {
                 if (position == 0) //straight on
                 {
-                    if (placement == 0)
-                    {
-                        robot.moveForInches(23, .25, 0);
-                        leftNinety();
-                        robot.moveForInches(3, .25);
-                    }
-                    if (placement == 1)
-                    {
-                        robot.moveForInches(27, .25, 0);
-                        leftNinety();
-                        robot.moveForInches(3, .25);
-                    }
-                    if (placement == 2)
-                    {
-                        robot.moveForInches(32, .25, 0);
-                        leftNinety();
-                        robot.moveForInches(3, .25);
-                    }
+                    robot.moveForInches(28 + 4, .5, 0);
                 }
 
                 if (position == 1) //turning
                 {
+                    robot.moveForInches(28, .5, 0);
+                }
+            }
+            if (teamColor == 2)
+            {
+                if (position == 1) //turning
+                {
                     if (placement == 0)
                     {
+                        robot.moveForInches(26.5 + offset, .25); //drive forward
+                        leftNinety();
+                        robot.moveForInches(3, .25, 0);
+                        placeGlyph();
 
                     }
                     if (placement == 1)
                     {
+                        robot.moveForInches(35 + offset, .25); //drive forward
+                        leftNinety();
+                        placeGlyph();
 
                     }
                     if (placement == 2)
                     {
-//
-                    }
-                    if (placement == 3)
-                    {
-                        
+                        robot.moveForInches(43.5 + offset, .25); //drive forward
+                        leftNinety();
+                        placeGlyph();
                     }
                 }
             }
-            while (opModeIsActive())sleep(1);
-
         }
         catch (Exception e)
         {
@@ -125,6 +141,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
             telemetry.update();
             while (opModeIsActive())sleep(1);
         }
+        while (opModeIsActive()){sleep(100);}
 
     }
 
