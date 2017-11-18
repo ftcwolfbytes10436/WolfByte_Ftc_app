@@ -35,28 +35,29 @@ public class BaseTankTeleop extends OpMode{
 
         /*
         if (gamepad2.right_trigger > 0.5 && !triggerHit) {
-            backFeedPower += 0.1;
+            robot.backFeedPower += 0.05;
         }
         if (gamepad2.left_trigger > 0.5 && !triggerHit) {
-            backFeedPower -= 0.1;
+            robot.backFeedPower -= 0.05;
         }
         triggerHit = gamepad2.right_trigger > 0.5 || gamepad2.left_trigger > 0.5;
         */
 
+
         robot.LifterMotor.setPower(robot.backFeedPower+0.4 * (Range.clip(-gamepad2.right_stick_y, -1, 1)));
 
-        //telemetry.addData("backdrive", robot.backFeedPower);
+        telemetry.addData("backdrive", robot.backFeedPower);
         telemetry.addData("Left Servo: ", robot.leftGripper.getPosition());
         telemetry.addData("Right Servo: ", robot.rightGripper.getPosition());
         telemetry.update();
 
         if (gamepad2.left_stick_y > .8)
         {
-            robot.setGriperPos(.9);
+            robot.setGriperPos(.75);
         }
         else if (gamepad2.left_stick_y < -.8)
         {
-            robot.setGriperPos(.75);
+            robot.setGriperPos(.5);
         }
         else
         {

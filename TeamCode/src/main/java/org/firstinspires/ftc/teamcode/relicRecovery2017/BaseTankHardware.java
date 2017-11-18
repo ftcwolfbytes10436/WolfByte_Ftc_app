@@ -27,7 +27,7 @@ public class BaseTankHardware {
     HardwareMap hwMap = null;
     Telemetry telemetry = null;
     double gripperPos = 0;
-    public double backFeedPower = 0.1;
+    public double backFeedPower = 0.2;
 
     public void init(HardwareMap ahwMap, Telemetry telemetry) {
         // Save a reference to Hardware map
