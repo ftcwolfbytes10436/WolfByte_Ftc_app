@@ -17,6 +17,21 @@ public class BaseTankAutoRoute extends LinearOpMode {
     Telemetry.Item pathTelemetry = null;
     Telemetry.Item targetTelemetry = null;
 
+    enum TeamColor
+    {
+        Red, Blue
+    }
+
+    enum FieldLocation
+    {
+        Straight, Turn
+    }
+
+    enum GlyphColumn
+    {
+        Left, Center, Right
+    }
+
     VuforiaLocalizer vuforia;
 
     @Override
@@ -29,34 +44,28 @@ public class BaseTankAutoRoute extends LinearOpMode {
         try
         {
             double offset = -2;
-            //blue = 0
-            //red  = 1
-            //secret = 2
-            int teamColor = 0;
 
-            //straight on = 0
-            //turning     = 1
-            int position = 1;
+            TeamColor teamColor = TeamColor.Blue;
 
-            //left   cryptobox = 0
-            //center cryptobox = 1
-            //right  cryptobox = 2
-            int placement = 0;
+            FieldLocation fieldLocation = FieldLocation.Straight;
+
+            GlyphColumn glyphColumn = GlyphColumn.Left;
 
             telemetry.addData("team Color", teamColor);
-            telemetry.addData("position", position);
-            telemetry.addData("placement", placement);
+            telemetry.addData("position", fieldLocation);
+            telemetry.addData("placement", glyphColumn);
             telemetry.update();
 
             robot.setGriperPos(1);
             sleep(2000);
 
-            //hitJewel(teamColor);
+            hitJewel(teamColor);
+
             raiseArm();
 
-            if (teamColor == 0) //blue
+            if (teamColor == TeamColor.Blue)
             {
-                if (position == 0) //straight on
+                if (fieldLocation == FieldLocation.Straight)
                 {
                     if (true) {
                         robot.moveForInches(28 + offset, .25); //drive forward
@@ -69,69 +78,37 @@ public class BaseTankAutoRoute extends LinearOpMode {
                     */
                 }
 
-                if (position == 1) //turning
+                if (fieldLocation == FieldLocation.Turn)
                 {
-                    if (placement == 0)
+                    if (glyphColumn == GlyphColumn.Left)
                     {
                         robot.moveForInches(26.5 + offset, .25); //drive forward
                         leftNinety();
-                        robot.moveForInches(3, .5, 0);
                         placeGlyph();
                     }
-                    if (placement == 1)
+                    else if (glyphColumn == GlyphColumn.Center)
                     {
                         robot.moveForInches(35 + offset, .25); //drive forward
                         leftNinety();
                         placeGlyph();
                     }
-                    if (placement == 2)
-                    {
+                    else if (glyphColumn == GlyphColumn.Right) {
                         robot.moveForInches(43.5 + offset, .25); //drive forward
                         leftNinety();
                         placeGlyph();
                     }
-                    if (placement == 3) {
-                        robot.moveForInches(35 + offset, .25); //drive forward
-                    }
                 }
             }
-            if (teamColor == 1) //red
+            if (teamColor == TeamColor.Red) //red
             {
-                if (position == 0) //straight on
+                if (fieldLocation == FieldLocation.Straight) //straight on
                 {
-                    robot.moveForInches(28 + 4, .5, 0);
+                    robot.moveForInches(28 + 4, .5, BaseTankAuto.Direction.Backward);
                 }
 
-                if (position == 1) //turning
+                if (fieldLocation == FieldLocation.Turn) //turning
                 {
-                    robot.moveForInches(28, .5, 0);
-                }
-            }
-            if (teamColor == 2)
-            {
-                if (position == 1) //turning
-                {
-                    if (placement == 0)
-                    {
-                        robot.moveForInches(26.5 + offset, .25); //drive forward
-                        leftNinety();
-                        robot.moveForInches(3, .25, 0);
-                        placeGlyph();
-
-                    }
-                    if (placement == 1)
-                    {
-                        robot.moveForInches(35 + offset, .25); //drive forward
-                        leftNinety();
-                        placeGlyph();
-
-                    }
-                    if (placement == 2)
-                    {
-                        robot.moveForInches(43.5 + offset, .25); //drive forward
-                        leftNinety();
-                        placeGlyph();
-                    }
+                    robot.moveForInches(28, .5, BaseTankAuto.Direction.Backward);
                 }
             }
         }
@@ -145,17 +122,24 @@ public class BaseTankAutoRoute extends LinearOpMode {
 
     }
 
-    public void hitJewel(int teamColor)
+    public void hitJewel(TeamColor teamColor)
     {
-        //blue = 0
-        //red  = 1
-        int rightColor = 0;
+        TeamColor rightBallColor = TeamColor.Red;
 
+        //straighten the hit arm
         robot.jewelHit.setPosition(.33);
+
         sleep(250);
+
+        //lower the hit arm
         robot.jewelRaise.setPosition(.2);
 
         sleep(2000);
+
+        //move the hit arm close to the ball
+        robot.jewelHit.setPosition(.43);
+
+        sleep(500);
 
         //find color
         int red = robot.sensorRGB.red();
@@ -164,23 +148,28 @@ public class BaseTankAutoRoute extends LinearOpMode {
         //use color
         if(red > blue)
         {
-            rightColor = 1;
+            rightBallColor = TeamColor.Red;
         }
         else
         {
-            rightColor = 0;
+            rightBallColor = TeamColor.Blue;
         }
 
-        if(rightColor == teamColor)
+        if(rightBallColor == teamColor)
         {
             robot.hitLeft();
         }
         else
         {
+            //move the hit arm back to center (wind up for the hit)
+            robot.jewelHit.setPosition(.33);
+            sleep(100);
+            //and swing batter
             robot.hitRight();
         }
 
 
+        //reset the arm back up
         sleep(500);
         robot.jewelRaise.setPosition(.85);
         sleep(500);
@@ -271,15 +260,35 @@ public class BaseTankAutoRoute extends LinearOpMode {
     }
 
     public void placeGlyph() throws Exception {
+
+        //backup ( we need to work on this part)
+        robot.moveForInches(9, .5, BaseTankAuto.Direction.Backward); //back up
+
+        //drive forward
         robot.moveForInches(4, .25);
+
+        //bump arm down (to keep from being stuck in up position)
         robot.LifterMotor.setPower(-.3);
+
         //sleep(100);
+
+        //Turn off back drive (allow the arm to lower)
         robot.LifterMotor.setPower(0);
+
         sleep(3000);
+
+        //open Glyph doors
         robot.dropGlyph();
+
+        //push Glyph in
         robot.moveForInches(2);
-        robot.moveForInches(2, .5, 0);
+
+        //backup up out of the way
+        robot.moveForInches(2, .5, BaseTankAuto.Direction.Backward);
+
         raiseArm();
+
+        //move back in a little to be in safe zone
         robot.moveForInches(1, .5);
     }
 

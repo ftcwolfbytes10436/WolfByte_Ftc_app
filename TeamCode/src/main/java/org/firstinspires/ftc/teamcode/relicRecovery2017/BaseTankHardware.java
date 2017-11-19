@@ -42,8 +42,8 @@ public class BaseTankHardware {
 
         LifterMotor = initMotor("LifterMotor", DcMotorSimple.Direction.FORWARD);
 
-        leftGripper = initServo("LeftGripper", 0 /*gripperPos*/, Direction.FORWARD);
-        rightGripper = initServo("RightGripper", 0 /*gripperPos*/, Direction.REVERSE);
+        leftGripper = initServo("LeftGripper", .4 /*gripperPos*/, Direction.FORWARD);
+        rightGripper = initServo("RightGripper", .4 /*gripperPos*/, Direction.REVERSE);
 
         jewelRaise = initServo("jewelRaise", .85, Direction.FORWARD);
         jewelHit = initServo("jewelHit", 1, Direction.FORWARD);

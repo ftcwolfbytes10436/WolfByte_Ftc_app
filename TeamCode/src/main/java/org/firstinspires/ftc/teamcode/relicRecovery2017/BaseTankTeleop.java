@@ -13,6 +13,7 @@ public class BaseTankTeleop extends OpMode{
     /* Declare OpMode members. */
     BaseTankHardware robot = new BaseTankHardware();
     boolean triggerHit = false;
+    double liftMotorPower = 0;
 
     @Override
     public void init() {
@@ -43,8 +44,19 @@ public class BaseTankTeleop extends OpMode{
         triggerHit = gamepad2.right_trigger > 0.5 || gamepad2.left_trigger > 0.5;
         */
 
+        //we have to invert the y joystick then clip it to make sure it is always between -1 and 1
+        liftMotorPower = Range.clip(gamepad2.right_stick_y * -1, -1, 1 );
 
-        robot.LifterMotor.setPower(robot.backFeedPower+0.4 * (Range.clip(-gamepad2.right_stick_y, -1, 1)));
+        if (liftMotorPower > 0) //lifting
+        {
+            liftMotorPower = liftMotorPower *.4; //we want 40% of the joystick value for the power
+        }
+        else //lowering
+        {
+            liftMotorPower = liftMotorPower * .1; // we want 10% of the joytick value for power (slow down the lowering)
+        }
+
+        robot.LifterMotor.setPower(robot.backFeedPower + liftMotorPower);
 
         telemetry.addData("backdrive", robot.backFeedPower);
         telemetry.addData("Left Servo: ", robot.leftGripper.getPosition());

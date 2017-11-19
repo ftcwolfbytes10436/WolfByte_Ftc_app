@@ -20,6 +20,10 @@ public class BaseTankAuto extends BaseTankHardware{
     public BNO055IMU imu = null;
     ColorSensor sensorRGB;
 
+    enum Direction
+    {
+        Forward, Backward
+    }
 
     private Orientation currentOrientation = null;
 
@@ -78,25 +82,22 @@ public class BaseTankAuto extends BaseTankHardware{
 
     public void moveForInches(double inches) throws Exception
     {
-        moveForInches(inches, 1, 1);
+        moveForInches(inches, 1, Direction.Forward);
     }
 
     public void moveForInches(double inches, double power) throws Exception
     {
-        double i = inches;
-        double p = power;
-        moveForInches(i, p, 1);
+        moveForInches(inches, power, Direction.Forward);
     }
 
-
-    public void moveForInches(double inches, double power, int direction) throws Exception //throws Exception {driveForInches(inches, power, brake);}
+    public void moveForInches(double inches, double power, Direction direction) throws Exception //throws Exception {driveForInches(inches, power, brake);}
     {
-        if (direction == 1) //forward
+        if (direction == Direction.Forward) //forward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        if (direction == 0) //backward
+        if (direction == Direction.Backward) //backward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
