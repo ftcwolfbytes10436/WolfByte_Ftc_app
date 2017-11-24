@@ -53,7 +53,7 @@ public class BaseTankTeleop extends OpMode{
         }
         else //lowering
         {
-            liftMotorPower = liftMotorPower * .1; // we want 10% of the joytick value for power (slow down the lowering)
+            liftMotorPower = liftMotorPower * .4; // we want 10% of the joytick value for power (slow down the lowering)
         }
 
         robot.LifterMotor.setPower(robot.backFeedPower + liftMotorPower);

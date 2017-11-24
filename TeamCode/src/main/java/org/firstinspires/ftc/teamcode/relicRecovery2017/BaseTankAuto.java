@@ -182,7 +182,7 @@ public class BaseTankAuto extends BaseTankHardware{
         jewelHit.setPosition(1);
     }
 
-    public void dropGlyph() { setGriperPos(0);}
+    public void dropGlyph() { setGriperPos(.5);}
 
 
 

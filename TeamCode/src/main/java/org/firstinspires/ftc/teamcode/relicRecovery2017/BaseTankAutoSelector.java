@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.relicRecovery2017;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.ArrayList;
-
+@Disabled
 @Autonomous(name="tank autonomous route selector")
 public class BaseTankAutoSelector extends LinearOpMode {
 

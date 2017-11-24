@@ -43,13 +43,13 @@ public class BaseTankAutoRoute extends LinearOpMode {
         waitForStart();
         try
         {
-            double offset = -2;
+            double offset = 0;
 
             TeamColor teamColor = TeamColor.Blue;
 
-            FieldLocation fieldLocation = FieldLocation.Straight;
+            FieldLocation fieldLocation = FieldLocation.Turn;
 
-            GlyphColumn glyphColumn = GlyphColumn.Left;
+            GlyphColumn glyphColumn = GlyphColumn.Right;
 
             telemetry.addData("team Color", teamColor);
             telemetry.addData("position", fieldLocation);
@@ -57,10 +57,10 @@ public class BaseTankAutoRoute extends LinearOpMode {
             telemetry.update();
 
             robot.setGriperPos(1);
-            sleep(2000);
 
-            hitJewel(teamColor);
-
+            //hitJewel(teamColor);
+            sleep(500);
+            
             raiseArm();
 
             if (teamColor == TeamColor.Blue)
@@ -82,19 +82,19 @@ public class BaseTankAutoRoute extends LinearOpMode {
                 {
                     if (glyphColumn == GlyphColumn.Left)
                     {
-                        robot.moveForInches(26.5 + offset, .25); //drive forward
-                        leftNinety();
+                        robot.moveForInches(24.5 + offset, .25); //drive forward
+                        leftNinety( 89);
                         placeGlyph();
                     }
                     else if (glyphColumn == GlyphColumn.Center)
                     {
-                        robot.moveForInches(35 + offset, .25); //drive forward
-                        leftNinety();
+                        robot.moveForInches(30.5 + offset, .25); //drive forward
+                        leftNinety(89);
                         placeGlyph();
                     }
                     else if (glyphColumn == GlyphColumn.Right) {
-                        robot.moveForInches(43.5 + offset, .25); //drive forward
-                        leftNinety();
+                        robot.moveForInches(37.5 + offset, .25); //drive forward
+                        leftNinety(89);
                         placeGlyph();
                     }
                 }
@@ -180,14 +180,46 @@ public class BaseTankAutoRoute extends LinearOpMode {
     public void raiseArm()
     {
         robot.LifterMotor.setPower(0.5);
-        sleep(1000);
+        sleep(1250);
         robot.LifterMotor.setPower(robot.backFeedPower);
     }
 
-    public void leftNinety()
+    public void courseCorrect(double degrees)
+    {
+
+            int loopCount = 10;
+            while ((robot.getHeading() > (degrees + .5) || robot.getHeading() < (degrees - .5))
+                    && loopCount > 0
+                    && opModeIsActive()) {
+
+                if (robot.getHeading() > degrees + .5) {
+                    telemetry.addData("Turning: ", "Right");
+                    //best we can tell we hit some kind of bug
+                    //when we moved this code to a function we had to reverse the power
+                    robot.LeftMotor.setPower(-.2 * loopCount/10);
+                    robot.RightMotor.setPower(.15 * loopCount/10);
+                    sleep(300);
+                    robot.LeftMotor.setPower(0);
+                    robot.RightMotor.setPower(0);
+                } else if (robot.getHeading() < (degrees - .5)) {
+                    telemetry.addData("Turning: ", "Left");
+                    robot.RightMotor.setPower(-.15 * loopCount/10);
+                    robot.LeftMotor.setPower(.2 * loopCount/10);
+                    sleep(300);
+                    robot.LeftMotor.setPower(0);
+                    robot.RightMotor.setPower(0);
+                }
+                loopCount--;
+                telemetry.addData("Heading: ", robot.getHeading());
+                telemetry.update();
+            }
+
+    }
+
+    public void leftNinety(double degrees)
     {
         if (opModeIsActive()) {
-            while (robot.getHeading() < 91 && robot.getHeading() < 89) {
+            while (robot.getHeading() < (degrees + 1) && robot.getHeading() < (degrees - 1)) {
                 robot.LeftMotor.setPower(-.3);
                 robot.RightMotor.setPower(.2);
                 telemetry.addData("Heading: ", robot.getHeading());
@@ -195,26 +227,26 @@ public class BaseTankAutoRoute extends LinearOpMode {
             }
             robot.LeftMotor.setPower(0);
             robot.RightMotor.setPower(0);
-            int loopCount = 0;
-            while ((robot.getHeading() > 91 || robot.getHeading() < 89) && loopCount < 3) {
-
-                if (robot.getHeading() > 91) {
-                    robot.LeftMotor.setPower(.15);
-                    robot.RightMotor.setPower(-.1);
-                    sleep(300);
-                    robot.LeftMotor.setPower(0);
-                    robot.RightMotor.setPower(0);
-                } else if (robot.getHeading() < 89) {
-                    robot.RightMotor.setPower(.1);
-                    robot.LeftMotor.setPower(-.15);
-                    sleep(300);
-                    robot.LeftMotor.setPower(0);
-                    robot.RightMotor.setPower(0);
-                }
-                loopCount++;
-                telemetry.addData("Heading: ", robot.getHeading());
-                telemetry.update();
-            }
+//            int loopCount = 0;
+//            while ((robot.getHeading() > (degrees + 1) || robot.getHeading() < (degrees - 1)) && loopCount < 3) {
+//
+//                if (robot.getHeading() > degrees + 1) {
+//                    robot.LeftMotor.setPower(.2);
+//                    robot.RightMotor.setPower(-.15);
+//                    sleep(300);
+//                    robot.LeftMotor.setPower(0);
+//                    robot.RightMotor.setPower(0);
+//                } else if (robot.getHeading() < (degrees - 1)) {
+//                    robot.RightMotor.setPower(.15);
+//                    robot.LeftMotor.setPower(-.2);
+//                    sleep(300);
+//                    robot.LeftMotor.setPower(0);
+//                    robot.RightMotor.setPower(0);
+//                }
+//                loopCount++;
+//                telemetry.addData("Heading: ", robot.getHeading());
+//                telemetry.update();
+//            }
         }
     }
 
@@ -262,10 +294,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
     public void placeGlyph() throws Exception {
 
         //backup ( we need to work on this part)
-        robot.moveForInches(9, .5, BaseTankAuto.Direction.Backward); //back up
-
-        //drive forward
-        robot.moveForInches(4, .25);
+        robot.moveForInches(2, .25, BaseTankAuto.Direction.Backward); //back up
 
         //bump arm down (to keep from being stuck in up position)
         robot.LifterMotor.setPower(-.3);
@@ -273,23 +302,24 @@ public class BaseTankAutoRoute extends LinearOpMode {
         //sleep(100);
 
         //Turn off back drive (allow the arm to lower)
-        robot.LifterMotor.setPower(0);
+        robot.LifterMotor.setPower(0.05);
 
         sleep(3000);
+
+        telemetry.addData("Before Heading: ", robot.getHeading());
+
+        courseCorrect(89);
+        telemetry.addData("After Heading: ", robot.getHeading());
+
+        robot.LifterMotor.setPower(0);
 
         //open Glyph doors
         robot.dropGlyph();
 
-        //push Glyph in
-        robot.moveForInches(2);
+        robot.moveForInches(11, .25);
 
         //backup up out of the way
-        robot.moveForInches(2, .5, BaseTankAuto.Direction.Backward);
-
-        raiseArm();
-
-        //move back in a little to be in safe zone
-        robot.moveForInches(1, .5);
+        robot.moveForInches(3, .5, BaseTankAuto.Direction.Backward);
     }
 
 }
