@@ -170,6 +170,9 @@ public class BaseTankAuto extends BaseTankHardware{
         LeftMotor.setPower(0);
         RightMotor.setPower(0);
 
+        LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     public void hitLeft()

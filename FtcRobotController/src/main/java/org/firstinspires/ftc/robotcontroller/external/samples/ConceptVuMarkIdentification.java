@@ -103,14 +103,14 @@ public class ConceptVuMarkIdentification extends LinearOpMode {
          * Once you've obtained a license key, copy the string from the Vuforia web site
          * and paste it in to your code onthe next line, between the double quotes.
          */
-        parameters.vuforiaLicenseKey = "ATsODcD/////AAAAAVw2lR...d45oGpdljdOh5LuFB9nDNfckoxb8COxKSFX";
+        parameters.vuforiaLicenseKey = "AUqb0l//////AAAAGevdjhGJj0rPhL7HPPOgXiMjObqiWrCOBJv2OvmyVIE1WTBpDt2ccEX7yWqDCZNRiMvT3ZeM/aA/Qx5Jpd1+8EraKY+8FD/uFVHJmMMwfkcYJkuIz3NzoVTdSc7c/3lwVmt7APWF/KAhoD6OPaoEjh1+gE17QlLkUoQNhlEEbbG3o2gjkyQf2xC+ZbXVehs0DF+ilZzliIa0NHNBSXutZaVmOzdbzJQNioxv9U+kf6P61pEy3aHvBPsqmRatPjzOeEN+/7NVyFJiDk2iakWxIrlTF0jUWl9zFBJcbXM+AwAaC57xY+txkzO8WFDR/ZQygDUajJKZQbfk+AbUj4yVMDCrX2bmrmZDAOFvrFtVFlqZ";
 
         /*
          * We also indicate which camera on the RC that we wish to use.
          * Here we chose the back (HiRes) camera (for greater range), but
          * for a competition robot, the front camera might be more convenient.
          */
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
         /**
