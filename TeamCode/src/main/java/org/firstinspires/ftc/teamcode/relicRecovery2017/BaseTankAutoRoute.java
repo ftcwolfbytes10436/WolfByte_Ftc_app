@@ -119,15 +119,8 @@ public class BaseTankAutoRoute extends LinearOpMode {
             {
                 if (fieldLocation == FieldLocation.Straight)
                 {
-                    if (true) {
-                        robot.moveForInches(28 + offset, .25); //drive forward
-                    }
-                    /*
-                    robot.moveForInches(28 + offset, .25); //drive forward
-                    leftToDegrees();
-                    leftToDegrees();
-                    leftToDegrees();
-                    */
+                    robot.moveForInches(20 + offset, .25); //drive forward
+                    placeGlyph(robot.getHeading());
                 }
 
                 if (fieldLocation == FieldLocation.Turn)
@@ -138,7 +131,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
 //                        leftToDegrees(89);
 //                        placeGlyph(89);
                         robot.moveForInches(17 + offset, .25); //drive forward
-                        leftToDegrees( 75);
+                        leftToDegrees(75);
                         placeGlyph(75);
                     }
                     else if (glyphColumn == GlyphColumn.Center)
@@ -148,7 +141,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
 //                        placeGlyph(89);
                         robot.moveForInches(26 + offset, .25); //drive forward
                         leftToDegrees(75);
-                        placeGlyph(75);
+                        placeGlyph(73);
                     }
                     else if (glyphColumn == GlyphColumn.Right) {
 //                        robot.moveForInches(38.5 + offset, .25); //drive forward
@@ -156,7 +149,7 @@ public class BaseTankAutoRoute extends LinearOpMode {
 //                        placeGlyph(89);
                         robot.moveForInches(32.5 + offset, .25); //drive forward
                         leftToDegrees(75);
-                        placeGlyph(75);
+                        placeGlyph(73);
                     }
                 }
             }

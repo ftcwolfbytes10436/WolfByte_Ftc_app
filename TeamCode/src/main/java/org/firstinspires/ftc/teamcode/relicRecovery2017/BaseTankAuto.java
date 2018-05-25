@@ -92,15 +92,17 @@ public class BaseTankAuto extends BaseTankHardware{
 
     public void moveForInches(double inches, double power, Direction direction) throws Exception //throws Exception {driveForInches(inches, power, brake);}
     {
+        double pi = 3.14152653589793;
+
         if (direction == Direction.Forward) //forward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-            RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
         if (direction == Direction.Backward) //backward
         {
             LeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-            RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         power = Range.clip(power, 0, 1);
@@ -118,8 +120,8 @@ public class BaseTankAuto extends BaseTankHardware{
         RightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //(inches to move) * (number of clicks per rotation) / (2 * r * pi )
-        int leftTargetPos = startingLeftPos + (int)(inches * (frontLeftOneRotation / (4 * 3.1415)));
-        int rightTargetPos = startingRightPos + (int)(inches * (frontRightOneRotation / (4 * 3.1415)));
+        int leftTargetPos = startingLeftPos + (int)(inches * (frontLeftOneRotation / (4 * pi)));
+        int rightTargetPos = startingRightPos + (int)(inches * (frontRightOneRotation / (4 * pi)));
 
         LeftMotor.setTargetPosition(leftTargetPos);
         RightMotor.setTargetPosition(rightTargetPos);
@@ -171,7 +173,7 @@ public class BaseTankAuto extends BaseTankHardware{
         RightMotor.setPower(0);
 
         LeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        RightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        RightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
 

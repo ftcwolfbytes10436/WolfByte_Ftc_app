@@ -12,9 +12,8 @@ public class PID_Test_Andrew {
     double mLastError;
     double pCorrection;
     double iCorrection;
-    double dCorreciton;
+    double dCorrection;
     double slope;
-
 
     public void init(){
         mError = 0;
@@ -22,8 +21,7 @@ public class PID_Test_Andrew {
         mLastError = 0;
     }
 
-
-    public double PIDloop(double pVal, double iVal, double dVal, double CurrentValue, double TargetValue, double MaxCorr, double MinCorr){
+    public double PIDloop(double pVal, double iVal, double dVal, double CurrentValue, double TargetValue, double MaxCorr, double MinCorr, double feedForward){
         mError = TargetValue - CurrentValue;
         pCorrection = pVal * mError;
 
@@ -31,14 +29,14 @@ public class PID_Test_Andrew {
         iCorrection = iVal * mSumError;
 
         slope = mError - mLastError;
-        dCorreciton = slope * dVal;
+        dCorrection = slope * dVal;
         mLastError = mError;
 
-        double correction = pCorrection + iCorrection + dCorreciton;
+        double correction = pCorrection + iCorrection + dCorrection;
 
         if (correction > MaxCorr) correction = MaxCorr;
         if (correction < MinCorr) correction = MinCorr;
 
-        return correction;
+        return correction + feedForward;
     }
 }
